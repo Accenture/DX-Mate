@@ -37,7 +37,7 @@ export function execShell(cmd: string) {
         cp.exec(cmd, {cwd: workspacePath}, (err, out) => {
             if (err) {
                 vscode.window.showQuickPick(['YES', 'NO'], {
-                    title: "An error occurred, do you wish to retry?",
+                    title: "An error occurred, do you wish to retry? \n\n Error: " + err,
                     canPickMany: false,
                     placeHolder: 'YES'
                 })
