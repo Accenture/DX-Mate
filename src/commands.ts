@@ -44,6 +44,14 @@ export function openScratchOrg() {
 //utilizes sfpowerkit to install dependencies. Might need to have an install script to install this automatically
 export function installDependencies() {
 	let keyParams = getPackageKeys(); //Get package.json, and find dependencies. keysParam must be a list 
+	if(keyParams === '') {
+		//No dependencies
+		einsteinOutput.appendLine('No Dependencies to install');
+		einsteinOutput.show();
+		return new Promise<string>((resolve, reject) => {
+			resolve('No Dependencies');
+		});
+	}
 	//Verify sfpowerkit is installed, or else rund the installation
 	let cmd = 'sfdx sfpowerkit:package:dependencies:install -r -a -w 10 --installationkeys ' + keyParams;
 
@@ -59,7 +67,7 @@ export function installDependencies() {
 	}, async (progress) => {
 		
 		progress.report({  message: 'Installing package dependencies' });
-		shellPromise;
+		await shellPromise;
 	});
 
 	return shellPromise;
@@ -101,7 +109,7 @@ export function sourcePushMetadata() {
 	}, async (progress) => {
 		
 		progress.report({  message: 'Pushing metadata' });
-		shellPromise;
+		await shellPromise;
 	});
 
 	return shellPromise;
@@ -119,7 +127,7 @@ export function sourcePullMetadata() {
 	}, async (progress) => {
 		
 		progress.report({  message: 'Pulling metadata' });
-		shellPromise;
+		await shellPromise;
 	});
 
 	return shellPromise;
@@ -136,6 +144,10 @@ export function assignPermsets() {
 			let cmd = 'sfdx force:user:permset:assign -n ' + permset;
 			promiseList.push(execShell(cmd));
 		});
+	}
+	else{
+		einsteinOutput.appendLine('No permission sets to assign');
+		einsteinOutput.show();
 	}
 	return Promise.all(promiseList);
 }
