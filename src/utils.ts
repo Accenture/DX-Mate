@@ -45,6 +45,8 @@ export function execShell(cmd: string) {
                     if(value && value === 'YES') {
                         execShell(cmd);
                     } else{
+                        einsteinOutput.appendLine("ERROR: " + err);
+                        einsteinOutput.show();
                         return reject(err);
                     }
                 });

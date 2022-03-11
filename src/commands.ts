@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { createFile, einsteinOutput, execShell, getDirectories, getFile, workspacePath } from './utils';
+import { createFile, createFolder, einsteinOutput, execShell, folderExists, getDirectories, getFile, workspacePath } from './utils';
 
 //Creates a new scratch org based on name input. Default duration is set to 5 days
 export function createScratchOrg(scratchName: string) {
@@ -189,6 +189,9 @@ export function addPackageKey() {
 		placeHolder: "KEY",
 	}).then(value => {
 		if(value) {
+			if(!folderExists(workspacePath + '/einstein_config')) { 
+				createFolder(workspacePath + '/einstein_config');
+			}
 			createFile(workspacePath + '/einstein_config/.packageKey', value);
 		}
 	});
