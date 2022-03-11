@@ -144,6 +144,16 @@ export function assignPermsets() {
 			let cmd = 'sfdx force:user:permset:assign -n ' + permset;
 			promiseList.push(execShell(cmd));
 		});
+
+		vscode.window.withProgress({
+			location: vscode.ProgressLocation.Notification,
+			cancellable: true,
+			title: 'Permission set assignment'
+		}, async (progress) => {
+			
+			progress.report({  message: 'Assigning permission sets' });
+			await Promise.all(promiseList);
+		});
 	}
 	else{
 		einsteinOutput.appendLine('No permission sets to assign');
