@@ -144,6 +144,11 @@ export function assignPermsets() {
 export function deployUnpackagable() {
 	//Get path to unpackagable and deploy
 	let unpackPath = vscode.workspace.getConfiguration().get('unpackagable.location');
+	if(!unpackPath || unpackPath === '') {
+		return new Promise<string>((resolve, reject) => {
+			resolve('no unpack');
+		});
+	}
 
 	let shellPromise = execShell('sfdx force:source:deploy -p ' + unpackPath);
 	vscode.window.withProgress({
