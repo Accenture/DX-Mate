@@ -2,7 +2,7 @@
 	"name": "einstein",
 	"displayName": "Einstein's Little Helper",
 	"description": "Support tools for SFDX development",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"engines": {
 		"vscode": "^1.64.0"
 	},

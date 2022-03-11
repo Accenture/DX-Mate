@@ -1,5 +1,7 @@
 # Dependency directories
 node_modules/
-out/*
+
+#OUT
+out/
 
 *.vsix
