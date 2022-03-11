@@ -1,0 +1,120 @@
+{
+	"name": "einstein",
+	"displayName": "Einstein's Little Helper",
+	"description": "Support tools for SFDX development",
+	"version": "0.0.1",
+	"engines": {
+		"vscode": "^1.64.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onStartupFinished"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"commands": [
+			{
+				"command": "einstein.helloWorld",
+				"title": "Hello World"
+			}
+		],
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "einstein-explorer",
+					"title": "Einstein",
+					"icon": "einstein.png"
+				}
+			]
+		},
+		"views": {
+			"einstein-explorer": [
+				{
+					"id": "orgCommands",
+					"name": "Einstein org actions",
+					"contextualTitle": "Einstein Explorer"
+				},
+				{
+					"id": "packageCommands",
+					"name": "Einstein package actions",
+					"contextualTitle": "Einstein Explorer"
+				},
+				{
+					"id": "sourceCommands",
+					"name": "Einstein source actions",
+					"contextualTitle": "Einstein Explorer"
+				},
+				{
+					"id": "dataCommands",
+					"name": "Einstein data actions",
+					"contextualTitle": "Einstein Explorer"
+				}
+			]
+		},
+		"viewsWelcome": [
+			{
+				"view": "orgCommands",
+				"contents": "[Create Scratch Org](command:einstein.createScratch)\n[Open default scratch org](command:einstein.openScratch)\n[Change default scratch org](command:einstein.openScratch)"
+			},
+			{
+				"view": "packageCommands",
+				"contents": "[Add package key](command:einstein.addPackageKey)\n[Re-install dependent packages](command:einstein.dependencyInstall)"
+			},
+			{
+				"view": "sourceCommands",
+				"contents": "[Pull source](command:einstein.pullSource)\n[Push source](command:einstein.pushSource)\n"
+			},
+			{
+				"view": "dataCommands",
+				"contents": "[Import dummy data](command:einstein.importDummyData)\n[Assign default permission sets](command:einstein.assignPermissionsets)"
+			}
+		],
+		"configuration": {
+			"type": "object",
+			"title": "ACN Einstein", 
+			"properties": {
+			  "dummy.data.location": {
+				"type": "string",
+				"default": "/dummy-data",
+				"description": "Relative folder location to where dummy data should be imported using the sfdx import command"
+			  },
+			  "unpackagable.location": {
+				"type": "string",
+				"default": "/unpackagable",
+				"description": "Relative folder location to where unpackagable metadata is stored. This is automatically deployed aftert scratch creation and dependency install"
+			  },
+			  "scratch.default.permissionsets": {
+				"type": "array",
+				"items": {
+					"type": "string"
+				},
+				"default": [],
+				"description": "List of permission set to assign to your default scratch user"
+			  }
+			}
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"watch": "tsc -watch -p ./",
+		"pretest": "npm run compile && npm run lint",
+		"lint": "eslint src --ext ts",
+		"test": "node ./out/test/runTest.js"
+	},
+	"devDependencies": {
+		"@types/vscode": "^1.64.0",
+		"@types/glob": "^7.2.0",
+		"@types/mocha": "^9.1.0",
+		"@types/node": "14.x",
+		"@typescript-eslint/eslint-plugin": "^5.12.1",
+		"@typescript-eslint/parser": "^5.12.1",
+		"eslint": "^8.9.0",
+		"glob": "^7.2.0",
+		"mocha": "^9.2.1",
+		"typescript": "^4.5.5",
+		"@vscode/test-electron": "^2.1.2"
+	}
+}
