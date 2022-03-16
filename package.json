@@ -56,7 +56,7 @@
 		"viewsWelcome": [
 			{
 				"view": "orgCommands",
-				"contents": "[Create Scratch Org](command:einstein.createScratch)\n[Open default scratch org](command:einstein.openScratch)\n[Change default scratch org](command:einstein.openScratch)"
+				"contents": "[Create Scratch Org](command:einstein.createScratch)\n[Open default scratch org](command:einstein.openScratch)\n[Change default scratch org](command:einstein.openScratch)\n[Generate login link](command:einstein.scratchLoginLink)"
 			},
 			{
 				"view": "packageCommands",

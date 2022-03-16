@@ -23,6 +23,21 @@ export function createScratchOrg(scratchName: string) {
 	return shellPromise;
 }
 
+//Generates a login link that can be shared to allow others to log into i.e. a scratch org for test and validation
+//NB! This can potentially be used to generate a link to a sandbox or even production organization, handle with care
+export function generateLoginLink() {
+	let cmd = 'sfdx force:org:open -r --json';
+	execShell(cmd).then(cmdResult => {
+		let parsedResult = JSON.parse(cmdResult);
+		einsteinOutput.appendLine('WARNING! This link generates a direct opening to the default org\n\n LINK: ' + parsedResult.result.url );
+	}).catch(error => {
+		einsteinOutput.appendLine('FAILED TO OPEN ORG');
+	})
+	.finally(() => {
+		einsteinOutput.show();
+	});
+}
+
 //Opens the default scratch org
 export function openScratchOrg() {
 	let cmd = 'sfdx force:org:open';
