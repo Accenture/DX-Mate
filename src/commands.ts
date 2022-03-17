@@ -68,7 +68,7 @@ export function installDependencies() {
 		});
 	}
 	//Verify sfpowerkit is installed, or else rund the installation
-	let cmd = 'sfdx sfpowerkit:package:dependencies:install -r -a -w 10 --installationkeys ' + keyParams;
+	let cmd = 'sfdx sfpowerkit:package:dependencies:install -r -a -w 10 --installationkeys \"' + keyParams + '\"';
 
 	einsteinOutput.appendLine('FULL COMMAND:  ' + cmd);
     einsteinOutput.show();
