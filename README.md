@@ -42,6 +42,7 @@ None yet
 
 ## Release Notes
 
-### 1.0.0
+### 1.0.4
+Fixed issue with installing multiple dependencies
 
 Initial release of ACN Einstein
