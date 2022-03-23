@@ -67,6 +67,8 @@ export function installDependencies() {
 			resolve('No Dependencies');
 		});
 	}
+
+	//ADD CHECK TO VERIFY THAT A PACKAGE KEY HAS BEEN ADDED TO THE PROJECT, IF NOT, CALL THE ADD PACKAGE KEY COMMAND AND AWAIT
 	//Verify sfpowerkit is installed, or else rund the installation
 	let cmd = 'sfdx sfpowerkit:package:dependencies:install -r -a -w 10 --installationkeys \"' + keyParams + '\"';
 
@@ -222,6 +224,14 @@ export function importDummyData() {
 		progress.report({  message: 'Running dummy data import' });
 		await Promise.all(promiseArray);
 	});
+}
+
+//Allows calling sfdx export on the default org to retrieve data on json format
+//Stored in the chosen outputDirectory
+export function sfdxExportData() {
+	let inputQuery, outputDir;
+
+	let cmd = 'sfdx force:data:tree:export --json --outputdir ' + outputDir + ' --query ' + inputQuery;
 }
 
 //Updating config file with input package key

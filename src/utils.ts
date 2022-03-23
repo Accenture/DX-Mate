@@ -34,7 +34,7 @@ export function execShell(cmd: string) {
     return new Promise<string>((resolve, reject) => {
         einsteinOutput.appendLine("Running: " + cmd);
         einsteinOutput.show();
-        cp.exec(cmd, {cwd: workspacePath}, (err, out) => {
+        let process = cp.exec(cmd, {cwd: workspacePath}, (err, out) => {
             if (err) {
                 vscode.window.showQuickPick(['YES', 'NO'], {
                     title: "An error occurred, do you wish to retry? \n\n Error: " + err,
@@ -53,6 +53,12 @@ export function execShell(cmd: string) {
             }
             einsteinOutput.appendLine("Finished running: " + cmd);
             return resolve(out);
+        });
+
+        process.stdout?.on('data', data => {
+            //Adding stream to the output console for the process
+            //Possibly give ability to see what subprocess is ongoing
+            einsteinOutput.appendLine(data);
         });
     });
 }
