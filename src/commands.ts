@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { createFile, createFolder, einsteinOutput, execShell, folderExists, getDirectories, getFile, workspacePath } from './utils';
+import { createFile, createFolder, dxmateOutput, execShell, folderExists, getDirectories, getFile, workspacePath } from './utils';
 
 //Creates a new scratch org based on name input. Default duration is set to 5 days
 export function createScratchOrg(scratchName: string) {
@@ -29,12 +29,12 @@ export function generateLoginLink() {
 	let cmd = 'sfdx force:org:open -r --json';
 	execShell(cmd).then(cmdResult => {
 		let parsedResult = JSON.parse(cmdResult);
-		einsteinOutput.appendLine('WARNING! This link generates a direct opening to the default org\n\n LINK: ' + parsedResult.result.url );
+		dxmateOutput.appendLine('WARNING! This link generates a direct opening to the default org\n\n LINK: ' + parsedResult.result.url );
 	}).catch(error => {
-		einsteinOutput.appendLine('FAILED TO OPEN ORG');
+		dxmateOutput.appendLine('FAILED TO OPEN ORG');
 	})
 	.finally(() => {
-		einsteinOutput.show();
+		dxmateOutput.show();
 	});
 }
 
@@ -61,8 +61,8 @@ export function installDependencies() {
 	let keyParams = getPackageKeys(); //Get package.json, and find dependencies. keysParam must be a list 
 	if(keyParams === '') {
 		//No dependencies
-		einsteinOutput.appendLine('No Dependencies to install');
-		einsteinOutput.show();
+		dxmateOutput.appendLine('No Dependencies to install');
+		dxmateOutput.show();
 		return new Promise<string>((resolve, reject) => {
 			resolve('No Dependencies');
 		});
@@ -72,8 +72,8 @@ export function installDependencies() {
 	//Verify sfpowerkit is installed, or else rund the installation
 	let cmd = 'sfdx sfpowerkit:package:dependencies:install -r -a -w 10 --installationkeys \"' + keyParams + '\"';
 
-	einsteinOutput.appendLine('FULL COMMAND:  ' + cmd);
-    einsteinOutput.show();
+	dxmateOutput.appendLine('FULL COMMAND:  ' + cmd);
+    dxmateOutput.show();
 
 	let shellPromise = execShell(cmd);
 
@@ -100,18 +100,18 @@ function getPackageKeys() {
 	//Possibly support for mulit package directories?
     if(jsonData.packageDirectories[0].dependencies) {
         jsonData.packageDirectories[0].dependencies.forEach((dependency: any) => {
-			einsteinOutput.appendLine('DEPENDENCY:  ' + dependency.package);
+			dxmateOutput.appendLine('DEPENDENCY:  ' + dependency.package);
             keyParams += dependency.package + ':' + packageKey + ' ' ;
         });
-		einsteinOutput.show();
+		dxmateOutput.show();
     }
 
     return keyParams;
 }
 
-//Get the package key stored in einstein_config. See if we need to support package key per dependency
+//Get the package key stored in dxmate_config. See if we need to support package key per dependency
 function getPackageKey() {
-	return getFile(workspacePath + '/einstein_config/.packageKey');
+	return getFile(workspacePath + '/dxmate_config/.packageKey');
 }
 
 //push metadata from scratch org
@@ -173,8 +173,8 @@ export function assignPermsets() {
 		});
 	}
 	else{
-		einsteinOutput.appendLine('No permission sets to assign');
-		einsteinOutput.show();
+		dxmateOutput.appendLine('No permission sets to assign');
+		dxmateOutput.show();
 	}
 	return Promise.all(promiseList);
 }
@@ -241,10 +241,10 @@ export function addPackageKey() {
 		placeHolder: "KEY",
 	}).then(value => {
 		if(value) {
-			if(!folderExists(workspacePath + '/einstein_config')) { 
-				createFolder(workspacePath + '/einstein_config');
+			if(!folderExists(workspacePath + '/dxmate_config')) { 
+				createFolder(workspacePath + '/dxmate_config');
 			}
-			createFile(workspacePath + '/einstein_config/.packageKey', value);
+			createFile(workspacePath + '/dxmate_config/.packageKey', value);
 		}
 	});
 }

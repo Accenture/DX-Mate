@@ -1,6 +1,6 @@
-# ACN einstein
+# ACN dxmate
 
-ACN Einstein is an extension that provides a set of UI actions to improve SFDX development efficiency
+ACN dxmate is an extension that provides a set of UI actions to improve SFDX development efficiency
 
 ## Features
 
@@ -45,4 +45,4 @@ None yet
 ### 1.0.4
 Fixed issue with installing multiple dependencies
 
-Initial release of ACN Einstein
+Initial release of ACN dxmate

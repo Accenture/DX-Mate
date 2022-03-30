@@ -1,6 +1,6 @@
 {
-	"name": "einstein",
-	"displayName": "Einstein's Little Helper",
+	"name": "dxmate",
+	"displayName": "ACN DX MATE",
 	"description": "Support tools for SFDX development",
 	"version": "1.0.4",
 	"engines": {
@@ -16,64 +16,64 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "einstein.helloWorld",
+				"command": "dxmate.helloWorld",
 				"title": "Hello World"
 			}
 		],
 		"viewsContainers": {
 			"activitybar": [
 				{
-					"id": "einstein-explorer",
-					"title": "Einstein",
+					"id": "dxmate-explorer",
+					"title": "DX Mate",
 					"icon": "lightning.png"
 				}
 			]
 		},
 		"views": {
-			"einstein-explorer": [
+			"dxmate-explorer": [
 				{
 					"id": "orgCommands",
-					"name": "Einstein org actions",
-					"contextualTitle": "Einstein Explorer"
+					"name": "DX Mate org actions",
+					"contextualTitle": "DX Mate Explorer"
 				},
 				{
 					"id": "packageCommands",
-					"name": "Einstein package actions",
-					"contextualTitle": "Einstein Explorer"
+					"name": "DX Mate package actions",
+					"contextualTitle": "DX Mate Explorer"
 				},
 				{
 					"id": "sourceCommands",
-					"name": "Einstein source actions",
-					"contextualTitle": "Einstein Explorer"
+					"name": "DX Mate source actions",
+					"contextualTitle": "DX Mate Explorer"
 				},
 				{
 					"id": "dataCommands",
-					"name": "Einstein data actions",
-					"contextualTitle": "Einstein Explorer"
+					"name": "DX Mate data actions",
+					"contextualTitle": "DX Mate Explorer"
 				}
 			]
 		},
 		"viewsWelcome": [
 			{
 				"view": "orgCommands",
-				"contents": "[Create Scratch Org](command:einstein.createScratch)\n[Open default scratch org](command:einstein.openScratch)\n[Change default scratch org](command:einstein.openScratch)\n[Generate login link](command:einstein.scratchLoginLink)"
+				"contents": "[Create Scratch Org](command:dxmate.createScratch)\n[Open default scratch org](command:dxmate.openScratch)\n[Change default scratch org](command:dxmate.openScratch)\n[Generate login link](command:dxmate.scratchLoginLink)"
 			},
 			{
 				"view": "packageCommands",
-				"contents": "[Add package key](command:einstein.addPackageKey)\n[Re-install dependent packages](command:einstein.dependencyInstall)"
+				"contents": "[Add package key](command:dxmate.addPackageKey)\n[Re-install dependent packages](command:dxmate.dependencyInstall)"
 			},
 			{
 				"view": "sourceCommands",
-				"contents": "[Pull source](command:einstein.pullSource)\n[Push source](command:einstein.pushSource)\n"
+				"contents": "[Pull source](command:dxmate.pullSource)\n[Push source](command:dxmate.pushSource)\n"
 			},
 			{
 				"view": "dataCommands",
-				"contents": "[Import dummy data](command:einstein.importDummyData)\n[Assign default permission sets](command:einstein.assignPermissionsets)"
+				"contents": "[Import dummy data](command:dxmate.importDummyData)\n[Assign default permission sets](command:dxmate.assignPermissionsets)"
 			}
 		],
 		"configuration": {
 			"type": "object",
-			"title": "ACN Einstein", 
+			"title": "ACN DX Mate", 
 			"properties": {
 			  "dummy.data.location": {
 				"type": "string",

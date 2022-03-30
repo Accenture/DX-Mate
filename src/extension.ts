@@ -10,30 +10,30 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 function registerOrgCommands(context: vscode.ExtensionContext) {
-	context.subscriptions.push(vscode.commands.registerCommand('einstein.openScratch', () => {
+	context.subscriptions.push(vscode.commands.registerCommand('dxmate.openScratch', () => {
 		openScratchOrg();
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('einstein.createScratch', () => {
+	context.subscriptions.push(vscode.commands.registerCommand('dxmate.createScratch', () => {
 		setupScratchOrg();
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('einstein.dependencyInstall', () => {
+	context.subscriptions.push(vscode.commands.registerCommand('dxmate.dependencyInstall', () => {
 		installDependencies();
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('einstein.addPackageKey', () => {
+	context.subscriptions.push(vscode.commands.registerCommand('dxmate.addPackageKey', () => {
 		addPackageKey();
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('einstein.importDummyData', () => {
+	context.subscriptions.push(vscode.commands.registerCommand('dxmate.importDummyData', () => {
 		importDummyData();
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('einstein.assignPermissionsets', () => {
+	context.subscriptions.push(vscode.commands.registerCommand('dxmate.assignPermissionsets', () => {
 		assignPermsets();
 	}));
-	context.subscriptions.push(vscode.commands.registerCommand('einstein.scratchLoginLink', () => {
+	context.subscriptions.push(vscode.commands.registerCommand('dxmate.scratchLoginLink', () => {
 		generateLoginLink();
 	}));
 }

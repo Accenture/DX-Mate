@@ -4,7 +4,7 @@ import * as fs from 'fs';
 
 export const workspacePath = vscode?.workspace?.workspaceFolders?.[0].uri.path;
 //Creates the extension output channel
-export const einsteinOutput = vscode.window.createOutputChannel("Einstein");
+export const dxmateOutput = vscode.window.createOutputChannel("DX Mate");
 
 export function getFile(filePath: string) {
 	//Returrn the file using fs
@@ -32,8 +32,8 @@ export function getDirectories(absPath: string) {
 //Use this to handle chained promises and command handling.
 export function execShell(cmd: string) {
     return new Promise<string>((resolve, reject) => {
-        einsteinOutput.appendLine("Running: " + cmd);
-        einsteinOutput.show();
+        dxmateOutput.appendLine("Running: " + cmd);
+        dxmateOutput.show();
         let process = cp.exec(cmd, {cwd: workspacePath}, (err, out) => {
             if (err) {
                 vscode.window.showQuickPick(['YES', 'NO'], {
@@ -45,20 +45,20 @@ export function execShell(cmd: string) {
                     if(value && value === 'YES') {
                         execShell(cmd);
                     } else{
-                        einsteinOutput.appendLine("ERROR: " + err);
-                        einsteinOutput.show();
+                        dxmateOutput.appendLine("ERROR: " + err);
+                        dxmateOutput.show();
                         return reject(err);
                     }
                 });
             }
-            einsteinOutput.appendLine("Finished running: " + cmd);
+            dxmateOutput.appendLine("Finished running: " + cmd);
             return resolve(out);
         });
 
         process.stdout?.on('data', data => {
             //Adding stream to the output console for the process
             //Possibly give ability to see what subprocess is ongoing
-            einsteinOutput.appendLine(data);
+            dxmateOutput.appendLine(data);
         });
     });
 }
