@@ -86,7 +86,7 @@ function addDependencyGetPackageNameInput() {
 function addDependencyGetPackageVersionInput() {
     return vscode.window.showInputBox({
 		title: 'Package version',
-		placeHolder: "0.1.0.LATEST",
+		value: "0.1.0.LATEST",
 	});
 }
 
