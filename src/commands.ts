@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { createFile, createFolder, dxmateOutput, execShell, folderExists, getDirectories, getFile, workspacePath } from './utils';
+import { dxmateOutput, execShell, getDirectories, workspacePath } from './utils';
 
 //Creates a new scratch org based on name input. Default duration is set to 5 days
 export function createScratchOrg(scratchName: string) {
@@ -56,63 +56,6 @@ export function openScratchOrg() {
 	return shellPromise;
 }
 
-//utilizes sfpowerkit to install dependencies. Might need to have an install script to install this automatically
-export function installDependencies() {
-	let keyParams = getPackageKeys(); //Get package.json, and find dependencies. keysParam must be a list 
-	if(keyParams === '') {
-		//No dependencies
-		dxmateOutput.appendLine('No Dependencies to install');
-		dxmateOutput.show();
-		return new Promise<string>((resolve, reject) => {
-			resolve('No Dependencies');
-		});
-	}
-
-	//ADD CHECK TO VERIFY THAT A PACKAGE KEY HAS BEEN ADDED TO THE PROJECT, IF NOT, CALL THE ADD PACKAGE KEY COMMAND AND AWAIT
-	//Verify sfpowerkit is installed, or else rund the installation
-	let cmd = 'sfdx sfpowerkit:package:dependencies:install -r -a -w 10 --installationkeys \"' + keyParams + '\"';
-
-	dxmateOutput.appendLine('FULL COMMAND:  ' + cmd);
-    dxmateOutput.show();
-
-	let shellPromise = execShell(cmd);
-
-	vscode.window.withProgress({
-		location: vscode.ProgressLocation.Notification,
-		cancellable: true,
-		title: 'Running sfpowerkit dependency install'
-	}, async (progress) => {
-		
-		progress.report({  message: 'Installing package dependencies' });
-		await shellPromise;
-	});
-
-	return shellPromise;
-}
-
-function getPackageKeys() {
-	let packageKey = getPackageKey();
-    let keyParams = '';
-    const projFile = getFile(workspacePath + '/sfdx-project.json');
-    let jsonData = JSON.parse(projFile);
-
-    //Check if dependencies exists
-	//Possibly support for mulit package directories?
-    if(jsonData.packageDirectories[0].dependencies) {
-        jsonData.packageDirectories[0].dependencies.forEach((dependency: any) => {
-			dxmateOutput.appendLine('DEPENDENCY:  ' + dependency.package);
-            keyParams += dependency.package + ':' + packageKey + ' ' ;
-        });
-		dxmateOutput.show();
-    }
-
-    return keyParams;
-}
-
-//Get the package key stored in dxmate_config. See if we need to support package key per dependency
-function getPackageKey() {
-	return getFile(workspacePath + '/dxmate_config/.packageKey');
-}
 
 //push metadata from scratch org
 export function sourcePushMetadata() {
@@ -232,19 +175,4 @@ export function sfdxExportData() {
 	let inputQuery, outputDir;
 
 	let cmd = 'sfdx force:data:tree:export --json --outputdir ' + outputDir + ' --query ' + inputQuery;
-}
-
-//Updating config file with input package key
-export function addPackageKey() {
-	vscode.window.showInputBox({
-		title: 'Package key',
-		placeHolder: "KEY",
-	}).then(value => {
-		if(value) {
-			if(!folderExists(workspacePath + '/dxmate_config')) { 
-				createFolder(workspacePath + '/dxmate_config');
-			}
-			createFile(workspacePath + '/dxmate_config/.packageKey', value);
-		}
-	});
 }

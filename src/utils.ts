@@ -8,7 +8,7 @@ export const dxmateOutput = vscode.window.createOutputChannel("DX Mate");
 
 export function getFile(filePath: string) {
 	//Returrn the file using fs
-    return fs.readFileSync(filePath, 'utf-8');
+    return fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf-8') : null;
 }
 
 export function createFile(absPath: string, data: string) {

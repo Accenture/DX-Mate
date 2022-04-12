@@ -64,7 +64,7 @@
 			},
 			{
 				"view": "packageCommands",
-				"contents": "[Add package key](command:dxmate.addPackageKey)\n[Re-install dependent packages](command:dxmate.dependencyInstall)"
+				"contents": "[Add package key](command:dxmate.addPackageKey)\n[Re-install dependent packages](command:dxmate.dependencyInstall)\n[Add package dependency](command:dxmate.addDependency)"
 			},
 			{
 				"view": "sourceCommands",

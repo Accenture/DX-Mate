@@ -1,7 +1,8 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import {openScratchOrg, installDependencies, sourcePushMetadata, addPackageKey, createScratchOrg, importDummyData, deployUnpackagable, assignPermsets, generateLoginLink} from './commands';
+import {openScratchOrg, sourcePushMetadata, createScratchOrg, importDummyData, deployUnpackagable, assignPermsets, generateLoginLink} from './commands';
+import { installDependencies, addPackageKey, addDependency } from './packageCommands';
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -35,6 +36,9 @@ function registerOrgCommands(context: vscode.ExtensionContext) {
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('dxmate.scratchLoginLink', () => {
 		generateLoginLink();
+	}));
+	context.subscriptions.push(vscode.commands.registerCommand('dxmate.addDependency', () => {
+		addDependency();
 	}));
 }
 
