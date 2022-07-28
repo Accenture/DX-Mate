@@ -13,7 +13,7 @@ export class ShellCommand{
     }
 }
 
-export const workspacePath = vscode?.workspace?.workspaceFolders?.[0].uri.path;
+export const workspacePath = vscode?.workspace?.workspaceFolders?.[0].uri.path.replace(/\\/g, "/");
 //Creates the extension output channel
 export const dxmateOutput = vscode.window.createOutputChannel("DX Mate");
 
