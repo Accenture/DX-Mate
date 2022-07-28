@@ -2,26 +2,20 @@ import * as vscode from 'vscode';
 import { createFile, createFolder, dxmateOutput, execShell, folderExists, getFile, workspacePath } from './utils';
 
 function getPackageKeys() {
-	let packageKey = getPackageKey();
     let keyParams = '';
-    let dependencies = getDependencies();
+    let dependencyKeys = getDependencyKeys();
 
     //Check if dependencies exists
 	//Possibly support for mulit package directories?
-    if(dependencies) {
-        dependencies.forEach((dependency: any) => {
-			dxmateOutput.appendLine('DEPENDENCY:  ' + dependency.package);
-            keyParams += dependency.package + ':' + packageKey + ' ' ;
+    if(dependencyKeys) {
+        dependencyKeys.forEach((dependency: any) => {
+			dxmateOutput.appendLine('DEPENDENCY:  ' + dependency.packageName);
+            keyParams += dependency.packageName + ':' + dependency.packageKey + ' ' ;
         });
 		dxmateOutput.show();
     }
 
     return keyParams;
-}
-
-//Get the package key stored in dxmate_config. See if we need to support package key per dependency
-function getPackageKey() {
-	return getFile(workspacePath + '/dxmate_config/.packageKey');
 }
 
 function getDependencies() {
@@ -97,6 +91,48 @@ function addDependencyGetPackageIdInput() {
 	});
 }
 
+async function validateDependencies() {
+    //Check if all the registered dependencies has been defined in dependencyKeys
+    let projDependencies = getDependencies();
+    let dependencyKeys = getDependencyKeys();
+
+    dxmateOutput.appendLine('FOUND DEPENDENCIES: ' + JSON.stringify(projDependencies));
+    let mappedPackages = new Set();
+
+    if(!projDependencies) { 
+        return;
+    }
+    if(dependencyKeys !== null) {
+        dependencyKeys.forEach((depKey: any) => {
+            mappedPackages.add(depKey.packageName);
+        });
+    }
+
+    let promiseList = new Array();
+    projDependencies.forEach((dependency: any) => {
+        if(!mappedPackages.has(dependency.package)) {
+            //If not mapped, prompt user to input a key for this package
+            //THIS NEEDS IMPROVEMENT TO WORK FOR SEVERAL MISSING KEYS. ONLY LAST PROMISE WORKS WITH THIS SOLUTION
+            promiseList.push(updateDependencyKey(dependency.package));
+        }
+    });
+
+    await Promise.all(promiseList);
+}
+
+function updateDependencyKey(packageName: string) {
+    return new Promise<string>((resolve, reject) => {
+        vscode.window.showInputBox({
+        title: 'Update package key for package: <' + packageName + '>',
+        placeHolder: "KEY",
+        }).then(value => {
+            let packageKey = value as string;
+            addToDependencyKeys(packageName, packageKey);
+            resolve('Added key');
+        });
+    });
+}
+
 //Adds a new set of dependency keys
 function addToDependencyKeys(packageName: string, packageKey: string) {
     createConfigFolder();
@@ -167,9 +203,10 @@ export async function addPackageKey() {
 }
 
 //utilizes sfpowerkit to install dependencies. Might need to have an install script to install this automatically
-export function installDependencies() {
+
+//TODO: INCLUDE EXTRA CHECK IF THE PROCESS TRIES TO INSTALL DEPENDENCIES IN A SANDBOX/FIND A WAY TO --updateOnly
+export async function installDependencies() {
 	let dependencies = getDependencies();
-	let keyParams = getPackageKeys(); //Get package.json, and find dependencies. keysParam must be a list 
 
 	if(!dependencies) {
 		//No dependencies
@@ -179,11 +216,8 @@ export function installDependencies() {
 			resolve('No Dependencies');
 		});
 	}
-
-	//If there are dependencies but not package keys have been registered
-	if(keyParams === '') {
-		//await addPackageKey();
-	}
+    await validateDependencies();
+    let keyParams = getPackageKeys(); //Get package.json, and find dependencies. keysParam must be a list 
 
 	//ADD CHECK TO VERIFY THAT A PACKAGE KEY HAS BEEN ADDED TO THE PROJECT, IF NOT, CALL THE ADD PACKAGE KEY COMMAND AND AWAIT
 	//Verify sfpowerkit is installed, or else rund the installation
@@ -192,7 +226,7 @@ export function installDependencies() {
 	dxmateOutput.appendLine('FULL COMMAND:  ' + cmd);
     dxmateOutput.show();
 
-	let shellPromise = execShell(cmd);
+	let shellPromise = execShell(cmd).shellPromise;
 
 	vscode.window.withProgress({
 		location: vscode.ProgressLocation.Notification,

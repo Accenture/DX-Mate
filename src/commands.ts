@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { dxmateOutput, execShell, getDirectories, workspacePath } from './utils';
+import { dxmateOutput, execShell, getDirectories, workspacePath, ShellCommand } from './utils';
 
 //Creates a new scratch org based on name input. Default duration is set to 5 days
 export function createScratchOrg(scratchName: string) {
@@ -9,25 +9,29 @@ export function createScratchOrg(scratchName: string) {
 	" --durationdays 5 " + 
 	"--setdefaultusername";
 
-	let shellPromise = execShell(cmd);
+	let shellCommand = execShell(cmd) as ShellCommand;
 
 	vscode.window.withProgress({
 		location: vscode.ProgressLocation.Notification,
 		cancellable: true,
 		title: 'Running sfdx force:org:create'
-	}, async (progress) => {
-		
+	}, async (progress, token) => {
+		token.onCancellationRequested(() => {
+			shellCommand.shellProcess.kill("SIGINT");
+
+		});
 		progress.report({  message: 'Creating scratch org' });
-		await shellPromise;
+		await shellCommand.shellPromise;
+		
 	});
-	return shellPromise;
+	return shellCommand.shellPromise;
 }
 
 //Generates a login link that can be shared to allow others to log into i.e. a scratch org for test and validation
 //NB! This can potentially be used to generate a link to a sandbox or even production organization, handle with care
 export function generateLoginLink() {
 	let cmd = 'sfdx force:org:open -r --json';
-	execShell(cmd).then(cmdResult => {
+	execShell(cmd).shellPromise.then(cmdResult => {
 		let parsedResult = JSON.parse(cmdResult);
 		dxmateOutput.appendLine('WARNING! This link generates a direct opening to the default org\n\n LINK: ' + parsedResult.result.url );
 	}).catch(error => {
@@ -42,7 +46,7 @@ export function generateLoginLink() {
 export function openScratchOrg() {
 	let cmd = 'sfdx force:org:open';
 
-	let shellPromise = execShell(cmd);
+	let shellCommand = execShell(cmd) as ShellCommand;
 
 	vscode.window.withProgress({
 		location: vscode.ProgressLocation.Notification,
@@ -51,16 +55,16 @@ export function openScratchOrg() {
 	}, async (progress) => {
 		
 		progress.report({  message: 'Opening default org' });
-		await shellPromise;
+		await shellCommand.shellPromise;
 	});
-	return shellPromise;
+	return shellCommand.shellPromise;
 }
 
 
 //push metadata from scratch org
 export function sourcePushMetadata() {
 	let cmd = 'sfdx force:source:push';
-	let shellPromise = execShell(cmd);
+	let shellCommand = execShell(cmd) as ShellCommand;
 
 	vscode.window.withProgress({
 		location: vscode.ProgressLocation.Notification,
@@ -69,16 +73,16 @@ export function sourcePushMetadata() {
 	}, async (progress) => {
 		
 		progress.report({  message: 'Pushing metadata' });
-		await shellPromise;
+		await shellCommand.shellPromise;
 	});
 
-	return shellPromise;
+	return shellCommand.shellPromise;
 }
 
 //Pull metadata from scratch org
 export function sourcePullMetadata() {
 	let cmd = 'sfdx force:source:pull';
-	let shellPromise = execShell(cmd);
+	let shellCommand = execShell(cmd) as ShellCommand;
 
 	vscode.window.withProgress({
 		location: vscode.ProgressLocation.Notification,
@@ -87,10 +91,10 @@ export function sourcePullMetadata() {
 	}, async (progress) => {
 		
 		progress.report({  message: 'Pulling metadata' });
-		await shellPromise;
+		await shellCommand.shellPromise;
 	});
 
-	return shellPromise;
+	return shellCommand.shellPromise;
 }
 
 //Assings all default permission sets defined in the workspace settings
@@ -102,7 +106,7 @@ export function assignPermsets() {
 	if(permsets.length > 0) {
 		permsets.forEach(permset => {
 			let cmd = 'sfdx force:user:permset:assign -n ' + permset;
-			promiseList.push(execShell(cmd));
+			promiseList.push(execShell(cmd).shellPromise);
 		});
 
 		vscode.window.withProgress({
@@ -132,7 +136,7 @@ export function deployUnpackagable() {
 		});
 	}
 
-	let shellPromise = execShell('sfdx force:source:deploy -p ' + unpackPath);
+	let shellPromise = execShell('sfdx force:source:deploy -p ' + unpackPath).shellPromise;
 	vscode.window.withProgress({
 		location: vscode.ProgressLocation.Notification,
 		cancellable: true,
@@ -156,7 +160,7 @@ export function importDummyData() {
 		let planJsonPath = workspacePath as string + dummyDataFolder + '/' + dataDirectory + '/plan.json';
 		let cmd = 'sfdx force:data:tree:import --plan ' + planJsonPath;
 
-		promiseArray.push(execShell(cmd));
+		promiseArray.push(execShell(cmd).shellPromise);
 	});
 	vscode.window.withProgress({
 		location: vscode.ProgressLocation.Notification,
