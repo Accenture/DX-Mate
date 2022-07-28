@@ -7,7 +7,7 @@ export class ShellCommand{
     shellPromise;
     shellProcess;
 
-    constructor(shellPromise: Promise<String>, shellProcess: any) {
+    constructor(shellPromise: Promise<string>, shellProcess: any) {
         this.shellPromise = shellPromise;
         this.shellProcess = shellProcess;
     }
