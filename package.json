@@ -2,7 +2,7 @@
 	"name": "dxmate",
 	"displayName": "ACN DX MATE",
 	"description": "Support tools for SFDX development",
-	"version": "1.0.4",
+	"version": "1.0.6",
 	"dependencies": {
 		"sfdx-cli": "7.144.2",
 		"sfpowerkit": "4.1.5"
