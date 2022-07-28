@@ -70,7 +70,11 @@ export function sourcePushMetadata() {
 		location: vscode.ProgressLocation.Notification,
 		cancellable: true,
 		title: 'Running source push'
-	}, async (progress) => {
+	}, async (progress, token) => {
+		token.onCancellationRequested(() => {
+			shellCommand.shellProcess.kill("SIGINT");
+
+		});
 		
 		progress.report({  message: 'Pushing metadata' });
 		await shellCommand.shellPromise;
@@ -88,8 +92,11 @@ export function sourcePullMetadata() {
 		location: vscode.ProgressLocation.Notification,
 		cancellable: true,
 		title: 'Running source pull'
-	}, async (progress) => {
-		
+	}, async (progress, token) => {
+		token.onCancellationRequested(() => {
+			shellCommand.shellProcess.kill("SIGINT");
+
+		});
 		progress.report({  message: 'Pulling metadata' });
 		await shellCommand.shellPromise;
 	});
@@ -136,18 +143,21 @@ export function deployUnpackagable() {
 		});
 	}
 
-	let shellPromise = execShell('sfdx force:source:deploy -p ' + unpackPath).shellPromise;
+	let shellCommand = execShell('sfdx force:source:deploy -p ' + unpackPath);
 	vscode.window.withProgress({
 		location: vscode.ProgressLocation.Notification,
 		cancellable: true,
 		title: 'Deploying unpackagable'
-	}, async (progress) => {
-		
+	}, async (progress, token) => {
+		token.onCancellationRequested(() => {
+			shellCommand.shellProcess.kill("SIGINT");
+
+		});
 		progress.report({  message: 'Deploying metadata from: ' + unpackPath });
-		await shellPromise;
+		await shellCommand.shellPromise;
 	});
 
-	return shellPromise;
+	return shellCommand.shellPromise;
 }
 
 //Iterates all folder in the dummy data folder to run sfdx import using the plan.json file
@@ -156,18 +166,24 @@ export function importDummyData() {
 	let directories = getDirectories(workspacePath as string + dummyDataFolder);
 
 	let promiseArray = new Array();
+	let commandArray = new Array();
 	directories.forEach((dataDirectory: string) => {
 		let planJsonPath = workspacePath as string + dummyDataFolder + '/' + dataDirectory + '/plan.json';
 		let cmd = 'sfdx force:data:tree:import --plan ' + planJsonPath;
-
-		promiseArray.push(execShell(cmd).shellPromise);
+		let shellCommand = execShell(cmd) as ShellCommand;
+		commandArray.push(shellCommand);
+		promiseArray.push(shellCommand.shellPromise);
 	});
 	vscode.window.withProgress({
 		location: vscode.ProgressLocation.Notification,
 		cancellable: true,
 		title: 'Importing dummy data'
-	}, async (progress) => {
-		
+	}, async (progress, token) => {
+		token.onCancellationRequested(() => {
+			commandArray.forEach(command => {
+				command.shellProcess.kill("SIGINT");
+			});
+		});
 		progress.report({  message: 'Running dummy data import' });
 		await Promise.all(promiseArray);
 	});
