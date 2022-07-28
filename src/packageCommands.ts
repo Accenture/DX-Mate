@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { createFile, createFolder, dxmateOutput, execShell, folderExists, getFile, workspacePath } from './utils';
+import { createFile, createFolder, dxmateOutput, execShell, folderExists, getFile, ShellCommand, workspacePath } from './utils';
 
 function getPackageKeys() {
     let keyParams = '';
@@ -92,32 +92,35 @@ function addDependencyGetPackageIdInput() {
 }
 
 async function validateDependencies() {
-    //Check if all the registered dependencies has been defined in dependencyKeys
-    let projDependencies = getDependencies();
-    let dependencyKeys = getDependencyKeys();
-
-    dxmateOutput.appendLine('FOUND DEPENDENCIES: ' + JSON.stringify(projDependencies));
-    let mappedPackages = new Set();
-
-    if(!projDependencies) { 
-        return;
-    }
-    if(dependencyKeys !== null) {
-        dependencyKeys.forEach((depKey: any) => {
-            mappedPackages.add(depKey.packageName);
-        });
-    }
-
-    let promiseList = new Array();
-    projDependencies.forEach((dependency: any) => {
-        if(!mappedPackages.has(dependency.package)) {
-            //If not mapped, prompt user to input a key for this package
-            //THIS NEEDS IMPROVEMENT TO WORK FOR SEVERAL MISSING KEYS. ONLY LAST PROMISE WORKS WITH THIS SOLUTION
-            promiseList.push(updateDependencyKey(dependency.package));
+    return new Promise<string>(async (resolve, reject) => {
+        //Check if all the registered dependencies has been defined in dependencyKeys
+        let projDependencies = getDependencies();
+        let dependencyKeys = getDependencyKeys();
+        const startInstall = () => {
+            resolve('START INSTALL');
         }
-    });
 
-    await Promise.all(promiseList);
+        dxmateOutput.appendLine('FOUND DEPENDENCIES: ' + JSON.stringify(projDependencies));
+        let mappedPackages = new Set();
+
+        if(!projDependencies) { 
+            resolve('No dependencies');
+        }
+        if(dependencyKeys !== null) {
+            dependencyKeys.forEach((depKey: any) => {
+                mappedPackages.add(depKey.packageName);
+            });
+        }
+
+        for (const dependency of projDependencies) {
+            if(!mappedPackages.has(dependency.package)) {
+                //If not mapped, prompt user to input a key for this package
+                await updateDependencyKey(dependency.package);
+            }
+        }
+
+        startInstall();
+    });
 }
 
 function updateDependencyKey(packageName: string) {
@@ -223,20 +226,22 @@ export async function installDependencies() {
 	//Verify sfpowerkit is installed, or else rund the installation
 	let cmd = 'sfdx sfpowerkit:package:dependencies:install -r -a -w 10 --installationkeys \"' + keyParams + '\"';
 
-	dxmateOutput.appendLine('FULL COMMAND:  ' + cmd);
+	dxmateOutput.appendLine('INSTALLING DEPENDENCIES');
     dxmateOutput.show();
 
-	let shellPromise = execShell(cmd).shellPromise;
+	let shellCommand = execShell(cmd) as ShellCommand;
 
 	vscode.window.withProgress({
 		location: vscode.ProgressLocation.Notification,
 		cancellable: true,
 		title: 'Running sfpowerkit dependency install'
-	}, async (progress) => {
-		
+	}, async (progress, token) => {
+		token.onCancellationRequested(() => {
+			shellCommand.shellProcess.kill("SIGINT");
+		});
 		progress.report({  message: 'Installing package dependencies' });
-		await shellPromise;
+		await shellCommand.shellPromise;
 	});
 
-	return shellPromise;
+	return shellCommand.shellPromise;
 }
