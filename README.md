@@ -1,6 +1,6 @@
-# ACN dxmate
+# DX-Mate
 
-ACN dxmate is an extension that provides a set of UI actions to improve SFDX development efficiency
+DX-Mate is an extension that provides a set of UI actions to improve SFDX development efficiency
 
 ## Features
 
@@ -16,14 +16,16 @@ In addition the create scratch org command automatically chains the following ac
 1. Creating scratch org with alias as input
 2. Installing package dependencies
 3. Pushing project source to scratch org
-4. Deploy unpackagable
+4. Deploy unpackagable (For i.e. metadata that do not support packaging or should not be included in the package being developed)
 5. Open scratch org
 6. Assigning default permission sets
 7. Importing dummy data
 
 ## Requirements
 
-This extension requires you to install the sfpowerkit plugin:
+1. [Salesforce CLI](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_install_cli.htm)
+
+2. sfpowerkit plugin
 ```bash
 sfdx plugins:install sfpowerkit
 ```
@@ -45,4 +47,4 @@ None yet
 ### 1.0.4
 Fixed issue with installing multiple dependencies
 
-Initial release of ACN dxmate
+Initial release of DX-Mate
