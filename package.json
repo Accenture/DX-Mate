@@ -8,7 +8,7 @@
 		"url": "https://github.com/Accenture/DX-Mate.git"
 	},
 	"dependencies": {
-		"sfdx-cli": "7.144.2",
+		"sfdx-cli": "7.171.0",
 		"sfpowerkit": "4.2.13"
 	},
 	"engines": {
