@@ -9,7 +9,7 @@
 	},
 	"dependencies": {
 		"sfdx-cli": "7.144.2",
-		"sfpowerkit": "4.1.5"
+		"sfpowerkit": "4.2.13"
 	},
 	"engines": {
 		"vscode": "^1.64.0"
