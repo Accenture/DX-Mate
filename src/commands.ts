@@ -29,7 +29,13 @@ export function createScratchOrg(scratchName: string) {
 
 //Generates a login link that can be shared to allow others to log into i.e. a scratch org for test and validation
 //NB! This can potentially be used to generate a link to a sandbox or even production organization, handle with care
-export function generateLoginLink() {
+export async function generateLoginLink() {
+	let orgInfo = await getDefaultOrgInfo();
+
+	if(isDevHub(orgInfo)) {
+		dxmateOutput.appendLine('No link generation allowed for DevHub');
+		return;
+	}
 	let cmd = 'sfdx force:org:open -r --json';
 	execShell(cmd).shellPromise.then(cmdResult => {
 		let parsedResult = JSON.parse(cmdResult);
@@ -40,6 +46,18 @@ export function generateLoginLink() {
 	.finally(() => {
 		dxmateOutput.show();
 	});
+}
+
+//Checks if the default org set is the DevHub itself
+function isDevHub(orgInfo: string) {
+	let orgInfoObject = JSON.parse(orgInfo);
+	return orgInfoObject !== null && orgInfoObject?.sfdxAuthUrl === null;
+}
+
+//Calls sfdx command to retrieve default org information
+function getDefaultOrgInfo() {
+	let cmd = 'sfdx force:org:display --json';
+	return execShell(cmd, true).shellPromise;
 }
 
 //Opens the default scratch org
