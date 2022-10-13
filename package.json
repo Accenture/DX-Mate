@@ -66,7 +66,7 @@
 		"viewsWelcome": [
 			{
 				"view": "orgCommands",
-				"contents": "[Create Scratch Org](command:dxmate.createScratch)\n[Open default scratch org](command:dxmate.openScratch)\n[Change default scratch org](command:dxmate.openScratch)\n[Generate login link](command:dxmate.scratchLoginLink)"
+				"contents": "[Create Scratch Org](command:dxmate.createScratch)\n[Open default scratch org](command:dxmate.openScratch)\n[Generate login link](command:dxmate.scratchLoginLink)"
 			},
 			{
 				"view": "packageCommands",
