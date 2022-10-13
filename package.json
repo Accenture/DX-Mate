@@ -28,6 +28,10 @@
 			{
 				"command": "dxmate.importDummyData",
 				"title": "dxmate: Import dummy data"
+			},
+			{
+				"command": "dxmate.createProject",
+				"title": "dxmate: create project"
 			}
 		],
 		"viewsContainers": {
@@ -44,26 +48,39 @@
 				{
 					"id": "orgCommands",
 					"name": "DX Mate org actions",
-					"contextualTitle": "DX Mate Explorer"
+					"contextualTitle": "DX Mate Explorer",
+					"when": "hasSfdxProject"
 				},
 				{
 					"id": "packageCommands",
 					"name": "DX Mate package actions",
-					"contextualTitle": "DX Mate Explorer"
+					"contextualTitle": "DX Mate Explorer",
+					"when": "hasSfdxProject"
 				},
 				{
 					"id": "sourceCommands",
 					"name": "DX Mate source actions",
-					"contextualTitle": "DX Mate Explorer"
+					"contextualTitle": "DX Mate Explorer",
+					"when": "hasSfdxProject"
 				},
 				{
 					"id": "dataCommands",
 					"name": "DX Mate data actions",
-					"contextualTitle": "DX Mate Explorer"
+					"contextualTitle": "DX Mate Explorer",
+					"when": "hasSfdxProject"
+				},
+				{
+					"id": "noSfdxProjectPresent",
+					"name": "",
+					"when": "!hasSfdxProject"
 				}
 			]
 		},
 		"viewsWelcome": [
+			{
+				"view": "noSfdxProjectPresent",
+				"contents": "No SFDX project detected.\n[SFDX Create Project](command:dxmate.createProject)"
+			},
 			{
 				"view": "orgCommands",
 				"contents": "[Create Scratch Org](command:dxmate.createScratch)\n[Open default scratch org](command:dxmate.openScratch)\n[Generate login link](command:dxmate.scratchLoginLink)"

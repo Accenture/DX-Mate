@@ -1,6 +1,10 @@
 import * as vscode from 'vscode';
 import { dxmateOutput, execShell, getDirectories, workspacePath, ShellCommand } from './utils';
 
+export function createProject() {
+	vscode.commands.executeCommand('sfdx.force.project.create');
+}
+
 //Creates a new scratch org based on name input. Default duration is set to 5 days
 export function createScratchOrg(scratchName: string) {
 	let cmd = 'sfdx force:org:create ' +
