@@ -41,10 +41,3 @@ This extension contributes the following settings:
 ## Known Issues
 
 None yet
-
-## Release Notes
-
-### 1.0.4
-Fixed issue with installing multiple dependencies
-
-Initial release of DX-Mate
