@@ -49,30 +49,30 @@
 					"id": "orgCommands",
 					"name": "DX Mate org actions",
 					"contextualTitle": "DX Mate Explorer",
-					"when": "hasSfdxProject"
+					"when": "hasSfdxProject && extensionActivated"
 				},
 				{
 					"id": "packageCommands",
 					"name": "DX Mate package actions",
 					"contextualTitle": "DX Mate Explorer",
-					"when": "hasSfdxProject"
+					"when": "hasSfdxProject && extensionActivated"
 				},
 				{
 					"id": "sourceCommands",
 					"name": "DX Mate source actions",
 					"contextualTitle": "DX Mate Explorer",
-					"when": "hasSfdxProject"
+					"when": "hasSfdxProject && extensionActivated"
 				},
 				{
 					"id": "dataCommands",
 					"name": "DX Mate data actions",
 					"contextualTitle": "DX Mate Explorer",
-					"when": "hasSfdxProject"
+					"when": "hasSfdxProject && extensionActivated"
 				},
 				{
 					"id": "noSfdxProjectPresent",
 					"name": "",
-					"when": "!hasSfdxProject"
+					"when": "!hasSfdxProject && extensionActivated"
 				}
 			]
 		},

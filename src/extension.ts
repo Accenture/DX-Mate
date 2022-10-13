@@ -10,6 +10,8 @@ export function activate(context: vscode.ExtensionContext) {
 	// The command has been defined in the package.json file
 	checkContext();
 	registerOrgCommands(context);
+
+	vscode.commands.executeCommand("setContext", "extensionActivated", true);
 }
 
 function checkContext() {
