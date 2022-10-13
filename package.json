@@ -26,8 +26,8 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "dxmate.helloWorld",
-				"title": "Hello World"
+				"command": "dxmate.importDummyData",
+				"title": "dxmate: Import dummy data"
 			}
 		],
 		"viewsContainers": {
