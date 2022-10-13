@@ -15,6 +15,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [1.0.7] - 2022-10-13
 ### Added
 - Added extension icon to the manifest
+- Added sfdx create project action when vscode workspace does not contain a sfdx-project.json file.
+- Added visibility conditions to extension for hiding while activating
 
 ### Changed
 - Changed add dependency key action to also allow updating keys for existing dependencies
