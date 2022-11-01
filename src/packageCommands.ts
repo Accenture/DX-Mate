@@ -1,6 +1,32 @@
 import * as vscode from 'vscode';
 import { createFile, createFolder, dxmateOutput, execShell, folderExists, getFile, ShellCommand, workspacePath } from './utils';
 
+const SFDX_PROJECT_JSON =  getFile(workspacePath + '/sfdx-project.json') as string;
+export const IS_MULTI_PCKG_DIRECTORY = () => {
+    let projJson = JSON.parse(SFDX_PROJECT_JSON);
+    return projJson?.packageDirectories?.length > 1;
+};
+
+class PackageDependency {
+    packageName;
+    dependency;
+
+    constructor(packageName: string, dependency: Dependency) {
+        this.packageName = packageName;
+        this.dependency = dependency;
+    }
+}
+
+class Dependency{
+    packageName;
+    packageKey;
+
+    constructor(packageName: string, packageKey: string) {
+        this.packageName = packageName;
+        this.packageKey = packageKey;
+    }
+}
+
 function getPackageKeys() {
     let keyParams = '';
     let dependencyKeys = getDependencyKeys();
@@ -18,11 +44,24 @@ function getPackageKeys() {
     return keyParams;
 }
 
-function getDependencies() {
-	const projFile = getFile(workspacePath + '/sfdx-project.json') as string;
-    let jsonData = JSON.parse(projFile);
+function getDependencies(packageName=null) {
+    if(packageName === null) {
+        let projJson = JSON.parse(SFDX_PROJECT_JSON);
+	    return projJson?.packageDirectories[0]?.dependencies;
+    }
+    else{
+        return getPackageDirectory(packageName)?.dependencies;
+    }
+}
 
-	return jsonData?.packageDirectories[0]?.dependencies;
+function getPackageDirectory(packageName: string) {
+    let projJson = JSON.parse(SFDX_PROJECT_JSON);
+    for (let index = 0; index < projJson.packageDirectories.length; index++) {
+        const directory = projJson.packageDirectories[index];
+        if(directory?.package === packageName) {
+            return directory;
+        }
+    }
 }
 
 function getDependencyKeys() {
@@ -38,7 +77,7 @@ function createConfigFolder() {
 }
 
 //Adds a new dependency to the sfdx-project.json. If already existing as dependency, the version is overwritten
-function addToProjDependencies(packageName: string, packageVersion: string, packageId: string) {
+function addToProjDependencies(packageName=null, dependencyName: string, packageVersion: string, packageId: string) {
     let projDependencies = getDependencies();
     let added = false;
     if(!projDependencies) {
@@ -46,7 +85,7 @@ function addToProjDependencies(packageName: string, packageVersion: string, pack
     }
 
     projDependencies.forEach((dependency: any) => {
-        if(dependency.package === packageName && packageVersion === packageVersion) {
+        if(dependency.package === dependencyName && packageVersion === packageVersion) {
             added = true;
         }
     });
@@ -55,9 +94,9 @@ function addToProjDependencies(packageName: string, packageVersion: string, pack
         const projFile = getFile(workspacePath + '/sfdx-project.json') as string;
         let jsonData = JSON.parse(projFile);
 
-        projDependencies.push({package: packageName, versionNumber: packageVersion});
+        projDependencies.push({package: dependencyName, versionNumber: packageVersion});
         jsonData.packageDirectories[0].dependencies = projDependencies;
-        jsonData.packageAliases[packageName] = packageId;
+        jsonData.packageAliases[dependencyName] = packageId;
 
         createFile(workspacePath + '/sfdx-project.json', JSON.stringify(jsonData, null, 4));
     }
@@ -165,13 +204,13 @@ function addToDependencyKeys(packageName: string, packageKey: string) {
 
 //Initiate process to add new dependency to project
 export async function addDependency() {
-		let packageName = await addDependencyGetPackageNameInput() as string;
+		let dependencyName = await addDependencyGetPackageNameInput() as string;
         let packageVersion = await addDependencyGetPackageVersionInput() as string;
         let packageId = await addDependencyGetPackageIdInput() as string;
         let packageKey = await addDependencyGetPackageKeyInput() as string;
 
-        addToProjDependencies(packageName, packageVersion, packageId);
-        addToDependencyKeys(packageName, packageKey);
+        addToProjDependencies(null, dependencyName, packageVersion, packageId);
+        addToDependencyKeys(dependencyName, packageKey);
 }
 
 //Updating config file with input package key
