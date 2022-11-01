@@ -1,18 +1,30 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import {openScratchOrg, sourcePushMetadata, createScratchOrg, importDummyData, deployUnpackagable, assignPermsets, generateLoginLink, sourcePullMetadata} from './commands';
-import { installDependencies, addPackageKey, addDependency } from './packageCommands';
+import {openScratchOrg, sourcePushMetadata, createScratchOrg, importDummyData, deployUnpackagable, assignPermsets, generateLoginLink, sourcePullMetadata, createProject} from './commands';
+import { installDependencies, inputUpdateDependencyKey, addDependency } from './packageCommands';
+import { folderExists, workspacePath } from './utils';
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 	// The command has been defined in the package.json file
+	checkContext();
 	registerOrgCommands(context);
+
+	vscode.commands.executeCommand("setContext", "extensionActivated", true);
+}
+
+function checkContext() {
+	vscode.commands.executeCommand("setContext", "hasSfdxProject", folderExists(workspacePath + '/sfdx-project.json'));
 }
 
 function registerOrgCommands(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('dxmate.openScratch', () => {
 		openScratchOrg();
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('dxmate.createProject', () => {
+		createProject();
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('dxmate.createScratch', () => {
@@ -23,8 +35,8 @@ function registerOrgCommands(context: vscode.ExtensionContext) {
 		installDependencies();
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('dxmate.addPackageKey', () => {
-		addPackageKey();
+	context.subscriptions.push(vscode.commands.registerCommand('dxmate.updateDependencyKey', () => {
+		inputUpdateDependencyKey();
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('dxmate.pullSource', () => {

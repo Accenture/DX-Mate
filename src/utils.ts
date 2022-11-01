@@ -41,7 +41,7 @@ export function getDirectories(absPath: string) {
 }
 
 //Use this to handle chained promises and command handling.
-export function execShell(cmd: string) {
+export function execShell(cmd: string, suppressOutput = false) {
     let process = cp.exec(cmd, {cwd: workspacePath}, (err, out) => {
         if(err && err.signal !== 'SIGINT') {
             dxmateOutput.appendLine("An error occurred: \n " + err);
@@ -63,7 +63,7 @@ export function execShell(cmd: string) {
             })
             .then(value => {
                 if(value && value === 'YES') {
-                    execShell(cmd);
+                    execShell(cmd, suppressOutput);
                 } else{
                     dxmateOutput.show();
                     return reject('Error');
@@ -86,12 +86,14 @@ export function execShell(cmd: string) {
             }
         });
 
-        process.stdout?.on('data', data => {
-            output += data;
-            //Adding stream to the output console for the process
-            //Possibly give ability to see what subprocess is ongoing
-            dxmateOutput.appendLine(data);
-        });
+        if(suppressOutput === false) {
+            process.stdout?.on('data', data => {
+                output += data;
+                //Adding stream to the output console for the process
+                //Possibly give ability to see what subprocess is ongoing
+                dxmateOutput.appendLine(data);
+            });
+        }
     });
     return new ShellCommand(shellPromise, process);
 }

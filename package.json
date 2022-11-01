@@ -2,14 +2,16 @@
 	"name": "dxmate",
 	"displayName": "DX-Mate",
 	"description": "Support tools for SFDX development",
-	"version": "1.0.6",
+	"publisher": "Accenture",
+	"icon": "lightning.png",
+	"version": "1.0.7",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/Accenture/DX-Mate.git"
 	},
 	"dependencies": {
-		"sfdx-cli": "7.144.2",
-		"sfpowerkit": "4.1.5"
+		"sfdx-cli": "7.171.0",
+		"sfpowerkit": "4.2.13"
 	},
 	"engines": {
 		"vscode": "^1.64.0"
@@ -24,8 +26,12 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "dxmate.helloWorld",
-				"title": "Hello World"
+				"command": "dxmate.importDummyData",
+				"title": "dxmate: Import dummy data"
+			},
+			{
+				"command": "dxmate.createProject",
+				"title": "dxmate: create project"
 			}
 		],
 		"viewsContainers": {
@@ -42,33 +48,46 @@
 				{
 					"id": "orgCommands",
 					"name": "DX Mate org actions",
-					"contextualTitle": "DX Mate Explorer"
+					"contextualTitle": "DX Mate Explorer",
+					"when": "hasSfdxProject && extensionActivated"
 				},
 				{
 					"id": "packageCommands",
 					"name": "DX Mate package actions",
-					"contextualTitle": "DX Mate Explorer"
+					"contextualTitle": "DX Mate Explorer",
+					"when": "hasSfdxProject && extensionActivated"
 				},
 				{
 					"id": "sourceCommands",
 					"name": "DX Mate source actions",
-					"contextualTitle": "DX Mate Explorer"
+					"contextualTitle": "DX Mate Explorer",
+					"when": "hasSfdxProject && extensionActivated"
 				},
 				{
 					"id": "dataCommands",
 					"name": "DX Mate data actions",
-					"contextualTitle": "DX Mate Explorer"
+					"contextualTitle": "DX Mate Explorer",
+					"when": "hasSfdxProject && extensionActivated"
+				},
+				{
+					"id": "noSfdxProjectPresent",
+					"name": "",
+					"when": "!hasSfdxProject && extensionActivated"
 				}
 			]
 		},
 		"viewsWelcome": [
 			{
+				"view": "noSfdxProjectPresent",
+				"contents": "No SFDX project detected.\n[SFDX Create Project](command:dxmate.createProject)"
+			},
+			{
 				"view": "orgCommands",
-				"contents": "[Create Scratch Org](command:dxmate.createScratch)\n[Open default scratch org](command:dxmate.openScratch)\n[Change default scratch org](command:dxmate.openScratch)\n[Generate login link](command:dxmate.scratchLoginLink)"
+				"contents": "[Create Scratch Org](command:dxmate.createScratch)\n[Open default scratch org](command:dxmate.openScratch)\n[Generate login link](command:dxmate.scratchLoginLink)"
 			},
 			{
 				"view": "packageCommands",
-				"contents": "[Add package key](command:dxmate.addPackageKey)\n[Re-install dependent packages](command:dxmate.dependencyInstall)\n[Add package dependency](command:dxmate.addDependency)"
+				"contents": "[Update/Add dependency key](command:dxmate.updateDependencyKey)\n[Re-install dependent packages](command:dxmate.dependencyInstall)\n[Add package dependency](command:dxmate.addDependency)"
 			},
 			{
 				"view": "sourceCommands",

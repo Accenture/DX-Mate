@@ -214,9 +214,8 @@ export async function addDependency() {
 }
 
 //Updating config file with input package key
-export async function addPackageKey() {
+export async function inputUpdateDependencyKey() {
 	let dependencies = getDependencies();
-	let dependencyKeys = getDependencyKeys();
 
 	if(!dependencies) {
 		dxmateOutput.appendLine('No registered dependencies in sfdx-project.json');
@@ -226,21 +225,16 @@ export async function addPackageKey() {
 		if(!folderExists(workspacePath + '/dxmate_config')) { 
 			createFolder(workspacePath + '/dxmate_config');
 		}
+        let dependencyList = new Array();
 		dependencies.forEach((dependency: any) => {
-			let packageName = dependency.package;
-
-			vscode.window.showInputBox({
-				title: 'Package key',
-				placeHolder: "KEY",
-			}).then(value => {
-				if(value) {
-					if(!folderExists(workspacePath + '/dxmate_config')) { 
-						createFolder(workspacePath + '/dxmate_config');
-					}
-					createFile(workspacePath + '/dxmate_config/.packageKey', value);
-				}
-			});
+			dependencyList.push(dependency.package);
 		});
+        vscode.window.showQuickPick(dependencyList, {
+            title: 'Select dependency',
+            canPickMany: false
+        }).then(selectedPackage => {
+            updateDependencyKey(selectedPackage);
+        });
 	}
 }
 
@@ -261,7 +255,6 @@ export async function installDependencies() {
     await validateDependencies();
     let keyParams = getPackageKeys(); //Get package.json, and find dependencies. keysParam must be a list 
 
-	//ADD CHECK TO VERIFY THAT A PACKAGE KEY HAS BEEN ADDED TO THE PROJECT, IF NOT, CALL THE ADD PACKAGE KEY COMMAND AND AWAIT
 	//Verify sfpowerkit is installed, or else rund the installation
 	let cmd = 'sfdx sfpowerkit:package:dependencies:install -r -a -w 10 --installationkeys \"' + keyParams + '\"';
 
