@@ -85,7 +85,7 @@ async function setupScratchOrg() {
 		console.log('RUNNING SCRATCH ORG CREATE WITH: ' + packageDirectory.package);
 		createScratchOrg(value as string).then( out => {
 			installDependencies(packageDirectory.package).then( out => {
-				sourcePushMetadata(packageDirectory.path).then( out => {
+				sourcePushMetadata().then( out => {
 					deployUnpackagable().then( out => {
 						openScratchOrg();
 						//Automatically assign default permission sets. This needs to complete before importing dummy data
