@@ -7,32 +7,16 @@ export const IS_MULTI_PCKG_DIRECTORY = () => {
     return projJson?.packageDirectories?.length > 1;
 };
 
-class PackageDependency {
-    packageName;
-    dependencies;
-
-    constructor(packageName: string, dependencies: Dependency[]) {
-        this.packageName = packageName;
-        this.dependencies = dependencies;
-    }
-}
-
-class Dependency{
-    packageName;
-    packageKey;
-
-    constructor(packageName: string, packageKey: string) {
-        this.packageName = packageName;
-        this.packageKey = packageKey;
-    }
-}
-
 function getPackageKeys(packageName: string) {
     let keyParams = '';
-    let dependencyKeys = getDependencyKeys(packageName);
+    let dependencyKeys = getDependencyKeys() as DependencyKey[];
+    const packageDependencies = getDependencies(packageName);
+
+    if(packageDependencies && dependencyKeys) {
+
+    }
 
     //Check if dependencies exists
-	//Possibly support for mulit package directories?
     if(dependencyKeys) {
         dependencyKeys.forEach((dependency: any) => {
 			dxmateOutput.appendLine('DEPENDENCY:  ' + dependency.packageName);
@@ -44,34 +28,42 @@ function getPackageKeys(packageName: string) {
     return keyParams;
 }
 
-function getDependencies(packageName=null) {
-    if(packageName === null) {
-        let projJson = JSON.parse(SFDX_PROJECT_JSON);
-	    return projJson?.packageDirectories[0]?.dependencies;
-    }
-    else{
-        return getPackageDirectory(packageName)?.dependencies;
-    }
+/**
+ * 
+ * @param packageName (Name of package to get dependency list for from project.json folder)
+ * @returns Object[] 
+ */
+function getDependencies(packageName: string) {
+    return getPackageDirectory(packageName)?.dependencies;
 }
 
+/**
+ * 
+ * @returns PackageDirectory[] Model defined in models.ts
+ */
 export function getPackageDirectories() {
     let projJson = JSON.parse(SFDX_PROJECT_JSON);
     return projJson?.packageDirectories as PackageDirectory[];
 }
 
+/**
+ * Return the package directory for an input packageName
+ * @param packageName 
+ * @returns PackageDirectory
+ */
 function getPackageDirectory(packageName: string) {
-    let projJson = JSON.parse(SFDX_PROJECT_JSON);
-    for (let index = 0; index < projJson.packageDirectories.length; index++) {
-        const directory = projJson.packageDirectories[index];
+    const projDirecotries = getPackageDirectories() as PackageDirectory[];
+    for (let index = 0; index < projDirecotries.length; index++) {
+        const directory = projDirecotries[index];
         if(directory?.package === packageName) {
-            return directory as PackageDirectory;
+            return directory;
         }
     }
 }
 
-function getDependencyKeys(packageName: string) {
+function getDependencyKeys() {
 	const depFile = getFile(workspacePath + '/dxmate_config/dependencyKeys.json');
-    return depFile ? JSON.parse(depFile)[packageName] : null;  
+    return depFile ? JSON.parse(depFile) : null;  
 }
 
 //Creates the config folder if it is not already present
