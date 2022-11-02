@@ -4,7 +4,7 @@ class PackageDirectory {
     package: string = '';
     versionName: string = '';
     versionNumber: string = '';
-    dependencies: Object[] = []; //Object with properties "package", and "versionNumber"
+    dependencies: any[] = []; //Object with properties "package", and "versionNumber"
 }
 
 class DependencyKey {
