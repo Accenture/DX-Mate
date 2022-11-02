@@ -9,11 +9,11 @@ export const IS_MULTI_PCKG_DIRECTORY = () => {
 
 class PackageDependency {
     packageName;
-    dependency;
+    dependencies;
 
-    constructor(packageName: string, dependency: Dependency) {
+    constructor(packageName: string, dependencies: Dependency[]) {
         this.packageName = packageName;
-        this.dependency = dependency;
+        this.dependencies = dependencies;
     }
 }
 
@@ -27,9 +27,9 @@ class Dependency{
     }
 }
 
-function getPackageKeys() {
+function getPackageKeys(packageName: string) {
     let keyParams = '';
-    let dependencyKeys = getDependencyKeys();
+    let dependencyKeys = getDependencyKeys(packageName);
 
     //Check if dependencies exists
 	//Possibly support for mulit package directories?
@@ -54,19 +54,24 @@ function getDependencies(packageName=null) {
     }
 }
 
+export function getPackageDirectories() {
+    let projJson = JSON.parse(SFDX_PROJECT_JSON);
+    return projJson?.packageDirectories as PackageDirectory[];
+}
+
 function getPackageDirectory(packageName: string) {
     let projJson = JSON.parse(SFDX_PROJECT_JSON);
     for (let index = 0; index < projJson.packageDirectories.length; index++) {
         const directory = projJson.packageDirectories[index];
         if(directory?.package === packageName) {
-            return directory;
+            return directory as PackageDirectory;
         }
     }
 }
 
-function getDependencyKeys() {
+function getDependencyKeys(packageName: string) {
 	const depFile = getFile(workspacePath + '/dxmate_config/dependencyKeys.json');
-	return depFile ? JSON.parse(depFile) : null;
+    return depFile ? JSON.parse(depFile)[packageName] : null;  
 }
 
 //Creates the config folder if it is not already present
@@ -78,7 +83,7 @@ function createConfigFolder() {
 
 //Adds a new dependency to the sfdx-project.json. If already existing as dependency, the version is overwritten
 function addToProjDependencies(packageName=null, dependencyName: string, packageVersion: string, packageId: string) {
-    let projDependencies = getDependencies();
+    let projDependencies = getDependencies(packageName);
     let added = false;
     if(!projDependencies) {
         projDependencies = [];
@@ -241,8 +246,8 @@ export async function inputUpdateDependencyKey() {
 //utilizes sfpowerkit to install dependencies. Might need to have an install script to install this automatically
 
 //TODO: INCLUDE EXTRA CHECK IF THE PROCESS TRIES TO INSTALL DEPENDENCIES IN A SANDBOX/FIND A WAY TO --updateOnly
-export async function installDependencies() {
-	let dependencies = getDependencies();
+export async function installDependencies(packageName: string) {
+	let dependencies = getDependencies(packageName);
 
 	if(!dependencies) {
 		//No dependencies
