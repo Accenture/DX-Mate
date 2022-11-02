@@ -7,23 +7,28 @@ export const IS_MULTI_PCKG_DIRECTORY = () => {
     return projJson?.packageDirectories?.length > 1;
 };
 
+/**
+ * Gets the keys for the packages that the input packageName depends on if defined in config file
+ * @param packageName 
+ * @returns string (Formatted as required for input to sfpowerkit install dependencies command)
+ */
 function getPackageKeys(packageName: string) {
     let keyParams = '';
     let dependencyKeys = getDependencyKeys() as DependencyKey[];
     const packageDependencies = getDependencies(packageName);
 
     if(packageDependencies && dependencyKeys) {
-
-    }
-
-    //Check if dependencies exists
-    if(dependencyKeys) {
-        dependencyKeys.forEach((dependency: any) => {
-			dxmateOutput.appendLine('DEPENDENCY:  ' + dependency.packageName);
-            keyParams += dependency.packageName + ':' + dependency.packageKey + ' ' ;
+        packageDependencies.forEach(packageDependency => {
+            let dependencyKey = dependencyKeys.find((depKey) => {
+                return depKey.packageName === packageDependency.package;
+            });
+            if(dependencyKey) {
+                dxmateOutput.appendLine('DEPENDENCY:  ' + dependencyKey.packageName);
+                keyParams += dependencyKey.packageName + ':' + dependencyKey.packageKey + ' ' ;
+            }
         });
-		dxmateOutput.show();
     }
+    dxmateOutput.show();
 
     return keyParams;
 }
@@ -56,14 +61,19 @@ function getPackageDirectory(packageName: string) {
     for (let index = 0; index < projDirecotries.length; index++) {
         const directory = projDirecotries[index];
         if(directory?.package === packageName) {
+            console.log('Directory dependencies is: ' + JSON.stringify(directory.dependencies, null, 2));
             return directory;
         }
     }
 }
 
+/**
+ * Get the dependency keys defined in the config file.
+ * @returns 
+ */
 function getDependencyKeys() {
 	const depFile = getFile(workspacePath + '/dxmate_config/dependencyKeys.json');
-    return depFile ? JSON.parse(depFile) : null;  
+    return depFile ? JSON.parse(depFile) as DependencyKey[] : null;  
 }
 
 //Creates the config folder if it is not already present
@@ -74,7 +84,7 @@ function createConfigFolder() {
 }
 
 //Adds a new dependency to the sfdx-project.json. If already existing as dependency, the version is overwritten
-function addToProjDependencies(packageName=null, dependencyName: string, packageVersion: string, packageId: string) {
+function addToProjDependencies(packageName: string, dependencyName: string, packageVersion: string, packageId: string) {
     let projDependencies = getDependencies(packageName);
     let added = false;
     if(!projDependencies) {
@@ -235,6 +245,50 @@ export async function inputUpdateDependencyKey() {
 	}
 }
 
+export async function getPackageDirectoryInput() {
+	let directories = getPackageDirectories();
+	let dirMap = new Map();
+	let packageNames: string[] = [];
+
+	if(directories && directories.length > 0) {
+		directories.forEach(directory => {
+			dirMap.set(directory.package, directory);
+			packageNames.push(directory.package);
+		});
+		console.log(packageNames);
+	}
+	else{
+		dxmateOutput.appendLine('Error getting package directories');
+		return;
+	}
+
+	return vscode.window.showQuickPick(packageNames, {
+		title: 'Select package directory',
+		canPickMany: false,
+	}).then((selectedDirectory) => {
+		return selectedDirectory ? dirMap.get(selectedDirectory) : null;
+	});
+}
+
+/**
+ * Prompts user for input to select which package to install dependencies for and initiates the install
+ */
+export async function installDependenciesForPackage() {
+    let packageDirectory: PackageDirectory;
+    if(IS_MULTI_PCKG_DIRECTORY() === true) {
+        packageDirectory = await getPackageDirectoryInput() as PackageDirectory;
+
+		if(!packageDirectory) {
+			return; //User cancelled
+		}
+    }
+    else{
+		packageDirectory = getPackageDirectories()[0];
+	}
+
+    return installDependencies(packageDirectory.package);
+}
+
 //utilizes sfpowerkit to install dependencies. Might need to have an install script to install this automatically
 
 //TODO: INCLUDE EXTRA CHECK IF THE PROCESS TRIES TO INSTALL DEPENDENCIES IN A SANDBOX/FIND A WAY TO --updateOnly
@@ -250,7 +304,7 @@ export async function installDependencies(packageName: string) {
 		});
 	}
     await validateDependencies();
-    let keyParams = getPackageKeys(); //Get package.json, and find dependencies. keysParam must be a list 
+    let keyParams = getPackageKeys(packageName); //Get package.json, and find dependencies. keysParam must be a list 
 
 	//Verify sfpowerkit is installed, or else rund the installation
 	let cmd = 'sfdx sfpowerkit:package:dependencies:install -r -a -w 10 --installationkeys \"' + keyParams + '\"';

@@ -2,7 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import {openScratchOrg, sourcePushMetadata, createScratchOrg, importDummyData, deployUnpackagable, assignPermsets, generateLoginLink, sourcePullMetadata, createProject} from './commands';
-import { installDependencies, inputUpdateDependencyKey, addDependency, IS_MULTI_PCKG_DIRECTORY, getPackageDirectories } from './packageCommands';
+import { installDependencies, inputUpdateDependencyKey, addDependency, IS_MULTI_PCKG_DIRECTORY, getPackageDirectories, getPackageDirectoryInput, installDependenciesForPackage } from './packageCommands';
 import { dxmateOutput, folderExists, workspacePath } from './utils';
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -32,7 +32,7 @@ function registerOrgCommands(context: vscode.ExtensionContext) {
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('dxmate.dependencyInstall', () => {
-		installDependencies();
+		installDependenciesForPackage();
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('dxmate.updateDependencyKey', () => {
@@ -96,31 +96,6 @@ async function setupScratchOrg() {
 				})
 			});
 		});
-	});
-}
-
-async function getPackageDirectoryInput() {
-	let directories = getPackageDirectories();
-	let dirMap = new Map();
-	let packageNames: string[] = [];
-
-	if(directories && directories.length > 0) {
-		directories.forEach(directory => {
-			dirMap.set(directory.package, directory);
-			packageNames.push(directory.package);
-		});
-		console.log(packageNames);
-	}
-	else{
-		dxmateOutput.appendLine('Error getting package directories');
-		return;
-	}
-
-	return vscode.window.showQuickPick(packageNames, {
-		title: 'Select package directory',
-		canPickMany: false,
-	}).then((selectedDirectory) => {
-		return selectedDirectory ? dirMap.get(selectedDirectory) : null;
 	});
 }
 
