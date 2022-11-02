@@ -63,12 +63,16 @@ function registerOrgCommands(context: vscode.ExtensionContext) {
 }
 
 async function setupScratchOrg() {
-	console.log('MULTI PACKAGE REPO? ' + IS_MULTI_PCKG_DIRECTORY());
+	let packageDirectory: PackageDirectory;
 	if(IS_MULTI_PCKG_DIRECTORY() === true) {
-		const packageDirectory = await getPackageDirectoryInput();
+		packageDirectory = await getPackageDirectoryInput() as PackageDirectory;
+
 		if(!packageDirectory) {
 			return; //User cancelled
 		}
+	}
+	else{
+		packageDirectory = getPackageDirectories()[0];
 	}
 
 	vscode.window.showInputBox({
@@ -78,9 +82,10 @@ async function setupScratchOrg() {
 		if(!value){
 			return;//Cancelled
 		}
+		console.log('RUNNING SCRATCH ORG CREATE WITH: ' + packageDirectory.package);
 		createScratchOrg(value as string).then( out => {
-			installDependencies().then( out => {
-				sourcePushMetadata().then( out => {
+			installDependencies(packageDirectory.package).then( out => {
+				sourcePushMetadata(packageDirectory.path).then( out => {
 					deployUnpackagable().then( out => {
 						openScratchOrg();
 						//Automatically assign default permission sets. This needs to complete before importing dummy data
@@ -110,7 +115,6 @@ async function getPackageDirectoryInput() {
 		dxmateOutput.appendLine('Error getting package directories');
 		return;
 	}
-
 
 	return vscode.window.showQuickPick(packageNames, {
 		title: 'Select package directory',
