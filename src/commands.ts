@@ -22,7 +22,6 @@ export function createScratchOrg(scratchName: string) {
 	}, async (progress, token) => {
 		token.onCancellationRequested(() => {
 			shellCommand.shellProcess.kill("SIGINT");
-
 		});
 		progress.report({  message: 'Creating scratch org' });
 		await shellCommand.shellPromise;

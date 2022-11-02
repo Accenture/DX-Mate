@@ -2,8 +2,8 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import {openScratchOrg, sourcePushMetadata, createScratchOrg, importDummyData, deployUnpackagable, assignPermsets, generateLoginLink, sourcePullMetadata, createProject} from './commands';
-import { installDependencies, inputUpdateDependencyKey, addDependency } from './packageCommands';
-import { folderExists, workspacePath } from './utils';
+import { installDependencies, inputUpdateDependencyKey, addDependency, IS_MULTI_PCKG_DIRECTORY, getPackageDirectories } from './packageCommands';
+import { dxmateOutput, folderExists, workspacePath } from './utils';
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -62,11 +62,22 @@ function registerOrgCommands(context: vscode.ExtensionContext) {
 	}));
 }
 
-function setupScratchOrg() {
+async function setupScratchOrg() {
+	console.log('MULTI PACKAGE REPO? ' + IS_MULTI_PCKG_DIRECTORY());
+	if(IS_MULTI_PCKG_DIRECTORY() === true) {
+		const packageDirectory = await getPackageDirectoryInput();
+		if(!packageDirectory) {
+			return; //User cancelled
+		}
+	}
+
 	vscode.window.showInputBox({
 		title: 'Scratch org alias',
 		placeHolder: "MYSCRATCH",
 	}).then(value => {
+		if(!value){
+			return;//Cancelled
+		}
 		createScratchOrg(value as string).then( out => {
 			installDependencies().then( out => {
 				sourcePushMetadata().then( out => {
@@ -80,6 +91,32 @@ function setupScratchOrg() {
 				})
 			});
 		});
+	});
+}
+
+async function getPackageDirectoryInput() {
+	let directories = getPackageDirectories();
+	let dirMap = new Map();
+	let packageNames: string[] = [];
+
+	if(directories && directories.length > 0) {
+		directories.forEach(directory => {
+			dirMap.set(directory.package, directory);
+			packageNames.push(directory.package);
+		});
+		console.log(packageNames);
+	}
+	else{
+		dxmateOutput.appendLine('Error getting package directories');
+		return;
+	}
+
+
+	return vscode.window.showQuickPick(packageNames, {
+		title: 'Select package directory',
+		canPickMany: false,
+	}).then((selectedDirectory) => {
+		return selectedDirectory ? dirMap.get(selectedDirectory) : null;
 	});
 }
 
