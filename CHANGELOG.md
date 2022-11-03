@@ -23,6 +23,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Changed create scratch org command to support multi package directories
 - Changed update/add dependency key command to support multi package directories
 - Changed Add package dependency command to support multi package directories
+- Changed dependency validation to support multi package directories
 
 
 ## [1.0.7] - 2022-10-13
