@@ -82,8 +82,6 @@ export async function installDependenciesForPackage() {
     return installDependencies(packageDirectory.package);
 }
 
-//utilizes sfpowerkit to install dependencies. Might need to have an install script to install this automatically
-
 //TODO: INCLUDE EXTRA CHECK IF THE PROCESS TRIES TO INSTALL DEPENDENCIES IN A SANDBOX/FIND A WAY TO --updateOnly
 export async function installDependencies(packageName: string) {
 	let dependencies = getDependencies(packageName);
@@ -105,7 +103,7 @@ export async function installDependencies(packageName: string) {
 	dxmateOutput.appendLine('INSTALLING DEPENDENCIES');
     dxmateOutput.show();
 
-	let shellCommand = execShell(cmd) as ShellCommand;
+	let shellCommand = execShell(cmd, true) as ShellCommand; //Do not output all keys
 
 	vscode.window.withProgress({
 		location: vscode.ProgressLocation.Notification,
