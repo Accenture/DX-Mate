@@ -103,7 +103,7 @@ export async function installDependencies(packageName: string) {
 	dxmateOutput.appendLine('INSTALLING DEPENDENCIES');
     dxmateOutput.show();
 
-	let shellCommand = execShell(cmd, true) as ShellCommand; //Do not output all keys
+	let shellCommand = execShell(cmd) as ShellCommand; //Do not output all keys
 
 	vscode.window.withProgress({
 		location: vscode.ProgressLocation.Notification,
