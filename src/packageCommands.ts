@@ -33,16 +33,16 @@ function getPackageKeys(packageName: string) {
 async function validateDependencies(packageName: string) {
     return new Promise<string>(async (resolve, reject) => {
         //Check if all the registered dependencies has been defined in dependencyKeys
-        let projDependencies = getDependencies(packageName);
+        let packageDependencies = getDependencies(packageName);
         let dependencyKeys = getDependencyKeys();
         const startInstall = () => {
             resolve('START INSTALL');
         }
 
-        dxmateOutput.appendLine('FOUND DEPENDENCIES: ' + JSON.stringify(projDependencies));
+        dxmateOutput.appendLine('FOUND DEPENDENCIES: ' + JSON.stringify(packageDependencies));
         let mappedPackages = new Set();
 
-        if(!projDependencies) { 
+        if(!packageDependencies) { 
             resolve('No dependencies');
             return;
         }
@@ -52,7 +52,7 @@ async function validateDependencies(packageName: string) {
             });
         }
 
-        for (const dependency of projDependencies) {
+        for (const dependency of packageDependencies) {
             if(!mappedPackages.has(dependency.package)) {
                 //If not mapped, prompt user to input a key for this package
                 await updateDependencyKey(dependency.package);
@@ -96,7 +96,7 @@ export async function installDependencies(packageName: string) {
 			resolve('No Dependencies');
 		});
 	}
-    await validateDependencies();
+    await validateDependencies(packageName);
     let keyParams = getPackageKeys(packageName); //Get package.json, and find dependencies. keysParam must be a list 
 
 	//Verify sfpowerkit is installed, or else rund the installation
