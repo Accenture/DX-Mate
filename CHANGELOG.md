@@ -12,6 +12,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 ### Security
 
+## [1.0.8] - 2022-11-04
+### Added
+- Added new extension setting to support default permset definitions for multi package directories
+
+### Fixed
+- Fixed issue where some actions did not exit correctly when escaping input boxes
+
+### Changed
+- Changed create scratch org command to support multi package directories
+- Changed update/add dependency key command to support multi package directories
+- Changed Add package dependency command to support multi package directories
+
+
 ## [1.0.7] - 2022-10-13
 ### Added
 - Added extension icon to the manifest
