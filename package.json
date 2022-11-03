@@ -13,6 +13,9 @@
 		"sfdx-cli": "7.171.0",
 		"sfpowerkit": "4.2.13"
 	},
+	"extensionDependencies": [
+		"salesforce.salesforcedx-vscode-core"
+	],
 	"engines": {
 		"vscode": "^1.64.0"
 	},
