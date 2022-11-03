@@ -1,11 +1,6 @@
 import * as vscode from 'vscode';
+import { DependencyKey, PackageDirectory, Dependency, EXTENSION_CONTEXT } from './models';
 import { createFile, createFolder, dxmateOutput, execShell, folderExists, getFile, ShellCommand, workspacePath } from './utils';
-
-const SFDX_PROJECT_JSON =  getFile(workspacePath + '/sfdx-project.json') as string;
-export const IS_MULTI_PCKG_DIRECTORY = () => {
-    let projJson = JSON.parse(SFDX_PROJECT_JSON);
-    return projJson?.packageDirectories?.length > 1;
-};
 
 /**
  * Gets the keys for the packages that the input packageName depends on if defined in config file
@@ -63,7 +58,7 @@ function getProjectDependencies() {
  * @returns PackageDirectory[] Model defined in models.ts
  */
 export function getPackageDirectories() {
-    let projJson = JSON.parse(SFDX_PROJECT_JSON);
+    let projJson = JSON.parse(EXTENSION_CONTEXT.projJson);
     return projJson?.packageDirectories as PackageDirectory[];
 }
 
@@ -100,14 +95,14 @@ function createConfigFolder() {
 }
 
 //Adds a new dependency to the sfdx-project.json. If already existing as dependency, the version is overwritten
-function addToProjDependencies(packageName: string, dependencyName: string, packageVersion: string, packageId: string) {
-    let projDependencies = getDependencies(packageName);
+function addToProjDependencies(packageDirectory: PackageDirectory, dependencyName: string, packageVersion: string, packageId: string) {
+    let packageDependencies = packageDirectory.dependencies;
     let added = false;
-    if(!projDependencies) {
-        projDependencies = [];
+    if(!packageDependencies) {
+        packageDependencies = [];
     }
 
-    projDependencies.forEach((dependency: any) => {
+    packageDependencies.forEach((dependency: Dependency) => {
         if(dependency.package === dependencyName && packageVersion === packageVersion) {
             added = true;
         }
@@ -115,13 +110,20 @@ function addToProjDependencies(packageName: string, dependencyName: string, pack
 
     if(!added) {
         const projFile = getFile(workspacePath + '/sfdx-project.json') as string;
-        let jsonData = JSON.parse(projFile);
+        let projJson = JSON.parse(projFile);
 
-        projDependencies.push({package: dependencyName, versionNumber: packageVersion});
-        jsonData.packageDirectories[0].dependencies = projDependencies;
-        jsonData.packageAliases[dependencyName] = packageId;
+        packageDependencies.push({package: dependencyName, versionNumber: packageVersion});
 
-        createFile(workspacePath + '/sfdx-project.json', JSON.stringify(jsonData, null, 4));
+        for (let index = 0; index < projJson.packageDirectories.length; index++) {
+            const directory = projJson.packageDirectories[index] as PackageDirectory;
+            if(directory.package === packageDirectory.package) {
+                projJson.packageDirectories[index].dependencies = packageDependencies;
+                break; 
+            }
+        }
+        projJson.packageAliases[dependencyName] = packageId;
+
+        createFile(workspacePath + '/sfdx-project.json', JSON.stringify(projJson, null, 4));
     }
 }
 
@@ -153,6 +155,39 @@ function addDependencyGetPackageIdInput() {
 	});
 }
 
+function addDependencyGetPackageDirectoryInput() {
+    if(EXTENSION_CONTEXT.isMultiPackageDirectory === true) {
+        return getPackageDirectoryInput();
+    } else{
+        return getPackageDirectories()[0];
+    }
+}
+
+/**
+ * Starts process to add new dependency to project
+ * 1. Get package directory input
+ * 2. Get package name of new dependency as input
+ * 3. Get version number of new dependency as input
+ * 4. Get package ID of new dependency as input
+ * 5. Get package key of new dependency as input
+ */
+export async function addDependency() {
+        //If any of the input steps are cancelled the whole process stops
+        let packageDirectory = await addDependencyGetPackageDirectoryInput() as PackageDirectory;
+        if(!packageDirectory) {return;}
+        let dependencyName = await addDependencyGetPackageNameInput() as string;
+        if(!dependencyName) {return;}
+        let packageVersion = await addDependencyGetPackageVersionInput() as string;
+        if(!packageVersion) {return;}
+        let packageId = await addDependencyGetPackageIdInput() as string;
+        if(!packageId) {return;}
+        let packageKey = await addDependencyGetPackageKeyInput() as string;
+        if(!packageKey) {return;}
+
+        addToProjDependencies(packageDirectory, dependencyName, packageVersion, packageId);
+        addToDependencyKeys(dependencyName, packageKey);
+}
+
 async function validateDependencies(packageName: string) {
     return new Promise<string>(async (resolve, reject) => {
         //Check if all the registered dependencies has been defined in dependencyKeys
@@ -167,6 +202,7 @@ async function validateDependencies(packageName: string) {
 
         if(!projDependencies) { 
             resolve('No dependencies');
+            return;
         }
         if(dependencyKeys !== null) {
             dependencyKeys.forEach((depKey: any) => {
@@ -202,7 +238,11 @@ function updateDependencyKey(packageName: string) {
     });
 }
 
-//Adds a new set of dependency keys
+/**
+ * Updates the dependencyKeys.json with new packageName packageKey pair
+ * @param packageName 
+ * @param packageKey 
+ */
 function addToDependencyKeys(packageName: string, packageKey: string) {
     createConfigFolder();
     const depFile = getFile(workspacePath + '/dxmate_config/dependencyKeys.json');
@@ -229,16 +269,6 @@ function addToDependencyKeys(packageName: string, packageKey: string) {
     createFile(workspacePath + '/dxmate_config/dependencyKeys.json', JSON.stringify(dependencies, null, 4));
 }
 
-//Initiate process to add new dependency to project
-export async function addDependency() {
-		let dependencyName = await addDependencyGetPackageNameInput() as string;
-        let packageVersion = await addDependencyGetPackageVersionInput() as string;
-        let packageId = await addDependencyGetPackageIdInput() as string;
-        let packageKey = await addDependencyGetPackageKeyInput() as string;
-
-        addToProjDependencies(null, dependencyName, packageVersion, packageId);
-        addToDependencyKeys(dependencyName, packageKey);
-}
 
 //Updating config file with input package key
 export async function inputUpdateDependencyKey() {
@@ -299,7 +329,7 @@ export async function getPackageDirectoryInput() {
  */
 export async function installDependenciesForPackage() {
     let packageDirectory: PackageDirectory;
-    if(IS_MULTI_PCKG_DIRECTORY() === true) {
+    if(EXTENSION_CONTEXT.isMultiPackageDirectory === true) {
         packageDirectory = await getPackageDirectoryInput() as PackageDirectory;
 
 		if(!packageDirectory) {
