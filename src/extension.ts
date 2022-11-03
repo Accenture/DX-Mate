@@ -2,15 +2,16 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import {openScratchOrg, sourcePushMetadata, createScratchOrg, importDummyData, deployUnpackagable, assignPermsets, generateLoginLink, sourcePullMetadata, createProject} from './commands';
-import { installDependencies, inputUpdateDependencyKey, addDependency, IS_MULTI_PCKG_DIRECTORY, getPackageDirectories, getPackageDirectoryInput, installDependenciesForPackage } from './packageCommands';
-import { dxmateOutput, folderExists, workspacePath } from './utils';
+import { EXTENSION_CONTEXT, PackageDirectory } from './models';
+import { installDependencies, inputUpdateDependencyKey, addDependency, getPackageDirectories, getPackageDirectoryInput, installDependenciesForPackage } from './packageCommands';
+import { folderExists, workspacePath } from './utils';
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
+
 export function activate(context: vscode.ExtensionContext) {
 	// The command has been defined in the package.json file
 	checkContext();
 	registerOrgCommands(context);
-
 	vscode.commands.executeCommand("setContext", "extensionActivated", true);
 }
 
@@ -64,7 +65,7 @@ function registerOrgCommands(context: vscode.ExtensionContext) {
 
 async function setupScratchOrg() {
 	let packageDirectory: PackageDirectory;
-	if(IS_MULTI_PCKG_DIRECTORY() === true) {
+	if(EXTENSION_CONTEXT.isMultiPackageDirectory === true) {
 		packageDirectory = await getPackageDirectoryInput() as PackageDirectory;
 
 		if(!packageDirectory) {
