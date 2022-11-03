@@ -43,6 +43,22 @@ function getDependencies(packageName: string) {
 }
 
 /**
+ * Get the collective list of dependencies from all package directories
+ */
+function getProjectDependencies() {
+    let dependencies = new Set<string>();
+    const packageDirectories = getPackageDirectories();
+    packageDirectories.forEach(directory => {
+        directory.dependencies.forEach(dependency => {
+            dependencies.add(dependency.package);
+        });
+    });
+    console.log('PROJECT DEPENDENCIES');
+    console.log(dependencies);
+    return dependencies;
+}
+
+/**
  * 
  * @returns PackageDirectory[] Model defined in models.ts
  */
@@ -137,10 +153,10 @@ function addDependencyGetPackageIdInput() {
 	});
 }
 
-async function validateDependencies() {
+async function validateDependencies(packageName: string) {
     return new Promise<string>(async (resolve, reject) => {
         //Check if all the registered dependencies has been defined in dependencyKeys
-        let projDependencies = getDependencies();
+        let projDependencies = getDependencies(packageName);
         let dependencyKeys = getDependencyKeys();
         const startInstall = () => {
             resolve('START INSTALL');
@@ -175,6 +191,10 @@ function updateDependencyKey(packageName: string) {
         title: 'Update package key for package: <' + packageName + '>',
         placeHolder: "KEY",
         }).then(value => {
+            if(!value) {
+                console.log('Cancelled key input');
+                return;
+            }
             let packageKey = value as string;
             addToDependencyKeys(packageName, packageKey);
             resolve('Added key');
@@ -222,7 +242,7 @@ export async function addDependency() {
 
 //Updating config file with input package key
 export async function inputUpdateDependencyKey() {
-	let dependencies = getDependencies();
+	let dependencies = getProjectDependencies();
 
 	if(!dependencies) {
 		dxmateOutput.appendLine('No registered dependencies in sfdx-project.json');
@@ -233,13 +253,17 @@ export async function inputUpdateDependencyKey() {
 			createFolder(workspacePath + '/dxmate_config');
 		}
         let dependencyList = new Array();
-		dependencies.forEach((dependency: any) => {
-			dependencyList.push(dependency.package);
+		dependencies.forEach((dependencyname: string) => {
+			dependencyList.push(dependencyname);
 		});
         vscode.window.showQuickPick(dependencyList, {
             title: 'Select dependency',
             canPickMany: false
         }).then(selectedPackage => {
+            if(!selectedPackage) {
+                //Cancelled
+                return;
+            }
             updateDependencyKey(selectedPackage);
         });
 	}
