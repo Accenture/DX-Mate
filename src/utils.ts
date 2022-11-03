@@ -13,6 +13,17 @@ export class ShellCommand{
     }
 }
 
+// eslint-disable-next-line
+export function SFDX_PROJECT_JSON(): string {
+    console.log('GETTING PROJECT JSON');
+    return getFile(workspacePath + '/sfdx-project.json') as string;
+}
+// eslint-disable-next-line
+export function IS_MULTI_PCKG_DIRECTORY(): boolean {
+    let projJson = JSON.parse(SFDX_PROJECT_JSON());
+    return projJson?.packageDirectories?.length > 1;
+};
+
 export const workspacePath = vscode?.workspace?.workspaceFolders?.[0].uri.path.replace(/\\/g, "/");
 //Creates the extension output channel
 export const dxmateOutput = vscode.window.createOutputChannel("DX Mate");
