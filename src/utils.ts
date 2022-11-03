@@ -12,12 +12,19 @@ export class ShellCommand{
         this.shellProcess = shellProcess;
     }
 }
-
+/**
+ * Get the sfdx-project.json file from current project
+ * @returns 
+ */
 // eslint-disable-next-line
 export function SFDX_PROJECT_JSON(): string {
     console.log('GETTING PROJECT JSON');
     return getFile(workspacePath + '/sfdx-project.json') as string;
 }
+/**
+ * Check if the current project is a multi package project
+ * @returns 
+ */
 // eslint-disable-next-line
 export function IS_MULTI_PCKG_DIRECTORY(): boolean {
     let projJson = JSON.parse(SFDX_PROJECT_JSON());
@@ -51,7 +58,12 @@ export function getDirectories(absPath: string) {
     });
 }
 
-//Use this to handle chained promises and command handling.
+/**
+ * Function to initiate terminal processes from vscode. input command to run and optional param to suppress output to the dxMate output channel
+ * @param cmd 
+ * @param suppressOutput 
+ * @returns ShellCommand
+ */
 export function execShell(cmd: string, suppressOutput = false) {
     let process = cp.exec(cmd, {cwd: workspacePath}, (err, out) => {
         if(err && err.signal !== 'SIGINT') {
