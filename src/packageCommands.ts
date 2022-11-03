@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { getDependencyKeys, getDependencies, updateDependencyKey } from './dependencyCommands';
-import { DependencyKey, PackageDirectory, Dependency, EXTENSION_CONTEXT } from './models';
-import { createFile, dxmateOutput, execShell, getFile, ShellCommand, workspacePath } from './utils';
+import { DependencyKey, PackageDirectory, EXTENSION_CONTEXT } from './models';
+import {dxmateOutput, execShell, ShellCommand } from './utils';
 import { getPackageDirectoryInput, getPackageDirectories } from './workspace';
 
 /**
