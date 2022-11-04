@@ -1,7 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import {openScratchOrg, sourcePushMetadata, createScratchOrg, importDummyData, deployUnpackagable, assignPermsets, generateLoginLink, sourcePullMetadata, createProject} from './commands';
+import {openScratchOrg, sourcePushMetadata, createScratchOrg, importDummyData, deployUnpackagable, assignPermsets, generateLoginLink, sourcePullMetadata, createProject, assignDefaultPermsets} from './commands';
 import { EXTENSION_CONTEXT, PackageDirectory } from './models';
 import {inputUpdateDependencyKey, addDependency} from './dependencyCommands';
 import {getPackageDirectories, getPackageDirectoryInput} from './workspace'
@@ -55,7 +55,7 @@ function registerOrgCommands(context: vscode.ExtensionContext) {
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('dxmate.assignPermissionsets', () => {
-		assignPermsets();
+		assignDefaultPermsets();
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('dxmate.scratchLoginLink', () => {
 		generateLoginLink();
@@ -92,7 +92,7 @@ async function setupScratchOrg() {
 					deployUnpackagable().then( out => {
 						openScratchOrg();
 						//Automatically assign default permission sets. This needs to complete before importing dummy data
-						assignPermsets().then(out => {
+						assignPermsets(packageDirectory.package).then(out => {
 							importDummyData();
 						});
 					});
