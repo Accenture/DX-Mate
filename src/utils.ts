@@ -30,8 +30,8 @@ export function IS_MULTI_PCKG_DIRECTORY(): boolean {
     let projJson = JSON.parse(SFDX_PROJECT_JSON());
     return projJson?.packageDirectories?.length > 1;
 };
-
-export const workspacePath = vscode?.workspace?.workspaceFolders?.[0].uri.path.replace(/\\/g, "/");
+const workSpaceUri = vscode?.workspace?.workspaceFolders?.[0].uri;
+export const workspacePath = workSpaceUri?.fsPath;
 //Creates the extension output channel
 export const dxmateOutput = vscode.window.createOutputChannel("DX Mate");
 
