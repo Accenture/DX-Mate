@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 import {openScratchOrg, sourcePushMetadata, createScratchOrg, importDummyData, deployUnpackagable, assignPermsets, generateLoginLink, sourcePullMetadata, createProject, assignDefaultPermsets} from './commands';
 import { EXTENSION_CONTEXT, PackageDirectory } from './models';
 import {inputUpdateDependencyKey, addDependency} from './dependencyCommands';
-import {getPackageDirectories, getPackageDirectoryInput} from './workspace'
+import {getPackageDirectories, getPackageDirectoryInput} from './workspace';
 import { installDependencies, installDependenciesForPackage } from './packageCommands';
 import { folderExists, workspacePath } from './utils';
 // this method is called when your extension is activated
