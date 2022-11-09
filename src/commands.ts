@@ -1,5 +1,7 @@
 import * as vscode from 'vscode';
+import { EXTENSION_CONTEXT, PackageDirectory } from './models';
 import { dxmateOutput, execShell, getDirectories, workspacePath, ShellCommand } from './utils';
+import { getPackageDirectoryInput } from './workspace';
 
 export function createProject() {
 	vscode.commands.executeCommand('sfdx.force.project.create');
@@ -125,13 +127,23 @@ export function sourcePullMetadata() {
 	return shellCommand.shellPromise;
 }
 
+export async function assignDefaultPermsets() {
+	if(EXTENSION_CONTEXT.isMultiPackageDirectory) {
+		let packageDirectory = await getPackageDirectoryInput() as PackageDirectory;
+		if(packageDirectory) { assignPermsets(packageDirectory.package); }
+	}
+	else {
+
+	}
+}
+
 //Assings all default permission sets defined in the workspace settings
-export function assignPermsets() {
+export function assignPermsets(packageName: string) {
 	//Get the permets to assign på default by reading json config file.
-	let permsets = vscode.workspace.getConfiguration().get('scratch.default.permissionsets') as string[];
+	let permsets = getDefaultPermsetConfig(packageName);
 
 	let promiseList = new Array();
-	if(permsets.length > 0) {
+	if(permsets && permsets.length > 0) {
 		permsets.forEach(permset => {
 			let cmd = 'sfdx force:user:permset:assign -n ' + permset;
 			promiseList.push(execShell(cmd).shellPromise);
@@ -152,6 +164,19 @@ export function assignPermsets() {
 		dxmateOutput.show();
 	}
 	return Promise.all(promiseList);
+}
+
+function getDefaultPermsetConfig(packageName: string) {
+	if(packageName && packageName !== '') {
+		const multiDefaultConfig = vscode.workspace.getConfiguration().get('multi.scratch.default.permissionsets') as string;
+		let configObj = multiDefaultConfig && multiDefaultConfig !== '' ? JSON.parse(multiDefaultConfig) : null;
+		configObj.find((config: any) => {
+			return config.packagename === packageName;
+		})?.permissionsets as string[];
+	}
+	else{
+		return vscode.workspace.getConfiguration().get('scratch.default.permissionsets') as string[];
+	}
 }
 
 //Get configuration and deploys metadata that is stored in the unpackagable location
