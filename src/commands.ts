@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { EXTENSION_CONTEXT, PackageDirectory } from './models';
-import { dxmateOutput, execShell, getDirectories, workspacePath, ShellCommand } from './utils';
+import { dxmateOutput, execShell, getDirectories, workspacePath, ShellCommand, folderExists } from './utils';
 import { getPackageDirectoryInput } from './workspace';
 
 export function createProject() {
@@ -185,7 +185,14 @@ export function deployUnpackagable() {
 	let unpackPath = vscode.workspace.getConfiguration().get('unpackagable.location');
 	if(!unpackPath || unpackPath === '') {
 		return new Promise<string>((resolve, reject) => {
-			resolve('no unpack');
+			resolve('No unpack');
+		});
+	}
+	if(!folderExists(workspacePath as string + unpackPath)) {
+		dxmateOutput.appendLine('Could not find valid directory at: ' + workspacePath as string + unpackPath + '\nSkipping unpackagable deploy');
+		dxmateOutput.show();
+		return new Promise<string>((resolve, reject) => {
+			resolve('Unpack not found');
 		});
 	}
 
