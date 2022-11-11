@@ -68,6 +68,7 @@ export function execShell(cmd: string, suppressOutput = false) {
     let process = cp.exec(cmd, {cwd: workspacePath}, (err, out) => {
         if(err && err.signal !== 'SIGINT') {
             dxmateOutput.appendLine("An error occurred: \n " + err);
+            dxmateOutput.show();
         }
     });
 
@@ -79,20 +80,21 @@ export function execShell(cmd: string, suppressOutput = false) {
         let output= "";
 
         const handleRetry = () => {
-            vscode.window.showQuickPick(['YES', 'NO'], {
-                title: "An error occurred, do you wish to retry?" ,
-                canPickMany: false,
-                placeHolder: 'YES'
-            })
+            vscode.window.showErrorMessage(
+                'An error occurred. See DX-Mate output for info',
+                ...['Retry', 'Cancel']
+            )
             .then(value => {
-                if(value && value === 'YES') {
-                    execShell(cmd, suppressOutput);
-                } else{
-                    dxmateOutput.show();
+                if(value === 'Retry') {
+                    execShell(cmd, suppressOutput).shellPromise.then(() => {
+                        resolve('Retry success');
+                    });
+                }
+                else{
                     return reject('Error');
                 }
             });
-        }
+        };
 
         process.on('exit', (code, signal) =>{
             if(signal === 'SIGINT') {
