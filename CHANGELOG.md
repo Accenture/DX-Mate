@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 ### Security
 
+## [1.0.10] - 
+### Fixed
+- Improved fault handling when referencing folder/files that does not exist in directory for dummy data location and unpackagable location
+
 ## [1.0.9] - 2022-11-09
 ### Fixed
 - Fixed issue where cli commands would not run on windows due to wrong usage of uri.path
