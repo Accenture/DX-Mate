@@ -35,6 +35,10 @@
 			{
 				"command": "dxmate.createProject",
 				"title": "dxmate: create project"
+			},
+			{
+				"command": "runningTasks.refreshEntry",
+				"title": "dxmate: Refresh running tasks"
 			}
 		],
 		"viewsContainers": {
@@ -76,6 +80,10 @@
 					"id": "noSfdxProjectPresent",
 					"name": "",
 					"when": "!hasSfdxProject && extensionActivated"
+				},
+				{
+					"id": "runningTasks",
+					"name": "Running Tasks"
 				}
 			]
 		},

@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as cp from "child_process";
 import * as fs from 'fs';
+import { EXTENSION_CONTEXT } from './models';
 
 //Class containing a promise for executing a shellCommand and also the child process running the command
 export class ShellCommand{
@@ -11,6 +12,10 @@ export class ShellCommand{
         this.shellPromise = shellPromise;
         this.shellProcess = shellProcess;
     }
+}
+
+export function refreshRunningTasks() {
+    EXTENSION_CONTEXT.refreshRunningTasks;
 }
 /**
  * Get the sfdx-project.json file from current project
