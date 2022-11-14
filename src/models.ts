@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { RunningTaskProvider } from './RunningTaskProvider';
-import { IS_MULTI_PCKG_DIRECTORY, SFDX_PROJECT_JSON } from "./utils";
+import { IS_MULTI_PCKG_DIRECTORY, refreshRunningTasks, SFDX_PROJECT_JSON, ShellCommand } from "./utils";
 
 export class PackageDirectory {
     path: string = '';
@@ -29,13 +29,45 @@ export class DependencyKey {
 export class Job extends vscode.TreeItem{
     jobName: string = '';
     jobStatus: JobStatus = JobStatus.SCHEDULED;
+    jobStartTime?: Date;
+    jobEndTime?: Date;
+    shellCommand: ShellCommand;
 
-    constructor(jobName: string, jobStatus?: JobStatus) {
+    public startJob() {
+        this.jobStatus = JobStatus.IN_PROGRESS;
+        this.refreshIcon();
+        this.jobStartTime = new Date();
+        this.shellCommand.runCommand().shellPromise?.then( () => {
+            this.jobCompleted();
+        })
+        .catch(err => {
+            console.log('JOB FAILED');
+            this.jobFailed();
+        })
+        .finally(() => {
+            console.log('FINALLY CALLED');
+            this.jobEndTime = new Date();
+            this.refreshIcon();
+        });
+        return this.shellCommand.shellPromise;
+    }
+    
+    private jobFailed() {
+        this.jobStatus = JobStatus.ERROR;
+    }
+
+    private jobCompleted() {
+        this.jobStatus = JobStatus.SUCCESS;
+    }
+
+    private refreshIcon() {
+        this.iconPath = this.getIcon();
+        refreshRunningTasks();
+    }
+
+    constructor(jobName: string, shellCommand: ShellCommand) {
         super(jobName, vscode.TreeItemCollapsibleState.None);
-        
-        if(jobStatus !== undefined) { 
-            this.jobStatus = jobStatus; 
-        }
+        this.shellCommand = shellCommand;
         this.iconPath = this.getIcon();
     }
 
@@ -71,6 +103,7 @@ export abstract class EXTENSION_CONTEXT {
 
     public static addJob(job: Job) {
         this.jobs.push(job);
+        this.refreshRunningTasks();
     }
 
     public static clearJobs() {
