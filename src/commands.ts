@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { EXTENSION_CONTEXT, PackageDirectory } from './models';
+import { EXTENSION_CONTEXT, Job, PackageDirectory } from './models';
 import { dxmateOutput, execShell, getDirectories, workspacePath, ShellCommand, folderExists } from './utils';
 import { getPackageDirectoryInput } from './workspace';
 
@@ -9,27 +9,18 @@ export function createProject() {
 
 //Creates a new scratch org based on name input. Default duration is set to 5 days
 export function createScratchOrg(scratchName: string) {
+	const scratchJob = createScratchOrgJob(scratchName);
+	return scratchJob.startJob();
+}
+
+export function createScratchOrgJob(scratchName: string) {
 	let cmd = 'sfdx force:org:create ' +
 	"-f ./config/project-scratch-def.json " + 
 	"--setalias " + scratchName +
 	" --durationdays 5 " + 
 	"--setdefaultusername";
 
-	let shellCommand = execShell(cmd) as ShellCommand;
-
-	vscode.window.withProgress({
-		location: vscode.ProgressLocation.Notification,
-		cancellable: true,
-		title: 'Running sfdx force:org:create'
-	}, async (progress, token) => {
-		token.onCancellationRequested(() => {
-			shellCommand.shellProcess.kill("SIGINT");
-		});
-		progress.report({  message: 'Creating scratch org' });
-		await shellCommand.shellPromise;
-		
-	});
-	return shellCommand.shellPromise;
+	return new Job('Create Scratch Org', new ShellCommand(cmd));
 }
 
 //Generates a login link that can be shared to allow others to log into i.e. a scratch org for test and validation
@@ -37,12 +28,12 @@ export function createScratchOrg(scratchName: string) {
 export async function generateLoginLink() {
 	let orgInfo = await getDefaultOrgInfo();
 
-	if(isDevHub(orgInfo)) {
+	if(orgInfo && isDevHub(orgInfo)) {
 		dxmateOutput.appendLine('No link generation allowed for DevHub');
 		return;
 	}
 	let cmd = 'sfdx force:org:open -r --json';
-	execShell(cmd).shellPromise.then(cmdResult => {
+	execShell(cmd).shellPromise?.then(cmdResult => {
 		let parsedResult = JSON.parse(cmdResult);
 		dxmateOutput.appendLine('WARNING! This link generates a direct opening to the default org\n\n LINK: ' + parsedResult.result.url );
 	}).catch(error => {
@@ -67,64 +58,42 @@ function getDefaultOrgInfo() {
 
 //Opens the default scratch org
 export function openScratchOrg() {
+	let shellJob = openScratchOrgJob();
+	return shellJob.startJob();
+}
+
+export function openScratchOrgJob() {
 	let cmd = 'sfdx force:org:open';
-
-	let shellCommand = execShell(cmd) as ShellCommand;
-
-	vscode.window.withProgress({
-		location: vscode.ProgressLocation.Notification,
-		cancellable: true,
-		title: 'Running sfdx force:org:open'
-	}, async (progress) => {
-		
-		progress.report({  message: 'Opening default org' });
-		await shellCommand.shellPromise;
-	});
-	return shellCommand.shellPromise;
+	let shellJob = new Job('Open Scratch Org', new ShellCommand(cmd));
+	EXTENSION_CONTEXT.addJob(shellJob);
+	return shellJob;
 }
 
 
 //push metadata from scratch org
 export function sourcePushMetadata() {
+	let shellJob = sourcePushMetadataJob();
+	return shellJob.startJob();
+}
+
+export function sourcePushMetadataJob() {
 	let cmd = 'sfdx force:source:push';
-	let shellCommand = execShell(cmd) as ShellCommand;
-
-	vscode.window.withProgress({
-		location: vscode.ProgressLocation.Notification,
-		cancellable: true,
-		title: 'Running source push'
-	}, async (progress, token) => {
-		token.onCancellationRequested(() => {
-			shellCommand.shellProcess.kill("SIGINT");
-
-		});
-		
-		progress.report({  message: 'Pushing metadata' });
-		await shellCommand.shellPromise;
-	});
-
-	return shellCommand.shellPromise;
+	let shellJob = new Job('Push Metadata', new ShellCommand(cmd));
+	EXTENSION_CONTEXT.addJob(shellJob);
+	return shellJob;
 }
 
 //Pull metadata from scratch org
 export function sourcePullMetadata() {
+	let shellJob = sourcePullMetadataJob();
+	return shellJob.startJob();
+}
+
+export function sourcePullMetadataJob() {
 	let cmd = 'sfdx force:source:pull';
-	let shellCommand = execShell(cmd) as ShellCommand;
-
-	vscode.window.withProgress({
-		location: vscode.ProgressLocation.Notification,
-		cancellable: true,
-		title: 'Running source pull'
-	}, async (progress, token) => {
-		token.onCancellationRequested(() => {
-			shellCommand.shellProcess.kill("SIGINT");
-
-		});
-		progress.report({  message: 'Pulling metadata' });
-		await shellCommand.shellPromise;
-	});
-
-	return shellCommand.shellPromise;
+	let shellJob = new Job('Pull Metadata', new ShellCommand(cmd));
+	EXTENSION_CONTEXT.addJob(shellJob);
+	return shellJob;
 }
 
 export async function assignDefaultPermsets() {
@@ -181,6 +150,13 @@ function getDefaultPermsetConfig(packageName: string) {
 
 //Get configuration and deploys metadata that is stored in the unpackagable location
 export function deployUnpackagable() {
+	let shellJob = deployUnpackagableJob();
+	
+	//If a job is returned we start it, else a promise is returned
+	return shellJob instanceof Job ? shellJob.startJob() : shellJob;
+}
+
+export function deployUnpackagableJob(): Job | Promise<string> {
 	//Get path to unpackagable and deploy
 	let unpackPath = vscode.workspace.getConfiguration().get('unpackagable.location');
 	if(!unpackPath || unpackPath === '') {
@@ -196,21 +172,10 @@ export function deployUnpackagable() {
 		});
 	}
 
-	let shellCommand = execShell('sfdx force:source:deploy -p ' + unpackPath);
-	vscode.window.withProgress({
-		location: vscode.ProgressLocation.Notification,
-		cancellable: true,
-		title: 'Deploying unpackagable'
-	}, async (progress, token) => {
-		token.onCancellationRequested(() => {
-			shellCommand.shellProcess.kill("SIGINT");
-
-		});
-		progress.report({  message: 'Deploying metadata from: ' + unpackPath });
-		await shellCommand.shellPromise;
-	});
-
-	return shellCommand.shellPromise;
+	let cmd = 'sfdx force:source:deploy -p ' + unpackPath;
+	let shellJob = new Job('Deploy Unpackagable Metadata', new ShellCommand(cmd));
+	EXTENSION_CONTEXT.addJob(shellJob);
+	return shellJob;
 }
 
 //Iterates all folder in the dummy data folder to run sfdx import using the plan.json file
