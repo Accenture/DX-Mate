@@ -7,6 +7,7 @@ import {inputUpdateDependencyKey, addDependency} from './dependencyCommands';
 import {getPackageDirectories, getPackageDirectoryInput} from './workspace';
 import { installDependencies, installDependenciesForPackage } from './packageCommands';
 import { folderExists, workspacePath } from './utils';
+import { RunningTaskProvider } from './RunningTaskProvider';
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 
@@ -15,6 +16,17 @@ export function activate(context: vscode.ExtensionContext) {
 	checkContext();
 	registerOrgCommands(context);
 	vscode.commands.executeCommand("setContext", "extensionActivated", true);
+
+	let runningTaskProvider = new RunningTaskProvider();
+	EXTENSION_CONTEXT.setRunningTaskProvider(runningTaskProvider);
+	vscode.window.registerTreeDataProvider(
+		'runningTasks',
+		runningTaskProvider
+	);
+
+	vscode.commands.registerCommand('runningTasks.refreshEntry', () =>
+		runningTaskProvider.refresh()
+	);
 }
 
 function checkContext() {
@@ -86,7 +98,7 @@ async function setupScratchOrg() {
 			return;//Cancelled
 		}
 		console.log('RUNNING SCRATCH ORG CREATE WITH: ' + packageDirectory.package);
-		createScratchOrg(value as string).then( out => {
+		createScratchOrg(value as string)?.then( out => {
 			installDependencies(packageDirectory.package).then( out => {
 				sourcePushMetadata().then( out => {
 					deployUnpackagable().then( out => {
