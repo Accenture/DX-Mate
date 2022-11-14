@@ -5,17 +5,83 @@ import { EXTENSION_CONTEXT } from './models';
 
 //Class containing a promise for executing a shellCommand and also the child process running the command
 export class ShellCommand{
-    shellPromise;
-    shellProcess;
+    shellPromise?: Promise<string>;
+    shellProcess?: any;
+    command: string;
+    suppressOutput: boolean = false;
 
-    constructor(shellPromise: Promise<string>, shellProcess: any) {
-        this.shellPromise = shellPromise;
-        this.shellProcess = shellProcess;
+    constructor(command: string, suppressOutput?: boolean) {
+        this.command = command;
+        if(suppressOutput !== undefined) { this.suppressOutput = suppressOutput; }
+    }
+
+    public runCommand() {
+        let process = cp.exec(this.command, {cwd: workspacePath}, (err, out) => {
+            if(err && err.signal !== 'SIGINT') {
+                dxmateOutput.appendLine("An error occurred: \n " + err);
+                dxmateOutput.show();
+            }
+        });
+    
+        this.shellPromise = new Promise<string>((resolve, reject) => {
+            dxmateOutput.appendLine("Running: " + this.command);
+            dxmateOutput.show();
+    
+            //Stores output for the child_process in the onData event
+            let output= "";
+    
+            const handleRetry = () => {
+                vscode.window.showErrorMessage(
+                    'An error occurred. See DX-Mate output for info',
+                    ...['Retry', 'Cancel']
+                )
+                .then(value => {
+                    if(value === 'Retry') {
+                        this.runCommand().shellPromise
+                        ?.then(() => {
+                            resolve('Retry success');
+                        }).catch( err => {
+                            reject('Retry error');
+                        });
+                    }
+                    else{
+                        return reject('Error');
+                    }
+                });
+            };
+    
+            process.on('exit', (code, signal) =>{
+                if(signal === 'SIGINT') {
+                    dxmateOutput.appendLine("Process was cancelled");
+                    return reject('Cancelled');
+                }
+    
+                if(code === 0) {
+                    dxmateOutput.appendLine("Finished running: " + this.command);
+                    return resolve(output);
+                }
+                else{
+                    handleRetry();
+                }
+            });
+    
+            if(this.suppressOutput === false) {
+                process.stdout?.on('data', data => {
+                    output += data;
+                    //Adding stream to the output console for the process
+                    //Possibly give ability to see what subprocess is ongoing
+                    dxmateOutput.appendLine(data);
+                });
+            }
+        });
+
+        return this;
     }
 }
 
 export function refreshRunningTasks() {
-    EXTENSION_CONTEXT.refreshRunningTasks;
+    console.log('REFRESHING RUNNING TASKS');
+    EXTENSION_CONTEXT.refreshRunningTasks();
 }
 /**
  * Get the sfdx-project.json file from current project
@@ -70,60 +136,6 @@ export function getDirectories(absPath: string) {
  * @returns ShellCommand
  */
 export function execShell(cmd: string, suppressOutput = false) {
-    let process = cp.exec(cmd, {cwd: workspacePath}, (err, out) => {
-        if(err && err.signal !== 'SIGINT') {
-            dxmateOutput.appendLine("An error occurred: \n " + err);
-            dxmateOutput.show();
-        }
-    });
-
-    let shellPromise = new Promise<string>((resolve, reject) => {
-        dxmateOutput.appendLine("Running: " + cmd);
-        dxmateOutput.show();
-
-        //Stores output for the child_process in the onData event
-        let output= "";
-
-        const handleRetry = () => {
-            vscode.window.showErrorMessage(
-                'An error occurred. See DX-Mate output for info',
-                ...['Retry', 'Cancel']
-            )
-            .then(value => {
-                if(value === 'Retry') {
-                    execShell(cmd, suppressOutput).shellPromise.then(() => {
-                        resolve('Retry success');
-                    });
-                }
-                else{
-                    return reject('Error');
-                }
-            });
-        };
-
-        process.on('exit', (code, signal) =>{
-            if(signal === 'SIGINT') {
-                dxmateOutput.appendLine("Process was cancelled");
-                return reject('Cancelled');
-            }
-
-            if(code === 0) {
-                dxmateOutput.appendLine("Finished running: " + cmd);
-                return resolve(output);
-            }
-            else{
-                handleRetry();
-            }
-        });
-
-        if(suppressOutput === false) {
-            process.stdout?.on('data', data => {
-                output += data;
-                //Adding stream to the output console for the process
-                //Possibly give ability to see what subprocess is ongoing
-                dxmateOutput.appendLine(data);
-            });
-        }
-    });
-    return new ShellCommand(shellPromise, process);
+    const shellCommand = new ShellCommand(cmd, suppressOutput);
+    return shellCommand.runCommand();
 }
