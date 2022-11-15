@@ -31,13 +31,20 @@ export class Job extends vscode.TreeItem{
     jobStatus: JobStatus = JobStatus.SCHEDULED;
     jobStartTime?: Date;
     jobEndTime?: Date;
-    shellCommand: ShellCommand;
+    shellCommand?: ShellCommand;
+    subJobs: Job[] = [];
+    currentSubJobIndex = 0;
 
-    public startJob() {
+    public async startJob() {
         this.jobStatus = JobStatus.IN_PROGRESS;
         this.refreshIcon();
         this.jobStartTime = new Date();
-        this.shellCommand.runCommand().shellPromise?.then( () => {
+        if(this.hasSubJobs() === true) {
+            while(this.hasNextSubJob()) {
+                await this.runNextSubJob();
+            }
+        }
+        this.shellCommand?.runCommand().shellPromise?.then( () => {
             this.jobCompleted();
         })
         .catch(err => {
@@ -49,7 +56,8 @@ export class Job extends vscode.TreeItem{
             this.jobEndTime = new Date();
             this.refreshIcon();
         });
-        return this.shellCommand.shellPromise;
+        this.setProgressState();
+        return this.shellCommand?.shellPromise;
     }
     
     private jobFailed() {
@@ -65,9 +73,38 @@ export class Job extends vscode.TreeItem{
         refreshRunningTasks();
     }
 
-    constructor(jobName: string, shellCommand: ShellCommand) {
+    public addJob(job: Job) {
+        this.subJobs.push(job);
+    }
+
+    private hasSubJobs(): boolean {
+        return this.subJobs.length > 0;
+    }
+
+    private hasNextSubJob() {
+        return this.currentSubJobIndex > this.subJobs.length;
+    }
+
+    private runNextSubJob() {
+        this.currentSubJobIndex++;
+        return this.subJobs[this.currentSubJobIndex].startJob();
+    }
+
+    private setProgressState() {
+        vscode.window.withProgress(
+            {
+                location: { viewId: 'runningTasks' },
+                cancellable: false
+            },
+            async (progress) =>
+            {
+                await this.shellCommand?.shellPromise;
+            });
+    }
+
+    constructor(jobName: string, shellCommand?: ShellCommand) {
         super(jobName, vscode.TreeItemCollapsibleState.None);
-        this.shellCommand = shellCommand;
+        if(shellCommand !== undefined) {this.shellCommand = shellCommand;}
         this.iconPath = this.getIcon();
     }
 
@@ -92,6 +129,16 @@ export abstract class EXTENSION_CONTEXT {
     public static get projJson(): string { return SFDX_PROJECT_JSON();}
     public static jobs: Job[] = [];
     private static runningTaskProvider: RunningTaskProvider;
+    private static currentJobIndex = -1;
+
+    public static hasNextJob(): boolean {
+        return this.currentJobIndex < this.jobs.length;
+    }
+
+    public static runNextJob() {
+        this.currentJobIndex++;
+        return this.jobs[this.currentJobIndex].startJob();
+    }
 
     public static setRunningTaskProvider(runningTaskProvider: RunningTaskProvider) {
         this.runningTaskProvider = runningTaskProvider;
