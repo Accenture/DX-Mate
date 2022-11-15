@@ -7,7 +7,12 @@ export class RunningTaskProvider implements vscode.TreeDataProvider<Job> {
   }
 
   getChildren(element?: Job): Thenable<Job[]> {
-    return Promise.resolve(EXTENSION_CONTEXT.jobs);
+    if(element) {
+      return Promise.resolve(element.subJobs);
+    }
+    else{
+      return Promise.resolve(EXTENSION_CONTEXT.jobs);
+    }
   }
 
   private _onDidChangeTreeData: vscode.EventEmitter<Job | undefined | null | void> = new vscode.EventEmitter<Job | undefined | null | void>();
