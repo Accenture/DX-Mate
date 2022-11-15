@@ -20,7 +20,9 @@ export function createScratchOrgJob(scratchName: string) {
 	" --durationdays 5 " + 
 	"--setdefaultusername";
 
-	return new Job('Create Scratch Org', new ShellCommand(cmd));
+	let shellJob = new Job('Create Scratch Org', new ShellCommand(cmd));
+	EXTENSION_CONTEXT.addJob(shellJob);
+	return shellJob;
 }
 
 //Generates a login link that can be shared to allow others to log into i.e. a scratch org for test and validation
