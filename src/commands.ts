@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { EXTENSION_CONTEXT, Job, PackageDirectory } from './models';
-import { dxmateOutput, execShell, getDirectories, workspacePath, ShellCommand, folderExists } from './utils';
+import { dxmateOutput, execShell, getDirectories, workspacePath, ShellCommand, folderExists, IS_MULTI_PCKG_DIRECTORY } from './utils';
 import { getPackageDirectoryInput } from './workspace';
 
 export function createProject() {
@@ -139,7 +139,7 @@ export function assignPermsetsJob(packageName?: string) {
 }
 
 function getDefaultPermsetConfig(packageName?: string) {
-	if(packageName !== undefined) {
+	if(packageName !== undefined && IS_MULTI_PCKG_DIRECTORY()) {
 		const multiDefaultConfig = vscode.workspace.getConfiguration().get('multi.scratch.default.permissionsets') as string;
 		let configObj = multiDefaultConfig && multiDefaultConfig !== '' ? JSON.parse(multiDefaultConfig) : null;
 		configObj.find((config: any) => {
@@ -198,7 +198,7 @@ export function importDummyDataJob() {
 		directories.forEach((dataDirectory: string) => {
 			let planJsonPath = workspacePath as string + dummyDataFolder + '/' + dataDirectory + '/plan.json';
 			let cmd = 'sfdx force:data:tree:import --plan ' + planJsonPath;
-			shellJob.addJob(new Job('Import: ' + planJsonPath, new ShellCommand(cmd)));
+			shellJob.addJob(new Job('Import: ' + dataDirectory, new ShellCommand(cmd)));
 		});
 
 		EXTENSION_CONTEXT.addJob(shellJob);
