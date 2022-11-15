@@ -1,11 +1,11 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import {openScratchOrg, sourcePushMetadata, createScratchOrg, importDummyData, deployUnpackagable, assignPermsets, generateLoginLink, sourcePullMetadata, createProject, assignDefaultPermsets} from './commands';
+import {openScratchOrg, sourcePushMetadata, createScratchOrg, importDummyData, generateLoginLink, sourcePullMetadata, createProject, assignDefaultPermsets, createScratchOrgJob, sourcePushMetadataJob, deployUnpackagableJob, openScratchOrgJob, importDummyDataJob, assignPermsetsJob} from './commands';
 import { EXTENSION_CONTEXT, PackageDirectory } from './models';
 import {inputUpdateDependencyKey, addDependency} from './dependencyCommands';
 import {getPackageDirectories, getPackageDirectoryInput} from './workspace';
-import { installDependencies, installDependenciesForPackage } from './packageCommands';
+import { installDependenciesForPackage, installDependenciesJob } from './packageCommands';
 import { folderExists, workspacePath } from './utils';
 import { RunningTaskProvider } from './RunningTaskProvider';
 // this method is called when your extension is activated
@@ -98,19 +98,17 @@ async function setupScratchOrg() {
 			return;//Cancelled
 		}
 		console.log('RUNNING SCRATCH ORG CREATE WITH: ' + packageDirectory.package);
-		createScratchOrg(value as string)?.then( out => {
-			installDependencies(packageDirectory.package).then( out => {
-				sourcePushMetadata().then( out => {
-					deployUnpackagable().then( out => {
-						openScratchOrg();
-						//Automatically assign default permission sets. This needs to complete before importing dummy data
-						assignPermsets(packageDirectory.package).then(out => {
-							importDummyData();
-						});
-					});
-				})
-			});
+		createScratchOrgJob(value as string);
+		//Dependency job includes a secondary validate process that afterwards resolves a promise
+		installDependenciesJob(packageDirectory.package).then( out => {
+			sourcePushMetadataJob();
+			deployUnpackagableJob();
+			openScratchOrgJob();
+			assignPermsetsJob(packageDirectory.package);
+			importDummyDataJob();
 		});
+
+		EXTENSION_CONTEXT.startJobs();
 	});
 }
 
