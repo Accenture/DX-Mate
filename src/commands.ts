@@ -108,31 +108,32 @@ export async function assignDefaultPermsets() {
 
 //Assings all default permission sets defined in the workspace settings
 export function assignPermsets(packageName?: string) {
+	let shellJob = assignPermsetsJob(packageName);
+
+	//If a job is returned we start it, else a promise is returned
+	return shellJob instanceof Job ? shellJob.startJob() : shellJob;
+}
+
+export function assignPermsetsJob(packageName?: string) {
 	//Get the permets to assign på default by reading json config file.
 	let permsets = getDefaultPermsetConfig(packageName);
 
-	let promiseList = new Array();
 	if(permsets && permsets.length > 0) {
+		let shellJob = new Job('Assign Default Permission Sets');
 		permsets.forEach(permset => {
 			let cmd = 'sfdx force:user:permset:assign -n ' + permset;
-			promiseList.push(execShell(cmd).shellPromise);
+			shellJob.addJob(new Job('Assign: ' + permset, new ShellCommand(cmd)));
 		});
 
-		vscode.window.withProgress({
-			location: vscode.ProgressLocation.Notification,
-			cancellable: true,
-			title: 'Permission set assignment'
-		}, async (progress) => {
-			
-			progress.report({  message: 'Assigning permission sets' });
-			await Promise.all(promiseList);
-		});
+		return shellJob;
 	}
 	else{
 		dxmateOutput.appendLine('No permission sets to assign');
 		dxmateOutput.show();
+		return new Promise<string>((resolve, reject) => {
+			resolve('No permsets to assign');
+		});
 	}
-	return Promise.all(promiseList);
 }
 
 function getDefaultPermsetConfig(packageName?: string) {
