@@ -33,31 +33,49 @@ export class Job extends vscode.TreeItem{
     jobEndTime?: Date;
     shellCommand?: ShellCommand;
     subJobs: Job[] = [];
-    currentSubJobIndex = 0;
+    currentSubJobIndex = -1;
 
     public async startJob() {
         this.jobStatus = JobStatus.IN_PROGRESS;
         this.refreshIcon();
         this.jobStartTime = new Date();
         if(this.hasSubJobs() === true) {
+            console.log('HAS SUBJOBS');
             while(this.hasNextSubJob()) {
-                await this.runNextSubJob();
+                try{
+                    await this.runNextSubJob();
+                }
+                catch(exception) {
+                    this.jobFailed();
+                    return new Promise<string>((resolve, reject) => {
+                        reject('Subjob rejected');
+                    });
+                }
+                finally{
+                    this.jobEndTime = new Date();
+                    this.refreshIcon();
+                }
             }
+            return new Promise<string>((resolve, reject) => {
+                resolve('All jobs completed');
+            });
         }
-        this.shellCommand?.runCommand().shellPromise?.then( () => {
-            this.jobCompleted();
-        })
-        .catch(err => {
-            console.log('JOB FAILED');
-            this.jobFailed();
-        })
-        .finally(() => {
-            console.log('FINALLY CALLED');
-            this.jobEndTime = new Date();
-            this.refreshIcon();
-        });
-        this.setProgressState();
-        return this.shellCommand?.shellPromise;
+        else{
+            this.shellCommand?.runCommand().shellPromise?.then( () => {
+                this.jobCompleted();
+            })
+            .catch(err => {
+                console.log('JOB FAILED');
+                this.jobFailed();
+            })
+            .finally(() => {
+                console.log('FINALLY CALLED');
+                this.jobEndTime = new Date();
+                this.refreshIcon();
+            });
+            this.setProgressState();
+            return this.shellCommand?.shellPromise;
+        }
     }
     
     private jobFailed() {
@@ -74,6 +92,7 @@ export class Job extends vscode.TreeItem{
     }
 
     public addJob(job: Job) {
+        this.collapsibleState = vscode.TreeItemCollapsibleState.Expanded;
         this.subJobs.push(job);
     }
 
@@ -82,11 +101,12 @@ export class Job extends vscode.TreeItem{
     }
 
     private hasNextSubJob() {
-        return this.currentSubJobIndex > this.subJobs.length;
+        return this.currentSubJobIndex <= this.subJobs.length && this.hasSubJobs();
     }
 
     private runNextSubJob() {
         this.currentSubJobIndex++;
+        console.log('RUNNING SUBJOB: ' + this.currentSubJobIndex);
         return this.subJobs[this.currentSubJobIndex].startJob();
     }
 
@@ -132,7 +152,7 @@ export abstract class EXTENSION_CONTEXT {
     private static currentJobIndex = -1;
 
     public static hasNextJob(): boolean {
-        return this.currentJobIndex < this.jobs.length;
+        return this.currentJobIndex <= this.jobs.length && this.jobs.length > 0;
     }
 
     public static runNextJob() {
