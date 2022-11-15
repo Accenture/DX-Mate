@@ -102,12 +102,12 @@ export async function assignDefaultPermsets() {
 		if(packageDirectory) { assignPermsets(packageDirectory.package); }
 	}
 	else {
-
+		assignPermsets();
 	}
 }
 
 //Assings all default permission sets defined in the workspace settings
-export function assignPermsets(packageName: string) {
+export function assignPermsets(packageName?: string) {
 	//Get the permets to assign på default by reading json config file.
 	let permsets = getDefaultPermsetConfig(packageName);
 
@@ -135,8 +135,8 @@ export function assignPermsets(packageName: string) {
 	return Promise.all(promiseList);
 }
 
-function getDefaultPermsetConfig(packageName: string) {
-	if(packageName && packageName !== '') {
+function getDefaultPermsetConfig(packageName?: string) {
+	if(packageName !== undefined) {
 		const multiDefaultConfig = vscode.workspace.getConfiguration().get('multi.scratch.default.permissionsets') as string;
 		let configObj = multiDefaultConfig && multiDefaultConfig !== '' ? JSON.parse(multiDefaultConfig) : null;
 		configObj.find((config: any) => {
