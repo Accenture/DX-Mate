@@ -97,14 +97,15 @@ export async function installDependenciesJob(packageName: string) {
 			resolve('No Dependencies');
 		});
 	}
-    await validateDependencies(packageName);
-    let keyParams = getPackageKeys(packageName); //Get package.json, and find dependencies. keysParam must be a list 
-
-	//Verify sfpowerkit is installed, or else rund the installation
-	let cmd = 'sfdx sfpowerkit:package:dependencies:install -r -a -w 10 --installationkeys \"' + keyParams + '\"';
-
-
-    let shellJob = new Job('Install Dependencies', new ShellCommand(cmd));
-    EXTENSION_CONTEXT.addJob(shellJob);
-	return Promise.resolve(shellJob);
+    return new Promise<Job>(async (resolve, reject) => {
+        await validateDependencies(packageName);
+        let keyParams = getPackageKeys(packageName); //Get package.json, and find dependencies. keysParam must be a list 
+    
+        //Verify sfpowerkit is installed, or else rund the installation
+        let cmd = 'sfdx sfpowerkit:package:dependencies:install -r -a -w 10 --installationkeys \"' + keyParams + '\"';
+    
+        let shellJob = new Job('Install Dependencies', new ShellCommand(cmd));
+        EXTENSION_CONTEXT.addJob(shellJob);
+        resolve(shellJob);
+    });
 }
