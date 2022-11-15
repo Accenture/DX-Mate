@@ -88,7 +88,18 @@ export class Job extends vscode.TreeItem{
 
     private refreshIcon() {
         this.iconPath = this.getIcon();
+        this.label = this.jobTime ? this.jobName + ' (' + this.jobTime + ')': this.jobName;
         refreshRunningTasks();
+    }
+
+    private get jobTime(): string | null{
+        if(this.jobStartTime && this.jobEndTime) {
+            let dif = this.jobEndTime.getTime() - this.jobStartTime.getTime();
+            return Math.abs(dif/1000).toString();
+        }
+        else{
+            return null;
+        }
     }
 
     public addJob(job: Job) {
@@ -124,6 +135,7 @@ export class Job extends vscode.TreeItem{
 
     constructor(jobName: string, shellCommand?: ShellCommand) {
         super(jobName, vscode.TreeItemCollapsibleState.None);
+        this.jobName = jobName;
         if(shellCommand !== undefined) {this.shellCommand = shellCommand;}
         this.iconPath = this.getIcon();
     }
