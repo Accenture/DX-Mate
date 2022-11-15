@@ -93,20 +93,19 @@ async function setupScratchOrg() {
 	vscode.window.showInputBox({
 		title: 'Scratch org alias',
 		placeHolder: "MYSCRATCH",
-	}).then(value => {
+	}).then(async (value) => {
 		if(!value){
 			return;//Cancelled
 		}
 		console.log('RUNNING SCRATCH ORG CREATE WITH: ' + packageDirectory.package);
 		createScratchOrgJob(value as string);
 		//Dependency job includes a secondary validate process that afterwards resolves a promise
-		installDependenciesJob(packageDirectory.package).then( out => {
-			sourcePushMetadataJob();
-			deployUnpackagableJob();
-			openScratchOrgJob();
-			assignPermsetsJob(packageDirectory.package);
-			importDummyDataJob();
-		});
+		await installDependenciesJob(packageDirectory.package);
+		sourcePushMetadataJob();
+		deployUnpackagableJob();
+		openScratchOrgJob();
+		assignPermsetsJob(packageDirectory.package);
+		importDummyDataJob();
 
 		EXTENSION_CONTEXT.startJobs();
 	});
