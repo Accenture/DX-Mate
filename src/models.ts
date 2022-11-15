@@ -155,6 +155,12 @@ export abstract class EXTENSION_CONTEXT {
         return this.currentJobIndex <= this.jobs.length && this.jobs.length > 0;
     }
 
+    public static async startJobs() {
+        while(this.hasNextJob()) {
+            await this.runNextJob();
+        }
+    }
+
     public static runNextJob() {
         this.currentJobIndex++;
         return this.jobs[this.currentJobIndex].startJob();
