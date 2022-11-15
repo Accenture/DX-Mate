@@ -181,31 +181,32 @@ export function deployUnpackagableJob(): Job | Promise<string> {
 
 //Iterates all folder in the dummy data folder to run sfdx import using the plan.json file
 export function importDummyData() { 
+	let shellJob = importDummyDataJob();
+
+	//If a job is returned we start it, else a promise is returned
+	return shellJob instanceof Job ? shellJob.startJob() : shellJob;
+}
+
+export function importDummyDataJob() {
 	let dummyDataFolder = vscode.workspace.getConfiguration().get('dummy.data.location') as string;
 	let directories = getDirectories(workspacePath as string + dummyDataFolder);
 
-	let promiseArray = new Array();
-	let commandArray = new Array();
-	directories.forEach((dataDirectory: string) => {
-		let planJsonPath = workspacePath as string + dummyDataFolder + '/' + dataDirectory + '/plan.json';
-		let cmd = 'sfdx force:data:tree:import --plan ' + planJsonPath;
-		let shellCommand = execShell(cmd) as ShellCommand;
-		commandArray.push(shellCommand);
-		promiseArray.push(shellCommand.shellPromise);
-	});
-	vscode.window.withProgress({
-		location: vscode.ProgressLocation.Notification,
-		cancellable: true,
-		title: 'Importing dummy data'
-	}, async (progress, token) => {
-		token.onCancellationRequested(() => {
-			commandArray.forEach(command => {
-				command.shellProcess.kill("SIGINT");
-			});
+	if(directories.length > 0) {
+		let shellJob = new Job('Import Dummy Data');
+		directories.forEach((dataDirectory: string) => {
+			let planJsonPath = workspacePath as string + dummyDataFolder + '/' + dataDirectory + '/plan.json';
+			let cmd = 'sfdx force:data:tree:import --plan ' + planJsonPath;
+			shellJob.addJob(new Job('Import: ' + planJsonPath, new ShellCommand(cmd)));
 		});
-		progress.report({  message: 'Running dummy data import' });
-		await Promise.all(promiseArray);
-	});
+
+		EXTENSION_CONTEXT.addJob(shellJob);
+		return shellJob;
+	}
+	else{
+		return new Promise<string>((resolve, reject) => {
+			resolve('No dummy data');
+		});
+	}
 }
 
 //Allows calling sfdx export on the default org to retrieve data on json format
