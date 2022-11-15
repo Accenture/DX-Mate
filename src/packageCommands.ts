@@ -1,7 +1,6 @@
-import * as vscode from 'vscode';
 import { getDependencyKeys, getDependencies, updateDependencyKey } from './dependencyCommands';
-import { DependencyKey, PackageDirectory, EXTENSION_CONTEXT } from './models';
-import {dxmateOutput, execShell, ShellCommand } from './utils';
+import { DependencyKey, PackageDirectory, EXTENSION_CONTEXT, Job } from './models';
+import {dxmateOutput, ShellCommand } from './utils';
 import { getPackageDirectoryInput, getPackageDirectories } from './workspace';
 
 /**
@@ -83,8 +82,12 @@ export async function installDependenciesForPackage() {
 }
 
 //TODO: INCLUDE EXTRA CHECK IF THE PROCESS TRIES TO INSTALL DEPENDENCIES IN A SANDBOX/FIND A WAY TO --updateOnly
-export async function installDependencies(packageName: string) {
-	let dependencies = getDependencies(packageName);
+export function installDependencies(packageName: string) {
+    return installDependenciesJob(packageName);
+}
+
+export async function installDependenciesJob(packageName: string) {
+    let dependencies = getDependencies(packageName);
 
 	if(!dependencies) {
 		//No dependencies
@@ -100,22 +103,8 @@ export async function installDependencies(packageName: string) {
 	//Verify sfpowerkit is installed, or else rund the installation
 	let cmd = 'sfdx sfpowerkit:package:dependencies:install -r -a -w 10 --installationkeys \"' + keyParams + '\"';
 
-	dxmateOutput.appendLine('INSTALLING DEPENDENCIES');
-    dxmateOutput.show();
 
-	let shellCommand = execShell(cmd) as ShellCommand; //Do not output all keys
-
-	vscode.window.withProgress({
-		location: vscode.ProgressLocation.Notification,
-		cancellable: true,
-		title: 'Running sfpowerkit dependency install'
-	}, async (progress, token) => {
-		token.onCancellationRequested(() => {
-			shellCommand.shellProcess.kill("SIGINT");
-		});
-		progress.report({  message: 'Installing package dependencies' });
-		await shellCommand.shellPromise;
-	});
-
-	return shellCommand.shellPromise;
+    let shellJob = new Job('Install Dependencies', new ShellCommand(cmd));
+    EXTENSION_CONTEXT.addJob(shellJob);
+	return Promise.resolve(shellJob);
 }
