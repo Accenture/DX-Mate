@@ -124,7 +124,7 @@ export function assignPermsetsJob(packageName?: string) {
 			let cmd = 'sfdx force:user:permset:assign -n ' + permset;
 			shellJob.addJob(new Job('Assign: ' + permset, new ShellCommand(cmd)));
 		});
-
+		EXTENSION_CONTEXT.addJob(shellJob);
 		return shellJob;
 	}
 	else{
