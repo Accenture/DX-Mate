@@ -201,7 +201,7 @@ export abstract class EXTENSION_CONTEXT {
         if(this.hasActiveJob()) {
             console.log('CANCELLING ACTIVE JOBS');
             //When job is running the currentJobIndex is a step behind
-            let indx = this.currentJobIndex;
+            let indx = this.currentJobIndex + 1;
             console.log('CANCEL START INDEX: ' + indx);
             for (indx; indx < this.jobs.length; indx++) {
                 const job = this.jobs[indx];
