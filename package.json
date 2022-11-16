@@ -39,6 +39,16 @@
 			{
 				"command": "runningTasks.refreshEntry",
 				"title": "dxmate: Refresh running tasks"
+			},
+			{
+				"command": "runningTasks.cancel",
+				"title": "Cancel running jobs",
+				"icon": "$(stop)"
+			},
+			{
+				"command": "runningTasks.clear",
+				"title": "Clear jobs",
+				"icon": "$(clear-all)"
 			}
 		],
 		"viewsContainers": {
@@ -83,7 +93,8 @@
 				},
 				{
 					"id": "runningTasks",
-					"name": "Running Tasks"
+					"name": "Running Tasks",
+					"when": "extensionActivated"
 				}
 			]
 		},
@@ -109,6 +120,20 @@
 				"contents": "[Import dummy data](command:dxmate.importDummyData)\n[Assign default permission sets](command:dxmate.assignPermissionsets)"
 			}
 		],
+		"menus": {
+			"view/title": [
+				{
+					"command": "runningTasks.cancel",
+					"when": "view == runningTasks",
+					"group": "navigation"
+				},
+				{
+					"command": "runningTasks.clear",
+					"when": "view == runningTasks",
+					"group": "navigation"
+				}
+			]
+		},
 		"configuration": {
 			"type": "object",
 			"title": "DX-Mate", 
