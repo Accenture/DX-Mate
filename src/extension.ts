@@ -27,6 +27,12 @@ export function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand('runningTasks.refreshEntry', () =>
 		runningTaskProvider.refresh()
 	);
+	vscode.commands.registerCommand('runningTasks.cancel', () =>
+		EXTENSION_CONTEXT.cancelJobs()
+	);
+	vscode.commands.registerCommand('runningTasks.clear', () =>
+		EXTENSION_CONTEXT.clearJobs()
+	);
 }
 
 function checkContext() {
