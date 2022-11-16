@@ -77,6 +77,18 @@ export class Job extends vscode.TreeItem{
             return this.shellCommand?.shellPromise;
         }
     }
+
+    public cancel() {
+        console.log('CANCELLING JOB');
+        if(this.subJobs.length > 0) {
+            this.subJobs.forEach(subJob => {
+                subJob.cancel();
+            });
+        }
+        this.shellCommand?.shellProcess?.kill('SIGINT');
+        this.jobStatus = JobStatus.CANCELLED;
+        this.refreshIcon();
+    }
     
     private jobFailed() {
         this.jobStatus = JobStatus.ERROR;
@@ -125,7 +137,7 @@ export class Job extends vscode.TreeItem{
         vscode.window.withProgress(
             {
                 location: { viewId: 'runningTasks' },
-                cancellable: false
+                cancellable: true
             },
             async (progress) =>
             {
@@ -148,13 +160,15 @@ export class Job extends vscode.TreeItem{
                 return new vscode.ThemeIcon('testing-passed-icon');
             case JobStatus.ERROR:
                 return new vscode.ThemeIcon('error');
+            case JobStatus.CANCELLED:
+                return new vscode.ThemeIcon('circle-outline');
             default:
                 return new vscode.ThemeIcon('testing-queued-icon');
         }
     }
 }
 // eslint-disable-next-line
-export enum JobStatus {IN_PROGRESS, ERROR, SUCCESS, SCHEDULED}
+export enum JobStatus {IN_PROGRESS, CANCELLED, ERROR, SUCCESS, SCHEDULED}
 // eslint-disable-next-line
 export abstract class EXTENSION_CONTEXT {
 	public static  get isMultiPackageDirectory(): boolean { return IS_MULTI_PCKG_DIRECTORY();}
@@ -169,13 +183,37 @@ export abstract class EXTENSION_CONTEXT {
 
     public static async startJobs() {
         while(this.hasNextJob()) {
-            await this.runNextJob();
+            let job = this.getNextJob();
+            await job.startJob();
         }
     }
 
-    public static runNextJob() {
+    public static hasActiveJob(): boolean {
+        let activeJob = false;
+        for (let index = 0; index < this.jobs.length; index++) {
+            const job = this.jobs[index];
+            activeJob = job.jobStatus === JobStatus.IN_PROGRESS;
+            if(activeJob) { break; }
+        }
+        return activeJob;
+    }
+
+    public static cancelJobs() {
+        if(this.hasActiveJob()) {
+            console.log('CANCELLING ACTIVE JOBS');
+            //When job is running the currentJobIndex is a step behind
+            let indx = this.currentJobIndex;
+            console.log('CANCEL START INDEX: ' + indx);
+            for (indx; indx < this.jobs.length; indx++) {
+                const job = this.jobs[indx];
+                job.cancel();
+            }
+        }
+    }
+
+    public static getNextJob(): Job {
         this.currentJobIndex++;
-        return this.jobs[this.currentJobIndex].startJob();
+        return this.jobs[this.currentJobIndex];
     }
 
     public static setRunningTaskProvider(runningTaskProvider: RunningTaskProvider) {
@@ -191,7 +229,23 @@ export abstract class EXTENSION_CONTEXT {
         this.refreshRunningTasks();
     }
 
+    //Only allow clearing the jobs if no jobs are currently running
     public static clearJobs() {
-        this.jobs = [];
+        if(!this.hasActiveJob()) {
+            this.jobs = [];
+            this.refreshRunningTasks();
+        }
+        else{
+            vscode.window.showErrorMessage(
+                'You have running jobs in progress. cancel jobs?',
+                ...['Yes', 'No']
+            )
+            .then(value => {
+                if(value === 'Yes') {
+                    this.cancelJobs();
+                    this.clearJobs();
+                }
+            });
+        }
     }
 }
