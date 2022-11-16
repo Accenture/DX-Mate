@@ -16,7 +16,7 @@ export class ShellCommand{
     }
 
     public runCommand() {
-        let process = cp.exec(this.command, {cwd: workspacePath}, (err, out) => {
+        this.shellProcess = cp.exec(this.command, {cwd: workspacePath}, (err, out) => {
             if(err && err.signal !== 'SIGINT') {
                 dxmateOutput.appendLine("An error occurred: \n " + err);
                 dxmateOutput.show();
@@ -49,8 +49,8 @@ export class ShellCommand{
                     }
                 });
             };
-    
-            process.on('exit', (code, signal) =>{
+
+            this.shellProcess.on('exit', (code: number, signal: string) =>{
                 if(signal === 'SIGINT') {
                     dxmateOutput.appendLine("Process was cancelled");
                     return reject('Cancelled');
@@ -66,7 +66,7 @@ export class ShellCommand{
             });
     
             if(this.suppressOutput === false) {
-                process.stdout?.on('data', data => {
+                this.shellProcess.stdout?.on('data', (data: string) => {
                     output += data;
                     //Adding stream to the output console for the process
                     //Possibly give ability to see what subprocess is ongoing
