@@ -225,6 +225,9 @@ export abstract class EXTENSION_CONTEXT {
     }
 
     public static addJob(job: Job) {
+        //If no active jobs. The job tracker is cleared before pushing jobs to the queue
+        //Else the new job is chained to the end of the existing queue
+        if(!this.hasActiveJob()) { this.clearJobs(); }
         this.jobs.push(job);
         this.refreshRunningTasks();
     }
