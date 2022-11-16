@@ -51,11 +51,8 @@ export class Job extends vscode.TreeItem{
                         reject('Subjob rejected');
                     });
                 }
-                finally{
-                    this.jobEndTime = new Date();
-                    this.refreshIcon();
-                }
             }
+            this.jobCompleted();
             return new Promise<string>((resolve, reject) => {
                 resolve('All jobs completed');
             });
@@ -70,8 +67,6 @@ export class Job extends vscode.TreeItem{
             })
             .finally(() => {
                 console.log('FINALLY CALLED');
-                this.jobEndTime = new Date();
-                this.refreshIcon();
             });
             this.setProgressState();
             return this.shellCommand?.shellPromise;
@@ -92,10 +87,14 @@ export class Job extends vscode.TreeItem{
     
     private jobFailed() {
         this.jobStatus = JobStatus.ERROR;
+        this.jobEndTime = new Date();
+        this.refreshIcon();
     }
 
     private jobCompleted() {
         this.jobStatus = JobStatus.SUCCESS;
+        this.jobEndTime = new Date();
+        this.refreshIcon();
     }
 
     private refreshIcon() {
