@@ -47,6 +47,7 @@ export class Job extends vscode.TreeItem{
                 }
                 catch(exception) {
                     this.jobFailed();
+                    this.cancel();
                     return new Promise<string>((resolve, reject) => {
                         reject('Subjob rejected');
                     });
