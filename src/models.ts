@@ -124,7 +124,7 @@ export class Job extends vscode.TreeItem{
     }
 
     private hasNextSubJob() {
-        return this.currentSubJobIndex <= this.subJobs.length && this.hasSubJobs();
+        return this.currentSubJobIndex < this.subJobs.length && this.hasSubJobs();
     }
 
     private runNextSubJob() {
@@ -178,7 +178,7 @@ export abstract class EXTENSION_CONTEXT {
     private static currentJobIndex = -1;
 
     public static hasNextJob(): boolean {
-        return this.currentJobIndex <= this.jobs.length && this.jobs.length > 0;
+        return this.currentJobIndex < this.jobs.length && this.jobs.length > 0;
     }
 
     public static async startJobs() {
