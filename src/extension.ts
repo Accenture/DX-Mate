@@ -1,7 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import {openScratchOrg, sourcePushMetadata, createScratchOrg, importDummyData, generateLoginLink, sourcePullMetadata, createProject, assignDefaultPermsets, createScratchOrgJob, sourcePushMetadataJob, deployUnpackagableJob, openScratchOrgJob, importDummyDataJob, assignPermsetsJob} from './commands';
+import {openScratchOrg, sourcePushMetadata, importDummyData, generateLoginLink, sourcePullMetadata, createProject, assignDefaultPermsets, createScratchOrgJob, sourcePushMetadataJob, deployUnpackagableJob, openScratchOrgJob, importDummyDataJob, assignPermsetsJob} from './commands';
 import { EXTENSION_CONTEXT, PackageDirectory } from './models';
 import {inputUpdateDependencyKey, addDependency} from './dependencyCommands';
 import {getPackageDirectories, getPackageDirectoryInput} from './workspace';
