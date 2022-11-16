@@ -13,6 +13,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Security
 
 ## [1.0.10] - 
+### Added
+- Added the extension job tracker! Now the running processes are reflected in the tracker and also support for cancelling running process chaing and clearing the job history
+
+### Changed
+- Changed retry handling and job chaininng structure
+
 ### Fixed
 - Improved fault handling when referencing folder/files that does not exist in directory for dummy data location and unpackagable location
 - Fixed error when assigning default permsets for single package directory projects
