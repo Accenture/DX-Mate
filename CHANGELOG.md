@@ -12,7 +12,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 ### Security
 
-## [1.0.10] - 
+## [1.0.11] - 2022-11-17
+### Fixed
+- Fixed issue with calling dummy data import in an unchained job
+
+## [1.0.10] - 2022-11-17
 ### Added
 - Added the extension job tracker! Now the running processes are reflected in the tracker and also support for cancelling running process chaing and clearing the job history
 
