@@ -9,8 +9,7 @@ export function createProject() {
 
 //Creates a new scratch org based on name input. Default duration is set to 5 days
 export function createScratchOrg(scratchName: string) {
-	const scratchJob = createScratchOrgJob(scratchName);
-	return scratchJob.startJob();
+	createScratchOrgJob(scratchName).startJobs();
 }
 
 export function createScratchOrgJob(scratchName: string) {
@@ -21,8 +20,7 @@ export function createScratchOrgJob(scratchName: string) {
 	"--setdefaultusername";
 
 	let shellJob = new Job('Create Scratch Org', new ShellCommand(cmd));
-	EXTENSION_CONTEXT.addJob(shellJob);
-	return shellJob;
+	return EXTENSION_CONTEXT.addJob(shellJob);
 }
 
 //Generates a login link that can be shared to allow others to log into i.e. a scratch org for test and validation
@@ -60,42 +58,36 @@ function getDefaultOrgInfo() {
 
 //Opens the default scratch org
 export function openScratchOrg() {
-	let shellJob = openScratchOrgJob();
-	return shellJob.startJob();
+	openScratchOrgJob().startJobs();
 }
 
 export function openScratchOrgJob() {
 	let cmd = 'sfdx force:org:open';
 	let shellJob = new Job('Open Scratch Org', new ShellCommand(cmd));
-	EXTENSION_CONTEXT.addJob(shellJob);
-	return shellJob;
+	return EXTENSION_CONTEXT.addJob(shellJob);
 }
 
 
 //push metadata from scratch org
 export function sourcePushMetadata() {
-	let shellJob = sourcePushMetadataJob();
-	return shellJob.startJob();
+	sourcePushMetadataJob().startJobs();
 }
 
 export function sourcePushMetadataJob() {
 	let cmd = 'sfdx force:source:push';
 	let shellJob = new Job('Push Metadata', new ShellCommand(cmd));
-	EXTENSION_CONTEXT.addJob(shellJob);
-	return shellJob;
+	return EXTENSION_CONTEXT.addJob(shellJob);
 }
 
 //Pull metadata from scratch org
 export function sourcePullMetadata() {
-	let shellJob = sourcePullMetadataJob();
-	return shellJob.startJob();
+	sourcePullMetadataJob().startJobs();
 }
 
 export function sourcePullMetadataJob() {
 	let cmd = 'sfdx force:source:pull';
 	let shellJob = new Job('Pull Metadata', new ShellCommand(cmd));
-	EXTENSION_CONTEXT.addJob(shellJob);
-	return shellJob;
+	return EXTENSION_CONTEXT.addJob(shellJob);
 }
 
 export async function assignDefaultPermsets() {
@@ -112,8 +104,10 @@ export async function assignDefaultPermsets() {
 export function assignPermsets(packageName?: string) {
 	let shellJob = assignPermsetsJob(packageName);
 
-	//If a job is returned we start it, else a promise is returned
-	return shellJob instanceof Job ? shellJob.startJob() : shellJob;
+	if(shellJob instanceof EXTENSION_CONTEXT) {
+		//If extension context is rerturned we can start the jobs
+		EXTENSION_CONTEXT.startJobs();
+	}
 }
 
 export function assignPermsetsJob(packageName?: string) {
@@ -126,8 +120,7 @@ export function assignPermsetsJob(packageName?: string) {
 			let cmd = 'sfdx force:user:permset:assign -n ' + permset;
 			shellJob.addJob(new Job('Assign: ' + permset, new ShellCommand(cmd)));
 		});
-		EXTENSION_CONTEXT.addJob(shellJob);
-		return shellJob;
+		return EXTENSION_CONTEXT.addJob(shellJob);
 	}
 	else{
 		dxmateOutput.appendLine('No permission sets to assign');
@@ -155,11 +148,12 @@ function getDefaultPermsetConfig(packageName?: string) {
 export function deployUnpackagable() {
 	let shellJob = deployUnpackagableJob();
 	
-	//If a job is returned we start it, else a promise is returned
-	return shellJob instanceof Job ? shellJob.startJob() : shellJob;
+	if(shellJob instanceof EXTENSION_CONTEXT) {
+		EXTENSION_CONTEXT.startJobs();
+	}
 }
 
-export function deployUnpackagableJob(): Job | Promise<string> {
+export function deployUnpackagableJob(): EXTENSION_CONTEXT | Promise<string> {
 	//Get path to unpackagable and deploy
 	let unpackPath = vscode.workspace.getConfiguration().get('unpackagable.location');
 	if(!unpackPath || unpackPath === '') {
@@ -177,16 +171,16 @@ export function deployUnpackagableJob(): Job | Promise<string> {
 
 	let cmd = 'sfdx force:source:deploy -p ' + unpackPath;
 	let shellJob = new Job('Deploy Unpackagable Metadata', new ShellCommand(cmd));
-	EXTENSION_CONTEXT.addJob(shellJob);
-	return shellJob;
+	return EXTENSION_CONTEXT.addJob(shellJob);
 }
 
 //Iterates all folder in the dummy data folder to run sfdx import using the plan.json file
 export function importDummyData() { 
 	let shellJob = importDummyDataJob();
 
-	//If a job is returned we start it, else a promise is returned
-	return shellJob instanceof Job ? shellJob.startJob() : shellJob;
+	if(shellJob instanceof EXTENSION_CONTEXT) {
+		EXTENSION_CONTEXT.startJobs();
+	}
 }
 
 export function importDummyDataJob() {
@@ -201,8 +195,7 @@ export function importDummyDataJob() {
 			shellJob.addJob(new Job('Import: ' + dataDirectory, new ShellCommand(cmd)));
 		});
 
-		EXTENSION_CONTEXT.addJob(shellJob);
-		return shellJob;
+		return EXTENSION_CONTEXT.addJob(shellJob);
 	}
 	else{
 		return new Promise<string>((resolve, reject) => {
