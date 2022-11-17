@@ -182,9 +182,12 @@ export abstract class EXTENSION_CONTEXT {
     }
 
     public static async startJobs() {
-        while(this.hasNextJob()) {
-            let job = this.getNextJob();
-            await job.startJob();
+        //startJobs should not initiate processes multiple times
+        if(!this.hasActiveJob()) {
+            while(this.hasNextJob()) {
+                let job = this.getNextJob();
+                await job.startJob();
+            }
         }
     }
 
@@ -230,6 +233,7 @@ export abstract class EXTENSION_CONTEXT {
         if(!this.hasActiveJob()) { this.clearJobs(); }
         this.jobs.push(job);
         this.refreshRunningTasks();
+        return this;
     }
 
     //Only allow clearing the jobs if no jobs are currently running
