@@ -176,14 +176,14 @@ export function deployUnpackagableJob(): EXTENSION_CONTEXT | Promise<string> {
 
 //Iterates all folder in the dummy data folder to run sfdx import using the plan.json file
 export function importDummyData() { 
-	let shellJob = importDummyDataJob();
+	let jobSubmitted = importDummyDataJob();
 
-	if(shellJob instanceof EXTENSION_CONTEXT) {
+	if(jobSubmitted === true) {
 		EXTENSION_CONTEXT.startJobs();
 	}
 }
 
-export function importDummyDataJob() {
+export function importDummyDataJob(): boolean {
 	let dummyDataFolder = vscode.workspace.getConfiguration().get('dummy.data.location') as string;
 	let directories = getDirectories(workspacePath as string + dummyDataFolder);
 
@@ -195,12 +195,11 @@ export function importDummyDataJob() {
 			shellJob.addJob(new Job('Import: ' + dataDirectory, new ShellCommand(cmd)));
 		});
 
-		return EXTENSION_CONTEXT.addJob(shellJob);
+		EXTENSION_CONTEXT.addJob(shellJob);
+		return true;
 	}
 	else{
-		return new Promise<string>((resolve, reject) => {
-			resolve('No dummy data');
-		});
+		return false;
 	}
 }
 
