@@ -83,9 +83,19 @@ export async function installDependenciesForPackage() {
 
 //TODO: INCLUDE EXTRA CHECK IF THE PROCESS TRIES TO INSTALL DEPENDENCIES IN A SANDBOX/FIND A WAY TO --updateOnly
 export function installDependencies(packageName: string) {
-    return installDependenciesJob(packageName);
+    installDependenciesJob(packageName).then( jobsReady => {
+        //If the resolved value is true we start the jobs
+        if(jobsReady === true) {
+            EXTENSION_CONTEXT.startJobs();
+        }
+    });
 }
 
+/**
+ * Submits the install dependencies job after validation. Returns a boolean promise that resolves to true if the job was added
+ * @param packageName 
+ * @returns 
+ */
 export async function installDependenciesJob(packageName: string) {
     let dependencies = getDependencies(packageName);
 
@@ -93,11 +103,11 @@ export async function installDependenciesJob(packageName: string) {
 		//No dependencies
 		dxmateOutput.appendLine('No Dependencies to install');
 		dxmateOutput.show();
-		return new Promise<string>((resolve, reject) => {
-			resolve('No Dependencies');
+		return new Promise<boolean>((resolve, reject) => {
+			resolve(false);
 		});
 	}
-    return new Promise<Job>(async (resolve, reject) => {
+    return new Promise<boolean>(async (resolve, reject) => {
         await validateDependencies(packageName);
         let keyParams = getPackageKeys(packageName); //Get package.json, and find dependencies. keysParam must be a list 
     
@@ -106,6 +116,6 @@ export async function installDependenciesJob(packageName: string) {
     
         let shellJob = new Job('Install Dependencies', new ShellCommand(cmd));
         EXTENSION_CONTEXT.addJob(shellJob);
-        resolve(shellJob);
+        resolve(true);
     });
 }
