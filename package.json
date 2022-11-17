@@ -4,7 +4,7 @@
 	"description": "Support tools for SFDX development",
 	"publisher": "Accenture",
 	"icon": "lightning.png",
-	"version": "1.0.10",
+	"version": "1.0.11",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/Accenture/DX-Mate.git"
