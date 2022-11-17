@@ -176,6 +176,7 @@ export abstract class EXTENSION_CONTEXT {
     public static jobs: Job[] = [];
     private static runningTaskProvider: RunningTaskProvider;
     private static currentJobIndex = -1;
+    private static processCancelled: boolean = false;
 
     public static hasNextJob(): boolean {
         return this.currentJobIndex + 1 < this.jobs.length && this.jobs.length > 0;
@@ -205,8 +206,8 @@ export abstract class EXTENSION_CONTEXT {
         if(this.hasActiveJob()) {
             console.log('CANCELLING ACTIVE JOBS');
             //When job is running the currentJobIndex is a step behind
-            let indx = this.currentJobIndex + 1;
-            console.log('CANCEL START INDEX: ' + indx);
+            let indx = this.currentJobIndex;
+            this.processCancelled = true;
             for (indx; indx < this.jobs.length; indx++) {
                 const job = this.jobs[indx];
                 job.cancel();
@@ -228,9 +229,8 @@ export abstract class EXTENSION_CONTEXT {
     }
 
     public static addJob(job: Job) {
-        //If no active jobs. The job tracker is cleared before pushing jobs to the queue
-        //Else the new job is chained to the end of the existing queue
-        if(!this.hasActiveJob()) { this.clearJobs(); }
+        //If the previous process chain was cancelled, clear the jobs before submitting new ones
+        if(this.processCancelled === true) { this.clearJobs(); }
         this.jobs.push(job);
         this.refreshRunningTasks();
         return this;
