@@ -102,32 +102,29 @@ export async function assignDefaultPermsets() {
 
 //Assings all default permission sets defined in the workspace settings
 export function assignPermsets(packageName?: string) {
-	let shellJob = assignPermsetsJob(packageName);
+	let jobAdded = assignPermsetsJob(packageName);
 
-	if(shellJob instanceof EXTENSION_CONTEXT) {
-		//If extension context is rerturned we can start the jobs
+	if(jobAdded === true) {
 		EXTENSION_CONTEXT.startJobs();
 	}
 }
 
-export function assignPermsetsJob(packageName?: string) {
+export function assignPermsetsJob(packageName?: string): boolean {
 	//Get the permets to assign på default by reading json config file.
 	let permsets = getDefaultPermsetConfig(packageName);
-
 	if(permsets && permsets.length > 0) {
 		let shellJob = new Job('Assign Default Permission Sets');
 		permsets.forEach(permset => {
 			let cmd = 'sfdx force:user:permset:assign -n ' + permset;
 			shellJob.addJob(new Job('Assign: ' + permset, new ShellCommand(cmd)));
 		});
-		return EXTENSION_CONTEXT.addJob(shellJob);
+		EXTENSION_CONTEXT.addJob(shellJob);
+		return true;
 	}
 	else{
 		dxmateOutput.appendLine('No permission sets to assign');
 		dxmateOutput.show();
-		return new Promise<string>((resolve, reject) => {
-			resolve('No permsets to assign');
-		});
+		return false;
 	}
 }
 
