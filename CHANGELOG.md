@@ -12,6 +12,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 ### Security
 
+## [1.0.12] - 
+### Changed
+- Changed handling of dependency keys. Now stored as key -> value paris in extension user settings
+
+### Deprecated
+- Removed use of the dxmate_config folder. New version will upon activate allows user to convert to new model
+
 ## [1.0.11] - 2022-11-17
 ### Fixed
 - Fixed issue with calling dummy data import in an unchained job
