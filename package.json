@@ -143,6 +143,13 @@
 				"default": "/dummy-data",
 				"description": "Relative folder location to where dummy data should be imported using the sfdx import command"
 			  },
+			  "dependency.keys": {
+				"type": "object",
+				"additionalProperties": {
+					"type": "string"
+				  },
+				"description": "Defining the package installation keys of the known dependencies. Define package names as keys and installation key as values. Note that you should store this solely in user settings outside the workspace"
+			  },
 			  "unpackagable.location": {
 				"type": "string",
 				"default": "/unpackagable",
