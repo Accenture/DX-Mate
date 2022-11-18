@@ -120,29 +120,41 @@ export function updateDependencyKey(packageName: string) {
  * @param packageKey 
  */
 function addToDependencyKeys(packageName: string, packageKey: string) {
-    createConfigFolder();
-    const depFile = getFile(workspacePath + '/dxmate_config/dependencyKeys.json');
+    //const depFile = getFile(workspacePath + '/dxmate_config/dependencyKeys.json');
+    const depKeys = getDependencyKeys() as DependencyKey[];
     let added = false;
     let dependencies;
-    if(!depFile) {
+    if(!depKeys) {
         dependencies = [];
-        dependencies.push({packageName: packageName, packageKey: packageKey});
+        dependencies.push(new DependencyKey(packageName, packageKey));
     }
     else{
-        dependencies = JSON.parse(depFile);
+        dependencies = depKeys;
         dependencies.forEach((dependency: any) => {
             if(dependency.packageName === packageName) {
                 dependency.packageKey = packageKey;
                 added = true;
             }
         });
-
         if(!added) {
-            dependencies.push({packageName: packageName, packageKey: packageKey});
+            dependencies.push(new DependencyKey(packageName, packageKey));
         }
     }
 
-    createFile(workspacePath + '/dxmate_config/dependencyKeys.json', JSON.stringify(dependencies, null, 4));
+    updateDependencySetting(dependencies);
+}
+
+/**
+ * Convert a list of dependency keys to Object stucture to update extension setting
+ * @param dependencyKeys 
+ */
+function updateDependencySetting(dependencyKeys: DependencyKey[]) {
+    let newConfig : any = {};
+    dependencyKeys.forEach(legacyKey => {
+        newConfig[legacyKey.packageName] = legacyKey.packageKey;
+    });
+
+    vscode.workspace.getConfiguration().update('dependency.keys', newConfig, vscode.ConfigurationTarget.Global);
 }
 
 
@@ -155,9 +167,6 @@ export async function inputUpdateDependencyKey() {
 		dxmateOutput.show();
 		return;
 	} else{
-		if(!folderExists(workspacePath + '/dxmate_config')) { 
-			createFolder(workspacePath + '/dxmate_config');
-		}
         let dependencyList = new Array();
 		dependencies.forEach((dependencyname: string) => {
 			dependencyList.push(dependencyname);
@@ -175,20 +184,20 @@ export async function inputUpdateDependencyKey() {
 	}
 }
 
-//Creates the config folder if it is not already present
-function createConfigFolder() {
-    if(!folderExists(workspacePath + '/dxmate_config')) {
-        createFolder(workspacePath + '/dxmate_config');
-    }
-}
-
 /**
  * Get the dependency keys defined in the config file.
  * @returns 
  */
- export function getDependencyKeys() {
-	const depFile = getFile(workspacePath + '/dxmate_config/dependencyKeys.json');
-    return depFile ? JSON.parse(depFile) as DependencyKey[] : null;  
+ export function getDependencyKeys(): DependencyKey[] | null {
+	const deps = vscode.workspace.getConfiguration().get('dependency.keys') as any;
+    let depKeys: DependencyKey[] | null = null;
+    if(deps) {
+        depKeys = [];
+        for (const key in deps) {
+            depKeys.push(new DependencyKey(key, deps[key]));
+        }
+    }
+    return depKeys;
 }
 
 /**
