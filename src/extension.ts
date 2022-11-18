@@ -8,15 +8,20 @@ import {getPackageDirectories, getPackageDirectoryInput} from './workspace';
 import { installDependenciesForPackage, installDependenciesJob } from './packageCommands';
 import { folderExists, workspacePath } from './utils';
 import { RunningTaskProvider } from './RunningTaskProvider';
+import { depKeyMigrator } from './legacyHandlers/depLegacy';
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 
 export function activate(context: vscode.ExtensionContext) {
 	// The command has been defined in the package.json file
 	checkContext();
+	depKeyMigrator();
 	registerOrgCommands(context);
+	registerJobTracker(context);
 	vscode.commands.executeCommand("setContext", "extensionActivated", true);
+}
 
+function registerJobTracker(context: vscode.ExtensionContext) {
 	let runningTaskProvider = new RunningTaskProvider();
 	EXTENSION_CONTEXT.setRunningTaskProvider(runningTaskProvider);
 	vscode.window.registerTreeDataProvider(
