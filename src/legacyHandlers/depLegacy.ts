@@ -1,13 +1,13 @@
 import * as vscode from "vscode";
 import { DependencyKey } from "../models";
-import { getFile, workspacePath } from "../utils";
+import { execShell, getFile, workspacePath } from "../utils";
 
 
 /**
  * Get the dependency keys defined in the config file.
  * @returns 
  */
- export function getDependencyKeysLegacy() {
+function getDependencyKeysLegacy() {
 	const depFile = getFile(workspacePath + '/dxmate_config/dependencyKeys.json');
     return depFile ? JSON.parse(depFile) as DependencyKey[] : null;  
 }
@@ -41,5 +41,6 @@ function handleDepKeyLegacyMigration(legacyKeys: DependencyKey[]) {
 
     vscode.workspace.getConfiguration().update('dependency.keys', newConfig, vscode.ConfigurationTarget.Global).then( out => {
         //When successfull, we delete the dxmate_config folder with the content
+        execShell('rm -r ' + workspacePath + '/dxmate_config');
     });
 }
