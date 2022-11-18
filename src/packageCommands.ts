@@ -33,7 +33,7 @@ async function validateDependencies(packageName: string) {
     return new Promise<string>(async (resolve, reject) => {
         //Check if all the registered dependencies has been defined in dependencyKeys
         let packageDependencies = getDependencies(packageName);
-        let dependencyKeys = getDependencyKeys();
+        let dependencyKeys = getDependencyKeys() as DependencyKey[];
         const startInstall = () => {
             resolve('START INSTALL');
         }
