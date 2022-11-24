@@ -240,6 +240,9 @@ export async function sfdxExportData() {
 				if (fileUri && fileUri[0]) {
 					outputDir = fileUri[0].fsPath;
 					let cmd = 'sfdx force:data:tree:export --json --outputdir ' + outputDir + ` --query \"${inputQuery}\"`;
+					const shellJob = new Job('Export data', new ShellCommand(cmd));
+					EXTENSION_CONTEXT.addJob(shellJob);
+					EXTENSION_CONTEXT.startJobs();
 				}
 				else{
 					return;
@@ -260,9 +263,7 @@ function getSoqlQuickPicks(soqlFiles: any[]): vscode.QuickPickItem[] {
 function getSoqlFiles() {
 	return vscode.workspace.findFiles('**/*.soql', null, 50).then((uris: vscode.Uri[] ) => {            
 		let soqlFiles: any[] = [];
-		console.log('SOQL URIS: ' + uris);
 		uris.forEach(uri => {
-			console.log('URI: ' + uri.fsPath);
 			let fileContent = getFile(uri.fsPath);
 			soqlFiles.push({name: uri.fsPath.slice(uri.fsPath.lastIndexOf('/') + 1), soql: fileContent});
 		});
