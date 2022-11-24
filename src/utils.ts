@@ -131,6 +131,25 @@ export function getDirectories(absPath: string) {
 }
 
 /**
+ * Verify if the currently connected devhub is enabled for scratch org pooling.
+ * This requires that the DX@Scale unlocked package has been installed in the org.
+ */
+export function isPoolingEnabled() {
+    execShell('sfdx force:package:installed:list --json').shellPromise?.then(jsonList => {
+        if(jsonList) {
+            const packageList = JSON.parse(jsonList);
+            for (let index = 0; index < packageList.length; index++) {
+                const installedPckg = packageList[index];
+                if(installedPckg.SubscriberPackageVersionId === '04t1P000000gOqzQAE') {
+                    return true;
+                }
+            }
+        }
+        return false;
+    });
+}
+
+/**
  * Function to initiate terminal processes from vscode. input command to run and optional param to suppress output to the dxMate output channel
  * @param cmd 
  * @param suppressOutput 
