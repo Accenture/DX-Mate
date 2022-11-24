@@ -17,11 +17,11 @@ export function activate(context: vscode.ExtensionContext) {
 	checkContext();
 	depKeyMigrator();
 	registerOrgCommands(context);
-	registerJobTracker(context);
+	registerJobTracker();
 	vscode.commands.executeCommand("setContext", "extensionActivated", true);
 }
 
-function registerJobTracker(context: vscode.ExtensionContext) {
+function registerJobTracker() {
 	let runningTaskProvider = new RunningTaskProvider();
 	EXTENSION_CONTEXT.setRunningTaskProvider(runningTaskProvider);
 	vscode.window.registerTreeDataProvider(
