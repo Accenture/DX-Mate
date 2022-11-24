@@ -18,6 +18,7 @@ export class ShellCommand{
     public runCommand() {
         this.shellProcess = cp.exec(this.command, {cwd: workspacePath}, (err, out) => {
             if(err && err.signal !== 'SIGINT') {
+                console.error('DXMATE:CommandError: ' + err);
                 dxmateOutput.appendLine("An error occurred: \n " + err);
                 dxmateOutput.show();
             }
