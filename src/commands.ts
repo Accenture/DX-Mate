@@ -227,7 +227,7 @@ export async function sfdxExportData() {
 				//Cancelled
 				return;
 			}
-			inputQuery = selectedSoql.description as string;
+			inputQuery = selectedSoql.detail as string;
 
 			const options: vscode.OpenDialogOptions = {
 				canSelectMany: false,
@@ -239,8 +239,7 @@ export async function sfdxExportData() {
 			vscode.window.showOpenDialog(options).then(fileUri => {
 				if (fileUri && fileUri[0]) {
 					outputDir = fileUri[0].fsPath;
-					let cmd = 'sfdx force:data:tree:export --json --outputdir ' + outputDir + ' --query ' + inputQuery;
-					console.log('EXPORT COMMAND: ' + cmd);
+					let cmd = 'sfdx force:data:tree:export --json --outputdir ' + outputDir + ` --query \"${inputQuery}\"`;
 				}
 				else{
 					return;
@@ -253,19 +252,19 @@ export async function sfdxExportData() {
 function getSoqlQuickPicks(soqlFiles: any[]): vscode.QuickPickItem[] {
 	let options: vscode.QuickPickItem[] = [];
 	soqlFiles.forEach((file): any => {
-		options.push({label: file.name, description: file.soql});
+		options.push({label: file.name, detail: file.soql});
 	});
 	return options;
 }
 
 function getSoqlFiles() {
-	const globPattern = workspacePath + '/*.soql';
-	return vscode.workspace.findFiles(globPattern, null, 50).then((uris: vscode.Uri[] ) => {            
+	return vscode.workspace.findFiles('**/*.soql', null, 50).then((uris: vscode.Uri[] ) => {            
 		let soqlFiles: any[] = [];
-
+		console.log('SOQL URIS: ' + uris);
 		uris.forEach(uri => {
+			console.log('URI: ' + uri.fsPath);
 			let fileContent = getFile(uri.fsPath);
-			soqlFiles.push({name: uri.fsPath, soql: fileContent});
+			soqlFiles.push({name: uri.fsPath.slice(uri.fsPath.lastIndexOf('/') + 1), soql: fileContent});
 		});
 
 		return soqlFiles;
