@@ -16,6 +16,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 - Changed handling of dependency keys. Now stored as key -> value paris in extension user settings
 
+### Fixed
+- Fixed bug when cancelling a process, leaving the cancel flag set to true giving rise to unexpected errors
+
 ### Deprecated
 - Removed use of the dxmate_config folder. New version will upon activate allows user to convert to new model
 
