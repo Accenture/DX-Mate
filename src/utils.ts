@@ -66,14 +66,15 @@ export class ShellCommand{
                 }
             });
     
-            if(this.suppressOutput === false) {
-                this.shellProcess.stdout?.on('data', (data: string) => {
-                    output += data;
-                    //Adding stream to the output console for the process
-                    //Possibly give ability to see what subprocess is ongoing
+            
+            this.shellProcess.stdout?.on('data', (data: string) => {
+                output += data;
+                //Adding stream to the output console for the process
+                //Possibly give ability to see what subprocess is ongoing
+                if(this.suppressOutput === false) {
                     dxmateOutput.appendLine(data);
-                });
-            }
+                }
+            });
         });
 
         return this;
@@ -135,12 +136,13 @@ export function getDirectories(absPath: string) {
  * This requires that the DX@Scale unlocked package has been installed in the org.
  */
 export function isPoolingEnabled() {
-    execShell('sfdx force:package:installed:list --json').shellPromise?.then(jsonList => {
+    execShell('sfdx force:package:installed:list --json', true).shellPromise?.then(jsonList => {
         if(jsonList) {
             const packageList = JSON.parse(jsonList);
             for (let index = 0; index < packageList.length; index++) {
                 const installedPckg = packageList[index];
                 if(installedPckg.SubscriberPackageVersionId === '04t1P000000gOqzQAE') {
+                    console.info('Pooling activated');
                     return true;
                 }
             }

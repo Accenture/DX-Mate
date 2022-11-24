@@ -6,7 +6,7 @@ import { EXTENSION_CONTEXT, PackageDirectory } from './models';
 import {inputUpdateDependencyKey, addDependency} from './commands/dependencyCommands';
 import {getPackageDirectories, getPackageDirectoryInput} from './workspace';
 import { installDependenciesForPackage, installDependenciesJob } from './commands/packageCommands';
-import { folderExists, workspacePath } from './utils';
+import { folderExists, isPoolingEnabled, workspacePath } from './utils';
 import { RunningTaskProvider } from './RunningTaskProvider';
 import { depKeyMigrator } from './legacyHandlers/depLegacy';
 // this method is called when your extension is activated
@@ -42,6 +42,7 @@ function registerJobTracker() {
 
 function checkContext() {
 	vscode.commands.executeCommand("setContext", "hasSfdxProject", folderExists(workspacePath + '/sfdx-project.json'));
+	vscode.commands.executeCommand("setContext", "poolingActivated", isPoolingEnabled());
 }
 
 function registerOrgCommands(context: vscode.ExtensionContext) {
