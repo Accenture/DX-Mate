@@ -105,6 +105,11 @@
 			},
 			{
 				"view": "orgCommands",
+				"contents": "Scratch org pooling is activated\n[Get Scratch From Pool](command:dxmate.getScratchFromPool)",
+				"when": "poolingActivated"
+			},
+			{
+				"view": "orgCommands",
 				"contents": "[Create Scratch Org](command:dxmate.createScratch)\n[Open default scratch org](command:dxmate.openScratch)\n[Generate login link](command:dxmate.scratchLoginLink)"
 			},
 			{
