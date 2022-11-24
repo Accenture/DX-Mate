@@ -117,7 +117,7 @@
 			},
 			{
 				"view": "dataCommands",
-				"contents": "[Import dummy data](command:dxmate.importDummyData)\n[Assign default permission sets](command:dxmate.assignPermissionsets)"
+				"contents": "[Import dummy data](command:dxmate.importDummyData)\n[Export data](command:dxmate.exportData)\n[Assign default permission sets](command:dxmate.assignPermissionsets)"
 			}
 		],
 		"menus": {
