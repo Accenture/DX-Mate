@@ -60,7 +60,9 @@ export class ShellCommand{
                 }
     
                 if(code === 0) {
-                    dxmateOutput.appendLine("Finished running: " + this.command);
+                    if(this.suppressOutput === false) {
+                        dxmateOutput.appendLine("Finished running: " + this.command);
+                    }
                     return resolve(output);
                 }
                 else{
