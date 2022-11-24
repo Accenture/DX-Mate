@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { EXTENSION_CONTEXT, Job, PackageDirectory } from './models';
-import { dxmateOutput, execShell, getDirectories, workspacePath, ShellCommand, folderExists, IS_MULTI_PCKG_DIRECTORY } from './utils';
+import { dxmateOutput, execShell, getDirectories, workspacePath, ShellCommand, folderExists, IS_MULTI_PCKG_DIRECTORY, getFile } from './utils';
 import { getPackageDirectoryInput } from './workspace';
 
 export function createProject() {
@@ -202,8 +202,72 @@ export function importDummyDataJob(): boolean {
 
 //Allows calling sfdx export on the default org to retrieve data on json format
 //Stored in the chosen outputDirectory
-export function sfdxExportData() {
-	let inputQuery, outputDir;
+export async function sfdxExportData() {
+	let inputQuery: string, outputDir;
+	const soqlFiles = await getSoqlFiles();
 
-	let cmd = 'sfdx force:data:tree:export --json --outputdir ' + outputDir + ' --query ' + inputQuery;
+	if(soqlFiles.length === 0) {
+		//No SOQL files created. Prompt user to generate SOQL in query builder
+		vscode.window.showInformationMessage('No query files found in workspace, create new in SOQL builder?',
+		...['Yes', 'No']).then(resp => {
+			if(resp === 'Yes') {
+				vscode.commands.executeCommand('soql.builder.open.new');		
+			}
+			return;
+		});
+	}
+
+	else{
+		const quickPicks = getSoqlQuickPicks(soqlFiles);
+		vscode.window.showQuickPick(quickPicks, {
+			title: 'Select SOQL file to use',
+			canPickMany: false
+		}).then(selectedSoql => {
+			if(!selectedSoql) {
+				//Cancelled
+				return;
+			}
+			inputQuery = selectedSoql.description as string;
+
+			const options: vscode.OpenDialogOptions = {
+				canSelectMany: false,
+				openLabel: 'Select output directory',
+				canSelectFiles: false,
+				canSelectFolders: true
+			};
+
+			vscode.window.showOpenDialog(options).then(fileUri => {
+				if (fileUri && fileUri[0]) {
+					outputDir = fileUri[0].fsPath;
+					let cmd = 'sfdx force:data:tree:export --json --outputdir ' + outputDir + ' --query ' + inputQuery;
+					console.log('EXPORT COMMAND: ' + cmd);
+				}
+				else{
+					return;
+				}
+			});
+		});
+	}
+}
+
+function getSoqlQuickPicks(soqlFiles: any[]): vscode.QuickPickItem[] {
+	let options: vscode.QuickPickItem[] = [];
+	soqlFiles.forEach((file): any => {
+		options.push({label: file.name, description: file.soql});
+	});
+	return options;
+}
+
+function getSoqlFiles() {
+	const globPattern = workspacePath + '/*.soql';
+	return vscode.workspace.findFiles(globPattern, null, 50).then((uris: vscode.Uri[] ) => {            
+		let soqlFiles: any[] = [];
+
+		uris.forEach(uri => {
+			let fileContent = getFile(uri.fsPath);
+			soqlFiles.push({name: uri.fsPath, soql: fileContent});
+		});
+
+		return soqlFiles;
+	}); 
 }
