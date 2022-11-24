@@ -240,7 +240,8 @@ export abstract class EXTENSION_CONTEXT {
     public static clearJobs() {
         if(!this.hasActiveJob()) {
             this.jobs = [];
-            this.currentJobIndex = -1;
+            this.currentJobIndex = -1; //Reset process index
+            this.processCancelled = false; // Reset process flag
             this.refreshRunningTasks();
         }
         else{
