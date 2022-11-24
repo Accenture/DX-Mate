@@ -12,7 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 ### Security
 
-## [1.0.12] - 
+## [1.0.12] - 2022-11-24
+### Added
+- Added sfdx export command to allow exporting data from the default org
+
 ### Changed
 - Changed handling of dependency keys. Now stored as key -> value paris in extension user settings
 
