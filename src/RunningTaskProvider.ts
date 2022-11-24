@@ -19,7 +19,6 @@ export class RunningTaskProvider implements vscode.TreeDataProvider<Job> {
   readonly onDidChangeTreeData: vscode.Event<Job | undefined | null | void> = this._onDidChangeTreeData.event;
 
   refresh(): void {
-    console.log('RUNNING REFRESH');
     this._onDidChangeTreeData.fire();
   }
 }
