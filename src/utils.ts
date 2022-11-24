@@ -139,8 +139,10 @@ export function getDirectories(absPath: string) {
  * Verify if the currently connected devhub is enabled for scratch org pooling.
  * This requires that the DX@Scale unlocked package has been installed in the org.
  */
-export function checkPoolingEnabled() {
-    execShell('sfdx force:package:installed:list --json', true).shellPromise?.then(jsonList => {
+export async function checkPoolingEnabled() {
+    const devHub = await getDefualtDevhub();
+
+    execShell(`sfdx force:package:installed:list ${devHub} --json`, true).shellPromise?.then(jsonList => {
         console.log(jsonList);
         if(jsonList) {
             const packageList = JSON.parse(jsonList);
@@ -153,6 +155,12 @@ export function checkPoolingEnabled() {
                 }
             }
         }
+    });
+}
+
+export function getDefualtDevhub() {
+    execShell('sfdx config:get defaultdevhubusername', true).shellPromise?.then(config =>{
+        return JSON.parse(config)?.result[0]?.value;
     });
 }
 
