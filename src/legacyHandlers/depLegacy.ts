@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { platform } from "node:os";
 import { DependencyKey } from "../models";
 import { execShell, getFile, workspacePath } from "../utils";
 
@@ -41,6 +42,11 @@ function handleDepKeyLegacyMigration(legacyKeys: DependencyKey[]) {
 
     vscode.workspace.getConfiguration().update('dependency.keys', newConfig, vscode.ConfigurationTarget.Global).then( out => {
         //When successfull, we delete the dxmate_config folder with the content
-        execShell('rm -r ' + workspacePath + '/dxmate_config');
+        if(platform() === 'win32') {
+            execShell('rmdir /s /q ' + workspacePath + '\\dxmate_config');
+        }
+        else{
+            execShell('rm -r ' + workspacePath + '/dxmate_config');
+        }
     });
 }
