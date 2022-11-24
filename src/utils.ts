@@ -25,7 +25,9 @@ export class ShellCommand{
         });
     
         this.shellPromise = new Promise<string>((resolve, reject) => {
-            dxmateOutput.appendLine("Running: " + this.command);
+            if(this.suppressOutput === false) {
+                dxmateOutput.appendLine("Running: " + this.command);
+            }
             dxmateOutput.show();
     
             //Stores output for the child_process in the onData event
