@@ -1,7 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import {openScratchOrg, sourcePushMetadata, importDummyData, generateLoginLink, sourcePullMetadata, createProject, assignDefaultPermsets, createScratchOrgJob, sourcePushMetadataJob, deployUnpackagableJob, openScratchOrgJob, importDummyDataJob, assignPermsetsJob, sfdxExportData} from './commands/commands';
+import {openScratchOrg, sourcePushMetadata, importDummyData, generateLoginLink, sourcePullMetadata, createProject, assignDefaultPermsets, createScratchOrgJob, sourcePushMetadataJob, deployUnpackagableJob, openScratchOrgJob, importDummyDataJob, assignPermsetsJob, sfdxExportData, getScratchFromPool} from './commands/commands';
 import { EXTENSION_CONTEXT, PackageDirectory } from './models';
 import {inputUpdateDependencyKey, addDependency} from './commands/dependencyCommands';
 import {getPackageDirectories, getPackageDirectoryInput} from './workspace';
@@ -48,6 +48,10 @@ function checkContext() {
 function registerOrgCommands(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('dxmate.openScratch', () => {
 		openScratchOrg();
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('dxmate.getScratchFromPool', () => {
+		getScratchFromPool();
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('dxmate.createProject', () => {

@@ -13,7 +13,7 @@ export function createScratchOrg(scratchName: string) {
 }
 
 export function createScratchOrgJob(scratchName: string) {
-	let cmd = 'sfdx force:org:create ' +
+	const cmd = 'sfdx force:org:create ' +
 	"-f ./config/project-scratch-def.json " + 
 	"--setalias " + scratchName +
 	" --durationdays 5 " + 
@@ -21,6 +21,30 @@ export function createScratchOrgJob(scratchName: string) {
 
 	let shellJob = new Job('Create Scratch Org', new ShellCommand(cmd));
 	return EXTENSION_CONTEXT.addJob(shellJob);
+}
+
+export async function getScratchFromPool() {
+	let tagInput = await vscode.window.showInputBox({
+        title: 'Pool tag',
+        placeHolder: "tag",
+    });
+	if(!tagInput) { return; }
+
+	let aliasInput = await vscode.window.showInputBox({
+        title: 'Scratch org alias',
+        placeHolder: "alias",
+    });
+	if(!aliasInput) { return; }
+
+	getScratchFromPoolJob(tagInput, aliasInput);
+	EXTENSION_CONTEXT.startJobs();
+
+}
+
+function getScratchFromPoolJob(tag: string, alias: string) {
+	const cmd = `sfdx sfpowerscripts:pool:fetch --tag ${tag} -v Devhub -a ${alias}`;
+	const shellJob = new Job('Create Scratch Org', new ShellCommand(cmd));
+	EXTENSION_CONTEXT.addJob(shellJob);
 }
 
 //Generates a login link that can be shared to allow others to log into i.e. a scratch org for test and validation
