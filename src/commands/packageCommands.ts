@@ -1,7 +1,7 @@
 import { getDependencyKeys, getDependencies, updateDependencyKey } from './dependencyCommands';
-import { DependencyKey, PackageDirectory, EXTENSION_CONTEXT, Job } from './models';
-import {dxmateOutput, ShellCommand } from './utils';
-import { getPackageDirectoryInput, getPackageDirectories } from './workspace';
+import { DependencyKey, PackageDirectory, EXTENSION_CONTEXT, Job } from '../models';
+import {dxmateOutput, ShellCommand } from '../utils';
+import { getPackageDirectoryInput, getPackageDirectories } from '../workspace';
 
 /**
  * Gets the keys for the packages that the input packageName depends on if defined in config file
