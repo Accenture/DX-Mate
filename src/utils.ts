@@ -140,9 +140,15 @@ export function getDirectories(absPath: string) {
  * This requires that the DX@Scale unlocked package has been installed in the org.
  */
 export async function checkPoolingEnabled() {
-    const devHub = await getDefualtDevhub();
+    let devHub: string;
+    try{
+        devHub = await getDefaultDevhub();
+    }
+    catch(ex) {
+        return; //Error getting default devhub
+    }
 
-    execShell(`sfdx force:package:installed:list ${devHub} --json`, true).shellPromise?.then(jsonList => {
+    execShell(`sfdx force:package:installed:list -u ${devHub} --json`, true).shellPromise?.then(jsonList => {
         console.log(jsonList);
         if(jsonList) {
             const packageList = JSON.parse(jsonList);
@@ -158,9 +164,13 @@ export async function checkPoolingEnabled() {
     });
 }
 
-export function getDefualtDevhub() {
-    execShell('sfdx config:get defaultdevhubusername', true).shellPromise?.then(config =>{
-        return JSON.parse(config)?.result[0]?.value;
+export function getDefaultDevhub(): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+        execShell('sfdx config:get defaultdevhubusername --json', true).shellPromise?.then(config =>{
+            console.log(config);
+            if(!config) { reject('Error'); }
+            resolve(JSON.parse(config)?.result[0]?.value);
+        });
     });
 }
 
