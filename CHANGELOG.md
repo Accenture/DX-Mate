@@ -4,13 +4,9 @@ All notable changes to the "dxmate" extension will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
-## [Unreleased]
+## [2.0.0] -
 ### Added
-### Changed
-### Deprecated
-### Removed
-### Fixed
-### Security
+- DX-Mate now supports fetching scratch orgs from a scratch org pool. Your DevHub needs to adhere to the [DX@Scale](https://docs.dxatscale.io/) framework and have the unlocked package installed to support pooling.
 
 ## [1.0.12] - 2022-11-24
 ### Added
