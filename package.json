@@ -3,7 +3,7 @@
 	"displayName": "DX-Mate",
 	"description": "Support tools for SFDX development",
 	"publisher": "Accenture",
-	"icon": "lightning.png",
+	"icon": "src/graphics/lightning.png",
 	"version": "1.0.12",
 	"repository": {
 		"type": "git",
@@ -141,56 +141,58 @@
 		},
 		"configuration": {
 			"type": "object",
-			"title": "DX-Mate", 
+			"title": "DX-Mate",
 			"properties": {
-			  "dummy.data.location": {
-				"type": "string",
-				"default": "/dummy-data",
-				"description": "Relative folder location to where dummy data should be imported using the sfdx import command"
-			  },
-			  "dependency.keys": {
-				"type": "object",
-				"additionalProperties": {
-					"type": "string"
-				  },
-				"description": "Defining the package installation keys of the known dependencies. Define package names as keys and installation key as values. Note that you should store this solely in user settings outside the workspace"
-			  },
-			  "unpackagable.location": {
-				"type": "string",
-				"default": "/unpackagable",
-				"description": "Relative folder location to where unpackagable metadata is stored. This is automatically deployed aftert scratch creation and dependency install"
-			  },
-			  "scratch.default.permissionsets": {
-				"type": "array",
-				"items": {
-					"type": "string"
-					
+				"dummy.data.location": {
+					"type": "string",
+					"default": "/dummy-data",
+					"description": "Relative folder location to where dummy data should be imported using the sfdx import command"
 				},
-				"default": [],
-				"description": "List of permission set to assign to your default scratch user (Used for single package directory projects)"
-			  },
-			  "multi.scratch.default.permissionsets": {
-				"type": "array",
-				"description": "Used when project contains multiple package directories",
-				"items": {
+				"dependency.keys": {
 					"type": "object",
-					"properties": {
-						"packagename": {
-							"type": "string",
-							"default": "packagename",
-							"description": "Name of the package to define defaults for."
-						},
-						"permissionsets": {
-							"type": "array",
-							"items": {
-								"type": "string"
+					"additionalProperties": {
+						"type": "string"
+					},
+					"description": "Defining the package installation keys of the known dependencies. Define package names as keys and installation key as values. Note that you should store this solely in user settings outside the workspace"
+				},
+				"unpackagable.location": {
+					"type": "string",
+					"default": "/unpackagable",
+					"description": "Relative folder location to where unpackagable metadata is stored. This is automatically deployed aftert scratch creation and dependency install"
+				},
+				"scratch.default.permissionsets": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"default": [],
+					"description": "List of permission set to assign to your default scratch user (Used for single package directory projects)"
+				},
+				"multi.scratch.default.permissionsets": {
+					"type": "array",
+					"description": "Used when project contains multiple package directories",
+					"items": {
+						"type": "object",
+						"properties": {
+							"packagename": {
+								"type": "string",
+								"default": "packagename",
+								"description": "Name of the package to define defaults for."
 							},
-							"default": ["permset1", "pemset2"],
-							"description": "List of permission sets."
+							"permissionsets": {
+								"type": "array",
+								"items": {
+									"type": "string"
+								},
+								"default": [
+									"permset1",
+									"pemset2"
+								],
+								"description": "List of permission sets."
+							}
 						}
 					}
 				}
-			  }
 			}
 		}
 	},
@@ -203,16 +205,16 @@
 		"test": "node ./out/test/runTest.js"
 	},
 	"devDependencies": {
-		"@types/vscode": "^1.64.0",
 		"@types/glob": "^7.2.0",
 		"@types/mocha": "^9.1.0",
 		"@types/node": "14.x",
+		"@types/vscode": "^1.64.0",
 		"@typescript-eslint/eslint-plugin": "^5.12.1",
 		"@typescript-eslint/parser": "^5.12.1",
+		"@vscode/test-electron": "^2.1.2",
 		"eslint": "^8.9.0",
 		"glob": "^7.2.0",
 		"mocha": "^9.2.1",
-		"typescript": "^4.5.5",
-		"@vscode/test-electron": "^2.1.2"
+		"typescript": "^4.5.5"
 	}
 }
