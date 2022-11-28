@@ -42,7 +42,7 @@ export async function getScratchFromPool() {
 }
 
 function getScratchFromPoolJob(tag: string, alias: string) {
-	const cmd = `sfdx sfpowerscripts:pool:fetch --tag ${tag} -v Devhub -a ${alias}`;
+	const cmd = `sfdx sfpowerscripts:pool:fetch --tag ${tag} -a ${alias}`;
 	const shellJob = new Job('Create Scratch Org', new ShellCommand(cmd));
 	EXTENSION_CONTEXT.addJob(shellJob);
 }
