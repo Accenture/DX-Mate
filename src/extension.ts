@@ -9,6 +9,7 @@ import { installDependenciesForPackage, installDependenciesJob } from './command
 import { checkPoolingEnabled, folderExists, workspacePath } from './utils';
 import { RunningTaskProvider } from './RunningTaskProvider';
 import { depKeyMigrator } from './legacyHandlers/depLegacy';
+import { createUser } from './commands/userCommands';
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 
@@ -80,6 +81,10 @@ function registerOrgCommands(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(vscode.commands.registerCommand('dxmate.importDummyData', () => {
 		importDummyData();
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('dxmate.createUser', () => {
+		createUser();
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('dxmate.exportData', () => {
