@@ -15,11 +15,18 @@ class DummyUser {
     generatePassword: boolean = false;
 }
 
+/**
+ * Get the configured path for dummy users
+ * @returns 
+ */
 function getUserConfigPath() {
     return vscode.workspace.getConfiguration().get('dummy.users.location') as string;
 }
 
-
+/**
+ * Initiates process to create a dummy user
+ * @returns 
+ */
 export async function createUser() {
     const userQuickPickItem = await getUserJsonInput();
     if(!userQuickPickItem) { return; }
@@ -31,12 +38,21 @@ export async function createUser() {
     EXTENSION_CONTEXT.startJobs();
 }
 
+/**
+ * Sets context to check if dummy user config path has been set in settings
+ */
 export function activateDummyUserCommands() {
     if(getUserConfigPath()) {
         vscode.commands.executeCommand("setContext", "dummyUserActivated", true);
     }
 }
 
+/**
+ * Adds user creation job to the job queue
+ * @param userFile 
+ * @param username 
+ * @param generatepassword 
+ */
 function createUserJob(userFile: string, username: string, generatepassword: boolean) {
     let cmd = `sfdx force:user:create -f ${userFile} username=${username} email=${username} generatepassword=${generatepassword}`;
     let shellJob = new Job('Create dummy user', new ShellCommand(cmd));
