@@ -57,18 +57,16 @@ export async function generateLoginLink() {
 		return;
 	}
 	let cmd = 'sfdx force:org:open -r --json';
-	const shellJob = new Job('Creating login url', new ShellCommand(cmd));
-	EXTENSION_CONTEXT.addJob(shellJob);
-
-	shellJob.startJob()?.then(cmdResult => {
+	const promiseHandler = (cmdResult: string) => {
 		let parsedResult = JSON.parse(cmdResult as string);
 		dxmateOutput.appendLine('WARNING! This link generates a direct opening to the default org\n\n LINK: ' + parsedResult.result.url );
-	}).catch(error => {
-		dxmateOutput.appendLine('FAILED TO OPEN ORG');
-	})
-	.finally(() => {
-		dxmateOutput.show();
-	});
+	};
+	const shellCommand = new ShellCommand(cmd);
+	shellCommand.promiseHandler = promiseHandler;
+	const shellJob = new Job('Creating login url', shellCommand);
+	
+	EXTENSION_CONTEXT.addJob(shellJob);
+	EXTENSION_CONTEXT.startJobs();
 }
 
 //Checks if the default org set is the DevHub itself
@@ -80,7 +78,7 @@ function isDevHub(orgInfo: string) {
 //Calls sfdx command to retrieve default org information
 function getDefaultOrgInfo() {
 	let cmd = 'sfdx force:org:display --json';
-	return execShell(cmd, true).shellPromise;
+	return new Job('Get default org info', new ShellCommand(cmd, true)).startJob(); 
 }
 
 //Opens the default scratch org
