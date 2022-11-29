@@ -25,10 +25,8 @@ export async function createUser() {
     if(!userQuickPickItem) { return; }
 
     const chosenUser = Object.assign(new DummyUser(), JSON.parse(userQuickPickItem.detail as string));
-    console.log(chosenUser);
 
     const username = chosenUser.LastName + '@my.scratch';
-    console.log('USERNAME: ' + username);
     createUserJob(userQuickPickItem.description as string, username, chosenUser.generatePassword);
     if(chosenUser.permsets.length > 0) {
         assignUserPermsetsJob('Assign default permsets for ' + username, username, chosenUser.permsets);
