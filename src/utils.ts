@@ -7,6 +7,7 @@ import { EXTENSION_CONTEXT, Job } from './models';
 export class ShellCommand{
     shellPromise?: Promise<string>;
     shellProcess?: any;
+    promiseHandler?: any;
     command: string;
     suppressOutput: boolean = false;
 
@@ -63,6 +64,7 @@ export class ShellCommand{
                     if(this.suppressOutput === false) {
                         dxmateOutput.appendLine("Finished running: " + this.command);
                     }
+                    if(this.promiseHandler) { this.promiseHandler(output); }
                     return resolve(output);
                 }
                 else{
@@ -151,7 +153,6 @@ export async function checkPoolingEnabled() {
     const shellJob = new Job('Checking Devhub pooling status', new ShellCommand(`sfdx force:package:installed:list -u ${devHub} --json`, true));
     EXTENSION_CONTEXT.addJob(shellJob);
     shellJob.startJob()?.then(jsonList => {
-        console.log(jsonList);
         if(jsonList) {
             const packageList = JSON.parse(jsonList);
             for (let index = 0; index < packageList.result.length; index++) {
@@ -163,6 +164,7 @@ export async function checkPoolingEnabled() {
                 }
             }
         }
+        EXTENSION_CONTEXT.clearJobs();
     });
 }
 
