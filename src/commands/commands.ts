@@ -57,8 +57,11 @@ export async function generateLoginLink() {
 		return;
 	}
 	let cmd = 'sfdx force:org:open -r --json';
-	execShell(cmd).shellPromise?.then(cmdResult => {
-		let parsedResult = JSON.parse(cmdResult);
+	const shellJob = new Job('Creating login url', new ShellCommand(cmd));
+	EXTENSION_CONTEXT.addJob(shellJob);
+
+	shellJob.startJob()?.then(cmdResult => {
+		let parsedResult = JSON.parse(cmdResult as string);
 		dxmateOutput.appendLine('WARNING! This link generates a direct opening to the default org\n\n LINK: ' + parsedResult.result.url );
 	}).catch(error => {
 		dxmateOutput.appendLine('FAILED TO OPEN ORG');
