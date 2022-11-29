@@ -56,7 +56,7 @@
 				{
 					"id": "dxmate-explorer",
 					"title": "DX Mate",
-					"icon": "lightning.png"
+					"icon": "src/graphics/lightning.png"
 				}
 			]
 		},
@@ -147,6 +147,10 @@
 					"type": "string",
 					"default": "/dummy-data",
 					"description": "Relative folder location to where dummy data should be imported using the sfdx import command"
+				},
+				"dummy.users.location": {
+					"type": "string",
+					"description": "Relative folder location to where json files for dummy users are stored"
 				},
 				"dependency.keys": {
 					"type": "object",
