@@ -206,8 +206,13 @@ export abstract class EXTENSION_CONTEXT {
         if(!this.hasActiveJob()) {
             while(this.hasNextJob()) {
                 let job = this.getNextJob();
-                await job.startJob();
-                //TODO: Should handle exception to abort process if a single job is cancelled through retry functionality.
+                try{
+                    await job.startJob();
+                }
+                catch(exception) {
+                    //If a job in the process chain rejects, we move to the next
+                    //TODO: Possibly implement functionality to skip an ongoing action?
+                }
             }
         }
     }
