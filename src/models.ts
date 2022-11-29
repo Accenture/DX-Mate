@@ -207,6 +207,7 @@ export abstract class EXTENSION_CONTEXT {
             while(this.hasNextJob()) {
                 let job = this.getNextJob();
                 await job.startJob();
+                //TODO: Should handle exception to abort process if a single job is cancelled through retry functionality.
             }
         }
     }
