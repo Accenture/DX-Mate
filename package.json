@@ -122,7 +122,7 @@
 			},
 			{
 				"view": "dataCommands",
-				"contents": "[Import dummy data](command:dxmate.importDummyData)\n[Export data](command:dxmate.exportData)\n[Assign default permission sets](command:dxmate.assignPermissionsets)"
+				"contents": "[Import dummy data](command:dxmate.importDummyData)\n[Create user](command:dxmate.createUser)\n[Export data](command:dxmate.exportData)\n[Assign default permission sets](command:dxmate.assignPermissionsets)"
 			}
 		],
 		"menus": {
