@@ -28,7 +28,6 @@ export async function createUser() {
 
     const username = chosenUser.LastName + '@my.scratch';
     createUserJob(userQuickPickItem.description as string, username, chosenUser.generatePassword);
-
     EXTENSION_CONTEXT.startJobs();
 }
 
@@ -51,6 +50,7 @@ async function getUserJsonInput() {
     let userOptions = await getUserConfigs() as vscode.QuickPickItem[];
     if(!userOptions) {
         vscode.window.showInformationMessage('No .json files found in configured directory');
+        //Allow prompting creation of a new file in the configured directory
         return null;
     }
 
