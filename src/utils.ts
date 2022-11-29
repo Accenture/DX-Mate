@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as cp from "child_process";
 import * as fs from 'fs';
-import { EXTENSION_CONTEXT } from './models';
+import { EXTENSION_CONTEXT, Job } from './models';
 
 //Class containing a promise for executing a shellCommand and also the child process running the command
 export class ShellCommand{
@@ -148,7 +148,9 @@ export async function checkPoolingEnabled() {
         return; //Error getting default devhub
     }
 
-    execShell(`sfdx force:package:installed:list -u ${devHub} --json`, true).shellPromise?.then(jsonList => {
+    const shellJob = new Job('Checking Devhub pooling status', new ShellCommand(`sfdx force:package:installed:list -u ${devHub} --json`, true));
+    EXTENSION_CONTEXT.addJob(shellJob);
+    shellJob.startJob()?.then(jsonList => {
         console.log(jsonList);
         if(jsonList) {
             const packageList = JSON.parse(jsonList);
