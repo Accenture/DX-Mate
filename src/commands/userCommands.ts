@@ -28,9 +28,6 @@ export async function createUser() {
 
     const username = chosenUser.LastName + '@my.scratch';
     createUserJob(userQuickPickItem.description as string, username, chosenUser.generatePassword);
-    if(chosenUser.permsets.length > 0) {
-        assignUserPermsetsJob('Assign default permsets for ' + username, username, chosenUser.permsets);
-    }
 
     EXTENSION_CONTEXT.startJobs();
 }
@@ -45,17 +42,6 @@ function createUserJob(userFile: string, username: string, generatepassword: boo
     let cmd = `sfdx force:user:create -f ${userFile} username=${username} email=${username} generatepassword=${generatepassword}`;
     let shellJob = new Job('Create dummy user', new ShellCommand(cmd));
     EXTENSION_CONTEXT.addJob(shellJob);
-}
-
-function assignUserPermsetsJob(jobName: string, username: string, permsets: string[]) {
-    if(permsets && permsets.length > 0) {
-		let shellJob = new Job(jobName);
-		permsets.forEach(permset => {
-			let cmd = `sfdx force:user:permset:assign -n ${permset} -u ${username}`;
-			shellJob.addJob(new Job('Assign: ' + permset, new ShellCommand(cmd)));
-		});
-		EXTENSION_CONTEXT.addJob(shellJob);
-    }
 }
 
 /**
