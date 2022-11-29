@@ -2,11 +2,12 @@
 
 All notable changes to the "dxmate" extension will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [2.0.0] -
 ### Added
 - DX-Mate now supports fetching scratch orgs from a scratch org pool. Your DevHub needs to adhere to the [DX@Scale](https://docs.dxatscale.io/) framework and have the unlocked package installed to support pooling.
+- Added new action to allow creation of scratch org users. New workspace setting defines the directory to store valid user definiton files for using [sfdx force:user:create](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_force_user.htm#cli_reference_force_user_create)
 
 ## [1.0.12] - 2022-11-24
 ### Added
