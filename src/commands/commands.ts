@@ -207,12 +207,13 @@ export function importDummyData() {
 
 export function importDummyDataJob(): boolean {
 	let dummyDataFolder = vscode.workspace.getConfiguration().get('dummy.data.location') as string;
-	let directories = getDirectories(workspacePath as string + dummyDataFolder);
+	const relPath = dummyDataFolder.startsWith('/') ? dummyDataFolder : '/' + dummyDataFolder;
+	let directories = getDirectories(workspacePath as string + relPath);
 
 	if(directories.length > 0) {
 		let shellJob = new Job('Import Dummy Data');
 		directories.forEach((dataDirectory: string) => {
-			let planJsonPath = workspacePath as string + dummyDataFolder + '/' + dataDirectory + '/plan.json';
+			let planJsonPath = workspacePath as string + relPath + '/' + dataDirectory + '/plan.json';
 			let cmd = 'sfdx force:data:tree:import --plan ' + planJsonPath;
 			shellJob.addJob(new Job('Import: ' + dataDirectory, new ShellCommand(cmd)));
 		});
