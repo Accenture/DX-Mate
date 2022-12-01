@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { EXTENSION_CONTEXT, Job, PackageDirectory } from '../models';
-import { dxmateOutput, execShell, getDirectories, workspacePath, ShellCommand, folderExists, IS_MULTI_PCKG_DIRECTORY, getFile } from '../utils';
+import { dxmateOutput, getDirectories, workspacePath, ShellCommand, folderExists, IS_MULTI_PCKG_DIRECTORY, getFile } from '../utils';
 import { getPackageDirectoryInput } from '../workspace';
 
 export function createProject() {
