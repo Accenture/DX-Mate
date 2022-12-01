@@ -153,6 +153,11 @@
 					"default": "config/users",
 					"description": "Relative folder location to where json files for dummy users are stored"
 				},
+				"unpackagable.location": {
+					"type": "string",
+					"default": "unpackagable",
+					"description": "Relative folder location to where unpackagable metadata is stored. This is automatically deployed aftert scratch creation and dependency install"
+				},
 				"dependency.keys": {
 					"type": "object",
 					"scope": "application",
@@ -160,11 +165,6 @@
 						"type": "string"
 					},
 					"description": "Defining the package installation keys of the known dependencies. Define package names as keys and installation key as values. Note that you should store this solely in user settings outside the workspace"
-				},
-				"unpackagable.location": {
-					"type": "string",
-					"default": "unpackagable",
-					"description": "Relative folder location to where unpackagable metadata is stored. This is automatically deployed aftert scratch creation and dependency install"
 				},
 				"scratch.default.permissionsets": {
 					"type": "array",
