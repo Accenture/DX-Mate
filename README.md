@@ -1,6 +1,6 @@
 # DX-Mate
 
-DX-Mate is an extension that provides a set of UI actions to improve SFDX development efficiency. 
+DX-Mate is an extension that provides a set of UI actions to improve SFDX development efficiency. Note, when installing a new version using [vsix](https://code.visualstudio.com/docs/editor/extension-marketplace#_install-from-a-vsix) the previous version should be uninstalled first.
 
 ![Extension Screenshot](src/graphics/extension_screenshot.png)
 
@@ -46,7 +46,8 @@ sfdx plugins:install sfdmu
 
 This extension contributes the following settings:
 
-* `dependency.keys`: Installation keys for all known dependencies (This should ideally only be stores in user settings)
+* `dependency.keys`: Installation keys for all known dependencies only available in user settings
+* `dummy.user.location`: Set the workspace relative directory for dummy users to create in scratch orgs
 * `dummy.data.location`: Set the workspace relative directory for the dummy data
 * `unpackagable.location`: Set the workspace relative directory for unpackagable metadata
 * `scratch.default.permissionsets`: Set the list of default permission sets to be assigned for the workspace
