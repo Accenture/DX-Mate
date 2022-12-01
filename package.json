@@ -145,15 +145,17 @@
 			"properties": {
 				"dummy.data.location": {
 					"type": "string",
-					"default": "/dummy-data",
+					"default": "dummy-data",
 					"description": "Relative folder location to where dummy data should be imported using the sfdx import command"
 				},
 				"dummy.users.location": {
 					"type": "string",
+					"default": "config/users",
 					"description": "Relative folder location to where json files for dummy users are stored"
 				},
 				"dependency.keys": {
 					"type": "object",
+					"scope": "application",
 					"additionalProperties": {
 						"type": "string"
 					},
@@ -161,7 +163,7 @@
 				},
 				"unpackagable.location": {
 					"type": "string",
-					"default": "/unpackagable",
+					"default": "unpackagable",
 					"description": "Relative folder location to where unpackagable metadata is stored. This is automatically deployed aftert scratch creation and dependency install"
 				},
 				"scratch.default.permissionsets": {
