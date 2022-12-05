@@ -176,6 +176,7 @@ export async function checkPoolingEnabled() {
     })
     .catch(error => {
         //Catching sfdx error
+        //Fail gracefully
     })
     .finally(() => {
         EXTENSION_CONTEXT.clearJobs();
