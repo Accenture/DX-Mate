@@ -43,7 +43,7 @@ export async function getScratchFromPool() {
 
 function getScratchFromPoolJob(tag: string, alias: string) {
 	const cmd = `sfdx sfpowerscripts:pool:fetch --tag ${tag} -a ${alias}`;
-	const shellJob = new Job('Create Scratch Org', new ShellCommand(cmd));
+	const shellJob = new Job('Get Scratch From Pool', new ShellCommand(cmd));
 	EXTENSION_CONTEXT.addJob(shellJob);
 }
 
