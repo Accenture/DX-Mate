@@ -149,6 +149,8 @@ export function getDirectories(absPath: string) {
  * This requires that the DX@Scale unlocked package has been installed in the org.
  */
 export async function checkPoolingEnabled() {
+    //Only run if running in sfdx project workspace
+    if(!SFDX_PROJECT_JSON()) {return;}
     let devHub: string;
     try{
         devHub = await getDefaultDevhub();
