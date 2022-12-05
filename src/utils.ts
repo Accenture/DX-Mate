@@ -10,10 +10,16 @@ export class ShellCommand{
     promiseHandler?: any;
     command: string;
     suppressOutput: boolean = false;
+    retryEnabled: boolean = true;
 
     constructor(command: string, suppressOutput?: boolean) {
         this.command = command;
         if(suppressOutput !== undefined) { this.suppressOutput = suppressOutput; }
+    }
+
+    public disableRetry() {
+        this.retryEnabled = false;
+        return this;
     }
 
     public runCommand() {
@@ -35,6 +41,7 @@ export class ShellCommand{
             let output= "";
     
             const handleRetry = () => {
+                if(!this.retryEnabled) { return reject('Error'); }
                 vscode.window.showErrorMessage(
                     'An error occurred. See DX-Mate output for info',
                     ...['Retry', 'Cancel']
@@ -150,7 +157,7 @@ export async function checkPoolingEnabled() {
         return; //Error getting default devhub
     }
 
-    const shellJob = new Job('Checking Devhub pooling status', new ShellCommand(`sfdx force:package:installed:list -u ${devHub} --json`, true));
+    const shellJob = new Job('Checking Devhub pooling status', new ShellCommand(`sfdx force:package:installed:list -u ${devHub} --json`, true).disableRetry());
     EXTENSION_CONTEXT.addJob(shellJob);
     shellJob.startJob()?.then(jsonList => {
         if(jsonList) {
@@ -164,6 +171,11 @@ export async function checkPoolingEnabled() {
                 }
             }
         }
+    })
+    .catch(error => {
+        //Catching sfdx error
+    })
+    .finally(() => {
         EXTENSION_CONTEXT.clearJobs();
     });
 }
