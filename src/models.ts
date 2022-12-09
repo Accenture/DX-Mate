@@ -51,6 +51,7 @@ export class Job extends vscode.TreeItem{
     jobEndTime?: Date;
     shellCommand?: ShellCommand;
     subJobs: Job[] = [];
+    onJobFinish?: any;
     currentSubJobIndex = -1;
 
     public async startJob() {
@@ -114,6 +115,7 @@ export class Job extends vscode.TreeItem{
     private jobCompleted() {
         this.jobStatus = JobStatus.SUCCESS;
         this.jobEndTime = new Date();
+        if(this.onJobFinish) {this.onJobFinish();}
         this.refreshIcon();
     }
 
@@ -205,6 +207,9 @@ export abstract class EXTENSION_CONTEXT {
         //startJobs should not initiate processes multiple times
         if(!this.hasActiveJob()) {
             while(this.hasNextJob()) {
+                if(this.processCancelled === true) {
+                    return;
+                }
                 let job = this.getNextJob();
                 try{
                     await job.startJob();
