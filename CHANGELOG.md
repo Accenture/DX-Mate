@@ -4,6 +4,17 @@ All notable changes to the "dxmate" extension will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [2.0.1] - 
+### Added
+- Added job callback for more functionality in job chaining
+
+### Fixed
+- Improved error handling on pooling check and only run check in workspace with sfdx-project
+- Bugfix for process cancelling
+
+### Changed
+- Scratch org creation will now delete existing scratch with matching alias prior to creation
+
 ## [2.0.0] - 2022-12-01
 ### Added
 - DX-Mate now supports fetching scratch orgs from a scratch org pool. Your DevHub needs to adhere to the [DX@Scale](https://docs.dxatscale.io/) framework and have the unlocked package installed to support pooling.
