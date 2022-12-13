@@ -12,6 +12,40 @@ export function createScratchOrg(scratchName: string) {
 	createScratchOrgJob(scratchName).startJobs();
 }
 
+/**
+ * Handle deletion of scratch with same alias before creating new one
+ * @param alias 
+ */
+function deleteScratchOrgJob(alias: string) {
+	const cmd = `sfdx force:org:delete -u ${alias} -p`;
+	return new Job('Delete Matching Alias', new ShellCommand(cmd, true));
+}
+
+/**
+ * Helper use upon scratch creation to see if the input alias has already been used, if so -> the original scratch org with same alias
+ * @param scratchName 
+ * @param parentJob 
+ * @returns 
+ */
+function handleExistingAliases(scratchName: string, parentJob: Job) {
+	const cmd = 'sfdx force:org:list --json';
+	let shellCmd = new ShellCommand(cmd, true);
+	const promiseHandler = (cmdResult: string) => {
+		const parsedResult = JSON.parse(cmdResult);
+		if(parsedResult.result?.scratchOrgs && parsedResult.result?.scratchOrgs.length > 0) {
+			for (let index = 0; index < parsedResult.result.scratchOrgs.length; index++) {
+				const scratchOrg = parsedResult.result.scratchOrgs[index];
+				if(scratchOrg.alias === scratchName) {
+					parentJob.addJob(deleteScratchOrgJob(scratchName));
+				}
+			}
+		}
+	};
+
+	shellCmd.promiseHandler = promiseHandler;
+	return new Job('Check Scratch Aliases', shellCmd);
+}
+
 export function createScratchOrgJob(scratchName: string) {
 	const cmd = 'sfdx force:org:create ' +
 	"-f ./config/project-scratch-def.json " + 
@@ -19,7 +53,15 @@ export function createScratchOrgJob(scratchName: string) {
 	" --durationdays 5 " + 
 	"--setdefaultusername";
 
-	let shellJob = new Job('Create Scratch Org', new ShellCommand(cmd));
+	let shellJob = new Job('Create New Scratch Org');
+	const onHandlingFinished = () => {
+		//when handling existing aliases is finished the create scratch org step is queued
+		shellJob.addJob(new Job('Create Scratch Org', new ShellCommand(cmd)));
+	};
+
+	let handlingJob = handleExistingAliases(scratchName, shellJob);
+	handlingJob.onJobFinish = onHandlingFinished;
+	shellJob.addJob(handlingJob);
 	return EXTENSION_CONTEXT.addJob(shellJob);
 }
 
