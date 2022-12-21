@@ -225,15 +225,16 @@ export function deployUnpackagableJob(): EXTENSION_CONTEXT | Promise<string> {
 			resolve('No unpack');
 		});
 	}
+	const relPath = unpackPath.startsWith('/') ? unpackPath : '/' + unpackPath;
 	if(!folderExists(workspacePath as string + unpackPath)) {
-		dxmateOutput.appendLine('Could not find valid directory at: ' + workspacePath as string + unpackPath + '\nSkipping unpackagable deploy');
+		dxmateOutput.appendLine('Could not find valid directory at: ' + workspacePath as string + relPath + '\nSkipping unpackagable deploy');
 		dxmateOutput.show();
 		return new Promise<string>((resolve, reject) => {
 			resolve('Unpack not found');
 		});
 	}
 
-	let cmd = 'sfdx force:source:deploy -p ' + unpackPath;
+	let cmd = 'sfdx force:source:deploy -p ' + workspacePath as string + relPath;
 	let shellJob = new Job('Deploy Unpackagable Metadata', new ShellCommand(cmd));
 	return EXTENSION_CONTEXT.addJob(shellJob);
 }
