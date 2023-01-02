@@ -198,7 +198,8 @@ export function assignPermsetsJob(packageName?: string): boolean {
 function getDefaultPermsetConfig(packageName?: string) {
 	if(packageName !== undefined && IS_MULTI_PCKG_DIRECTORY()) {
 		const multiDefaultConfig = vscode.workspace.getConfiguration().get('multi.scratch.default.permissionsets') as string;
-		let configObj = multiDefaultConfig && multiDefaultConfig !== '' ? JSON.parse(multiDefaultConfig) : null;
+		let configObj = multiDefaultConfig && multiDefaultConfig.length > 0 ? JSON.parse(multiDefaultConfig) : null;
+		if(!configObj) { return null; }
 		configObj.find((config: any) => {
 			return config.packagename === packageName;
 		})?.permissionsets as string[];
