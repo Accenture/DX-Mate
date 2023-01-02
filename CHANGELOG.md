@@ -4,7 +4,16 @@ All notable changes to the "dxmate" extension will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
-## [2.0.1] - 
+## [2.0.2] - 
+
+### Changed
+- Added support for blank keys for dependencies and handling properly using sfpowerkit
+
+### Fixed
+- Improved error handling for mono repo projects with noe default permset config
+- Improved error handling for mono repo projects with non package directories
+
+## [2.0.1] - 2022-12-12
 ### Added
 - Added job callback for more functionality in job chaining
 
