@@ -20,7 +20,10 @@ function getPackageKeys(packageName: string) {
             });
             if(dependencyKey) {
                 dxmateOutput.appendLine('DEPENDENCY:  ' + dependencyKey.packageName);
-                keyParams += dependencyKey.packageName + ':' + dependencyKey.packageKey + ' ' ;
+                //Only add to keyparams if there is actually a key defined
+                if(dependencyKey.packageKey.length > 0) {
+                    keyParams += dependencyKey.packageName + ':' + dependencyKey.packageKey + ' ' ;
+                }
             }
         });
     }
@@ -112,7 +115,8 @@ export async function installDependenciesJob(packageName: string) {
         let keyParams = getPackageKeys(packageName); //Get package.json, and find dependencies. keysParam must be a list 
     
         //Verify sfpowerkit is installed, or else rund the installation
-        let cmd = 'sfdx sfpowerkit:package:dependencies:install -r -a -w 10 --installationkeys \"' + keyParams + '\"';
+        let cmd = 'sfdx sfpowerkit:package:dependencies:install -r -a -w 10';
+        cmd += keyParams.length > 0 ? ' --installationkeys \"' + keyParams + '\"' : '';
     
         let shellJob = new Job('Install Dependencies', new ShellCommand(cmd));
         EXTENSION_CONTEXT.addJob(shellJob);
