@@ -35,8 +35,11 @@ export async function getPackageDirectoryInput() {
 
 	if(directories && directories.length > 0) {
 		directories.forEach(directory => {
-			dirMap.set(directory.package, directory);
-			packageNames.push(directory.package);
+			//Only apply for directories with package defined
+			if(directory.package) {
+				dirMap.set(directory.package, directory);
+				packageNames.push(directory.package);
+			}
 		});
 		console.log(packageNames);
 	}
