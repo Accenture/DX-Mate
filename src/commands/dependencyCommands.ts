@@ -103,7 +103,8 @@ export function updateDependencyKey(packageName: string) {
         title: 'Update package key for package: <' + packageName + '>',
         placeHolder: "KEY",
         }).then(value => {
-            if(!value) {
+            //Allow empty keys
+            if(value === undefined) {
                 console.log('Cancelled key input');
                 return;
             }
