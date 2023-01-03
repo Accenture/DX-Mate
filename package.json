@@ -30,15 +30,15 @@
 		"commands": [
 			{
 				"command": "dxmate.importDummyData",
-				"title": "dxmate: Import dummy data"
+				"title": "DX Mate: Import dummy data"
 			},
 			{
 				"command": "dxmate.createProject",
-				"title": "dxmate: create project"
+				"title": "DX Mate: create project"
 			},
 			{
 				"command": "runningTasks.refreshEntry",
-				"title": "dxmate: Refresh running tasks"
+				"title": "DX Mate: Refresh running tasks"
 			},
 			{
 				"command": "runningTasks.cancel",
@@ -49,6 +49,10 @@
 				"command": "runningTasks.clear",
 				"title": "Clear jobs",
 				"icon": "$(clear-all)"
+			},
+			{
+				"command": "dxmate.generateFieldMarkdown",
+				"title": "DX Mate: Generate field table"
 			}
 		],
 		"viewsContainers": {
@@ -136,6 +140,12 @@
 					"command": "runningTasks.clear",
 					"when": "view == runningTasks",
 					"group": "navigation"
+				}
+			],
+			"explorer/context": [
+				{
+					"command": "dxmate.generateFieldMarkdown",
+					"when": "explorerResourceIsFolder == true"
 				}
 			]
 		},
