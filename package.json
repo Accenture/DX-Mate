@@ -145,7 +145,7 @@
 			"explorer/context": [
 				{
 					"command": "dxmate.generateFieldMarkdown",
-					"when": "explorerResourceIsFolder == true"
+					"when": "explorerResourceIsFolder == true && resourceFilename == 'fields'"
 				}
 			]
 		},

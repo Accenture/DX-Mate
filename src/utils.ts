@@ -144,6 +144,12 @@ export function getDirectories(absPath: string) {
     });
 }
 
+export function getFilesInDirectory(absPath: string) {
+    return fs.readdirSync(absPath).filter(function (file) {
+        return !fs.statSync(absPath+'/'+file).isDirectory();
+      });
+}
+
 /**
  * Verify if the currently connected devhub is enabled for scratch org pooling.
  * This requires that the DX@Scale unlocked package has been installed in the org.
