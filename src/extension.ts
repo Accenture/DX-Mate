@@ -10,6 +10,7 @@ import { checkPoolingEnabled, folderExists, workspacePath } from './utils';
 import { RunningTaskProvider } from './RunningTaskProvider';
 import { depKeyMigrator } from './legacyHandlers/depLegacy';
 import { createUser } from './commands/userCommands';
+import { generateFieldMarkdown } from './commands/explorerCommands';
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 
@@ -99,6 +100,10 @@ function registerOrgCommands(context: vscode.ExtensionContext) {
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('dxmate.addDependency', () => {
 		addDependency();
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('dxmate.generateFieldMarkdown', (target: vscode.Uri) => {
+		generateFieldMarkdown(target);
 	}));
 }
 
