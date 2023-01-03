@@ -5,6 +5,8 @@ All notable changes to the "dxmate" extension will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [2.0.2] - 
+### Added
+- Added new explorer action to generate table markdown of salesforce fields. Useful when generating data model documentation in markdown files.
 
 ### Changed
 - Added support for blank keys for dependencies and handling properly using sfpowerkit
