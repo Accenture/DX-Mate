@@ -220,7 +220,7 @@ export function deployUnpackagable() {
 
 export function deployUnpackagableJob(): EXTENSION_CONTEXT | Promise<string> {
 	//Get path to unpackagable and deploy
-	let unpackPath = vscode.workspace.getConfiguration().get('unpackagable.location');
+	let unpackPath = vscode.workspace.getConfiguration().get('unpackagable.location') as string;
 	if(!unpackPath || unpackPath === '') {
 		return new Promise<string>((resolve, reject) => {
 			resolve('No unpack');
