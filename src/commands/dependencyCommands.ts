@@ -202,18 +202,9 @@ export async function inputUpdateDependencyKey() {
 }
 
 /**
- * 
- * @param packageName (Name of package to get dependency list for from project.json folder)
- * @returns Object[] 
- */
- export function getDependencies(packageName: string) {
-    return getPackageDirectory(packageName)?.dependencies;
-}
-
-/**
  * Get the collective list of dependencies from all package directories
  */
-function getProjectDependencies() {
+export function getProjectDependencies() {
     let dependencies = new Set<string>();
     const packageDirectories = getPackageDirectories();
     packageDirectories.forEach(directory => {

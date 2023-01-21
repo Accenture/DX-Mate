@@ -1,22 +1,21 @@
-import { getDependencyKeys, getDependencies, updateDependencyKey } from './dependencyCommands';
-import { DependencyKey, PackageDirectory, EXTENSION_CONTEXT, Job } from '../models';
+import { getDependencyKeys, updateDependencyKey, getProjectDependencies } from './dependencyCommands';
+import { DependencyKey, EXTENSION_CONTEXT, Job } from '../models';
 import {dxmateOutput, ShellCommand } from '../utils';
-import { getPackageDirectoryInput, getPackageDirectories } from '../workspace';
 
 /**
- * Gets the keys for the packages that the input packageName depends on if defined in config file
+ * Gets the keys for the packages that the project depends on if defined in config file
  * @param packageName 
  * @returns string (Formatted as required for input to sfpowerkit install dependencies command)
  */
-function getPackageKeys(packageName: string) {
+function getPackageKeys() {
     let keyParams = '';
     let dependencyKeys = getDependencyKeys() as DependencyKey[];
-    const packageDependencies = getDependencies(packageName);
+    const projDependencies = getProjectDependencies();
 
-    if(packageDependencies && dependencyKeys) {
-        packageDependencies.forEach(packageDependency => {
+    if(projDependencies && dependencyKeys) {
+        projDependencies.forEach(packageDependency => {
             let dependencyKey = dependencyKeys.find((depKey) => {
-                return depKey.packageName === packageDependency.package;
+                return depKey.packageName === packageDependency;
             });
             if(dependencyKey) {
                 dxmateOutput.appendLine('DEPENDENCY:  ' + dependencyKey.packageName);
@@ -32,10 +31,10 @@ function getPackageKeys(packageName: string) {
     return keyParams;
 }
 
-async function validateDependencies(packageName: string) {
+async function validateDependencies() {
     return new Promise<string>(async (resolve, reject) => {
         //Check if all the registered dependencies has been defined in dependencyKeys
-        let packageDependencies = getDependencies(packageName);
+        let packageDependencies = getProjectDependencies() as Set<string>;
         let dependencyKeys = getDependencyKeys() as DependencyKey[];
         const startInstall = () => {
             resolve('START INSTALL');
@@ -55,9 +54,9 @@ async function validateDependencies(packageName: string) {
         }
 
         for (const dependency of packageDependencies) {
-            if(!mappedPackages.has(dependency.package)) {
+            if(!mappedPackages.has(dependency)) {
                 //If not mapped, prompt user to input a key for this package
-                await updateDependencyKey(dependency.package);
+                await updateDependencyKey(dependency);
             }
         }
 
@@ -65,28 +64,9 @@ async function validateDependencies(packageName: string) {
     });
 }
 
-/**
- * Prompts user for input to select which package to install dependencies for and initiates the install
- */
-export async function installDependenciesForPackage() {
-    let packageDirectory: PackageDirectory;
-    if(EXTENSION_CONTEXT.isMultiPackageDirectory === true) {
-        packageDirectory = await getPackageDirectoryInput() as PackageDirectory;
-
-		if(!packageDirectory) {
-			return; //User cancelled
-		}
-    }
-    else{
-		packageDirectory = getPackageDirectories()[0];
-	}
-
-    return installDependencies(packageDirectory.package);
-}
-
 //TODO: INCLUDE EXTRA CHECK IF THE PROCESS TRIES TO INSTALL DEPENDENCIES IN A SANDBOX/FIND A WAY TO --updateOnly
-export function installDependencies(packageName: string) {
-    installDependenciesJob(packageName).then( jobsReady => {
+export function installDependencies() {
+    installDependenciesJob().then( jobsReady => {
         //If the resolved value is true we start the jobs
         if(jobsReady === true) {
             EXTENSION_CONTEXT.startJobs();
@@ -99,8 +79,8 @@ export function installDependencies(packageName: string) {
  * @param packageName 
  * @returns 
  */
-export async function installDependenciesJob(packageName: string) {
-    let dependencies = getDependencies(packageName);
+export async function installDependenciesJob() {
+    let dependencies = getProjectDependencies();
 
 	if(!dependencies) {
 		//No dependencies
@@ -111,10 +91,10 @@ export async function installDependenciesJob(packageName: string) {
 		});
 	}
     return new Promise<boolean>(async (resolve, reject) => {
-        await validateDependencies(packageName);
-        let keyParams = getPackageKeys(packageName); //Get package.json, and find dependencies. keysParam must be a list 
+        await validateDependencies();
+        let keyParams = getPackageKeys(); //Get package.json, and find dependencies. keysParam must be a list 
     
-        //Verify sfpowerkit is installed, or else rund the installation
+        //Verify sfpowerkit is installed, or else run the installation
         let cmd = 'sfdx sfpowerkit:package:dependencies:install -r -a -w 10';
         cmd += keyParams.length > 0 ? ' --installationkeys \"' + keyParams + '\"' : '';
     
