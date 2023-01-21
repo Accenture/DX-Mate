@@ -134,7 +134,7 @@ async function setupScratchOrg() {
 		sourcePushMetadataJob();
 		deployUnpackagableJob();
 		openScratchOrgJob();
-		assignPermsetsJob(packageDirectory.package);
+		assignPermsetsJob();
 		importDummyDataJob();
 
 		EXTENSION_CONTEXT.startJobs();
