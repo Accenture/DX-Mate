@@ -4,7 +4,7 @@ All notable changes to the "dxmate" extension will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
-## [2.0.3] - TBD
+## [2.0.3] - 2023-01-21
 ### Changed
 - Changed default permission set assignment to be project dependenct instead of package dependent to better fit DX@Scale
 - Simplified workstream for scratch org create as sfpowerkit installs all deps by default. Package input is no longer required for mono-repo projects.
