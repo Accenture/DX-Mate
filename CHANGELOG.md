@@ -4,6 +4,10 @@ All notable changes to the "dxmate" extension will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [2.0.3] - TBD
+### Changed
+- Changed default permission set assignment to be project dependenct instead of package dependent to better fit DX@Scale
+
 ## [2.0.2] - 
 ### Added
 - Added new explorer action to generate table markdown of salesforce fields. Useful when generating data model documentation in markdown files.
