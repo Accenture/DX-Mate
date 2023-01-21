@@ -208,9 +208,12 @@ export function getProjectDependencies() {
     let dependencies = new Set<string>();
     const packageDirectories = getPackageDirectories();
     packageDirectories.forEach(directory => {
-        directory.dependencies.forEach(dependency => {
-            dependencies.add(dependency.package);
-        });
+        //Null check for dependencies
+        if(directory.dependencies) {
+            directory.dependencies.forEach(dependency => {
+                dependencies.add(dependency.package);
+            });
+        }
     });
     console.log('PROJECT DEPENDENCIES');
     console.log(dependencies);
