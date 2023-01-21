@@ -2,9 +2,8 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import {openScratchOrg, sourcePushMetadata, importDummyData, generateLoginLink, sourcePullMetadata, createProject, assignDefaultPermsets, createScratchOrgJob, sourcePushMetadataJob, deployUnpackagableJob, openScratchOrgJob, importDummyDataJob, assignPermsetsJob, sfdxExportData, getScratchFromPool} from './commands/commands';
-import { EXTENSION_CONTEXT, PackageDirectory } from './models';
+import { EXTENSION_CONTEXT } from './models';
 import {inputUpdateDependencyKey, addDependency} from './commands/dependencyCommands';
-import {getPackageDirectories, getPackageDirectoryInput} from './workspace';
 import { installDependencies, installDependenciesJob } from './commands/packageCommands';
 import { checkPoolingEnabled, folderExists, workspacePath } from './utils';
 import { RunningTaskProvider } from './RunningTaskProvider';
@@ -108,18 +107,6 @@ function registerOrgCommands(context: vscode.ExtensionContext) {
 }
 
 async function setupScratchOrg() {
-	let packageDirectory: PackageDirectory;
-	if(EXTENSION_CONTEXT.isMultiPackageDirectory === true) {
-		packageDirectory = await getPackageDirectoryInput() as PackageDirectory;
-
-		if(!packageDirectory) {
-			return; //User cancelled
-		}
-	}
-	else{
-		packageDirectory = getPackageDirectories()[0];
-	}
-
 	vscode.window.showInputBox({
 		title: 'Scratch org alias',
 		placeHolder: "MYSCRATCH",
@@ -127,10 +114,10 @@ async function setupScratchOrg() {
 		if(!value){
 			return;//Cancelled
 		}
-		console.log('RUNNING SCRATCH ORG CREATE WITH: ' + packageDirectory.package);
+		console.log('RUNNING SCRATCH ORG CREATE');
 		createScratchOrgJob(value as string);
 		//Dependency job includes a secondary validate process that afterwards resolves a promise
-		await installDependenciesJob(packageDirectory.package);
+		await installDependenciesJob();
 		sourcePushMetadataJob();
 		deployUnpackagableJob();
 		openScratchOrgJob();
