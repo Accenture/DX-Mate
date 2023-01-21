@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ## [2.0.3] - TBD
 ### Changed
 - Changed default permission set assignment to be project dependenct instead of package dependent to better fit DX@Scale
+- Simplified workstream for scratch org create as sfpowerkit installs all deps by default. Package input is no longer required for mono-repo projects.
 
 ## [2.0.2] - 
 ### Added
