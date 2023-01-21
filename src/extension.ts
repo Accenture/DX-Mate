@@ -5,7 +5,7 @@ import {openScratchOrg, sourcePushMetadata, importDummyData, generateLoginLink, 
 import { EXTENSION_CONTEXT, PackageDirectory } from './models';
 import {inputUpdateDependencyKey, addDependency} from './commands/dependencyCommands';
 import {getPackageDirectories, getPackageDirectoryInput} from './workspace';
-import { installDependenciesForPackage, installDependenciesJob } from './commands/packageCommands';
+import { installDependencies, installDependenciesJob } from './commands/packageCommands';
 import { checkPoolingEnabled, folderExists, workspacePath } from './utils';
 import { RunningTaskProvider } from './RunningTaskProvider';
 import { depKeyMigrator } from './legacyHandlers/depLegacy';
@@ -65,7 +65,7 @@ function registerOrgCommands(context: vscode.ExtensionContext) {
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('dxmate.dependencyInstall', () => {
-		installDependenciesForPackage();
+		installDependencies();
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('dxmate.updateDependencyKey', () => {
