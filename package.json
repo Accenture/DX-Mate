@@ -183,31 +183,6 @@
 					},
 					"default": [],
 					"description": "List of permission set to assign to your default scratch user (Used for single package directory projects)"
-				},
-				"multi.scratch.default.permissionsets": {
-					"type": "array",
-					"description": "Used when project contains multiple package directories",
-					"items": {
-						"type": "object",
-						"properties": {
-							"packagename": {
-								"type": "string",
-								"default": "packagename",
-								"description": "Name of the package to define defaults for."
-							},
-							"permissionsets": {
-								"type": "array",
-								"items": {
-									"type": "string"
-								},
-								"default": [
-									"permset1",
-									"pemset2"
-								],
-								"description": "List of permission sets."
-							}
-						}
-					}
 				}
 			}
 		}

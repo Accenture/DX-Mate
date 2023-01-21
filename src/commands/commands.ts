@@ -158,27 +158,21 @@ export function sourcePullMetadataJob() {
 }
 
 export async function assignDefaultPermsets() {
-	if(EXTENSION_CONTEXT.isMultiPackageDirectory) {
-		let packageDirectory = await getPackageDirectoryInput() as PackageDirectory;
-		if(packageDirectory) { assignPermsets(packageDirectory.package); }
-	}
-	else {
-		assignPermsets();
-	}
+	assignPermsets();
 }
 
 //Assings all default permission sets defined in the workspace settings
-export function assignPermsets(packageName?: string) {
-	let jobAdded = assignPermsetsJob(packageName);
+export function assignPermsets() {
+	let jobAdded = assignPermsetsJob();
 
 	if(jobAdded === true) {
 		EXTENSION_CONTEXT.startJobs();
 	}
 }
 
-export function assignPermsetsJob(packageName?: string): boolean {
+export function assignPermsetsJob(): boolean {
 	//Get the permets to assign på default by reading json config file.
-	let permsets = getDefaultPermsetConfig(packageName);
+	let permsets = getDefaultPermsetConfig();
 	if(permsets && permsets.length > 0) {
 		let shellJob = new Job('Assign Default Permission Sets');
 		permsets.forEach(permset => {
@@ -195,18 +189,8 @@ export function assignPermsetsJob(packageName?: string): boolean {
 	}
 }
 
-function getDefaultPermsetConfig(packageName?: string) {
-	if(packageName !== undefined && IS_MULTI_PCKG_DIRECTORY()) {
-		const multiDefaultConfig = vscode.workspace.getConfiguration().get('multi.scratch.default.permissionsets') as string;
-		let configObj = multiDefaultConfig && multiDefaultConfig.length > 0 ? JSON.parse(multiDefaultConfig) : null;
-		if(!configObj) { return null; }
-		configObj.find((config: any) => {
-			return config.packagename === packageName;
-		})?.permissionsets as string[];
-	}
-	else{
-		return vscode.workspace.getConfiguration().get('scratch.default.permissionsets') as string[];
-	}
+function getDefaultPermsetConfig() {
+	return vscode.workspace.getConfiguration().get('scratch.default.permissionsets') as string[];
 }
 
 //Get configuration and deploys metadata that is stored in the unpackagable location
