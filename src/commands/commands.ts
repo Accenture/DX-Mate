@@ -79,6 +79,7 @@ export async function getScratchFromPool() {
 	if(!aliasInput) { return; }
 
 	getScratchFromPoolJob(tagInput, aliasInput);
+	assignPermsetsJob();
 	EXTENSION_CONTEXT.startJobs();
 
 }
