@@ -4,6 +4,14 @@ All notable changes to the "dxmate" extension will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [2.0.4] - 2023-01-31
+### Fixed
+- Fixed issue where scratch org pooling was not activated for newer DX@Scale package versions
+
+## Added
+- Added setting scratch org fetched from pool as default org
+- Chained push and default permset assign to pool fetch job chain
+
 ## [2.0.3] - 2023-01-21
 ### Changed
 - Changed default permission set assignment to be project dependenct instead of package dependent to better fit DX@Scale
