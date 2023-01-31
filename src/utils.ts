@@ -173,7 +173,7 @@ export async function checkPoolingEnabled() {
             for (let index = 0; index < packageList.result.length; index++) {
                 const installedPckg = packageList.result[index];
                 console.log(installedPckg);
-                if(installedPckg.SubscriberPackageVersionId === '04t1P000000gOqzQAE') {
+                if(installedPckg.SubscriberPackageName === 'sfpower-scratchorg-pool') {
                     console.info('Pooling activated');
                     vscode.commands.executeCommand("setContext", "poolingActivated", true);
                 }
