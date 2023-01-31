@@ -79,13 +79,14 @@ export async function getScratchFromPool() {
 	if(!aliasInput) { return; }
 
 	getScratchFromPoolJob(tagInput, aliasInput);
+	sourcePushMetadataJob();
 	assignPermsetsJob();
 	EXTENSION_CONTEXT.startJobs();
 
 }
 
 function getScratchFromPoolJob(tag: string, alias: string) {
-	const cmd = `sfdx sfpowerscripts:pool:fetch --tag ${tag} -a ${alias}`;
+	const cmd = `sfdx sfpowerscripts:pool:fetch --tag ${tag} -a ${alias} -d`;
 	const shellJob = new Job('Get Scratch From Pool', new ShellCommand(cmd));
 	EXTENSION_CONTEXT.addJob(shellJob);
 }
