@@ -42,6 +42,9 @@ sfdx plugins:install @dxatscale/sfpowerscripts
 sfdx plugins:install sfdmu  
 ```
 
+Download the latest version of dxmate-x.x.x.vsic folder from https://github.com/Accenture/DX-Mate/releases.
+Then open VS-Code and press F1 -> install from vsix 
+
 ## Extension Settings
 
 This extension contributes the following settings:
