@@ -9,6 +9,7 @@ export class ShellCommand{
     shellProcess?: any;
     promiseHandler?: any;
     command: string;
+    cwd?: string = workspacePath;
     suppressOutput: boolean = false;
     retryEnabled: boolean = true;
 
@@ -17,13 +18,21 @@ export class ShellCommand{
         if(suppressOutput !== undefined) { this.suppressOutput = suppressOutput; }
     }
 
+    /**
+     * Allow setting command line directory for commands not being run at workspace top level
+     * @param cwd 
+     */
+    public setCwd(cwd: string) {
+        this.cwd = cwd;
+    }
+
     public disableRetry() {
         this.retryEnabled = false;
         return this;
     }
 
     public runCommand() {
-        this.shellProcess = cp.exec(this.command, {cwd: workspacePath}, (err, out) => {
+        this.shellProcess = cp.exec(this.command, {cwd: this.cwd}, (err, out) => {
             if(err && err.signal !== 'SIGINT') {
                 console.error('DXMATE:CommandError: ' + err);
                 dxmateOutput.appendLine("An error occurred: \n " + err);
