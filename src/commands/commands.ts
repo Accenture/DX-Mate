@@ -1,14 +1,13 @@
 import * as vscode from 'vscode';
-import { EXTENSION_CONTEXT, Job, PackageDirectory } from '../models';
-import { dxmateOutput, getDirectories, workspacePath, ShellCommand, folderExists, IS_MULTI_PCKG_DIRECTORY, getFile } from '../utils';
-import { getPackageDirectoryInput } from '../workspace';
+import { EXTENSION_CONTEXT, Job } from '../models';
+import { dxmateOutput, getDirectories, workspacePath, ShellCommand, folderExists, getFile } from '../utils';
 
 export function createProject() {
 	vscode.commands.executeCommand('sfdx.force.project.create');
 }
 
 //Creates a new scratch org based on name input. Default duration is set to 5 days
-export function createScratchOrg(scratchName: string) {
+export function createScratchOrg(scratchName: string, durationDays: ) {
 	createScratchOrgJob(scratchName).startJobs();
 }
 
