@@ -158,6 +158,11 @@
 					"default": "dummy-data",
 					"description": "Relative folder location to where dummy data should be imported using the sfdx import command"
 				},
+				"dummy.data.sfdmu": {
+					"type": "boolean",
+					"default": "false",
+					"description": "Enables dummy data import using sfdmu. This requires dummy data folder to be on required format for sfdmu csvFile import"
+				},
 				"dummy.users.location": {
 					"type": "string",
 					"default": "config/users",
