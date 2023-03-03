@@ -245,19 +245,19 @@ export async function importDummyData(scratchAlias?: string) {
 export function importDummyDataJob(scratchAlias?: string): boolean {
 	let dummyDataFolder = vscode.workspace.getConfiguration().get('dummy.data.location') as string;
 	const relPath = dummyDataFolder.startsWith('/') ? dummyDataFolder : '/' + dummyDataFolder;
-	let directories = getDirectories(workspacePath as string + relPath);
-
+	
 	const sfdmuActive = vscode.workspace.getConfiguration().get('dummy.data.sfdmu') as boolean;
 	if(sfdmuActive === true) {
 		let cmd = `sfdx sfdmu:run --sourceusername csvFile --targetusername ${scratchAlias}`;
 		let shellCommand = new ShellCommand(cmd);
 		shellCommand.setCwd(workspacePath + relPath);
 		let shellJob = new Job('Import Dummy Data', shellCommand);;
-
+		
 		EXTENSION_CONTEXT.addJob(shellJob);
 		return true;
 	}
 	else{
+		let directories = getDirectories(workspacePath as string + relPath);
 		if(directories.length > 0) {
 			let shellJob = new Job('Import Dummy Data');
 			directories.forEach((dataDirectory: string) => {
