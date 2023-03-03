@@ -110,21 +110,39 @@ async function setupScratchOrg() {
 	vscode.window.showInputBox({
 		title: 'Scratch org alias',
 		placeHolder: "MYSCRATCH",
-	}).then(async (value) => {
-		if(!value){
+	}).then(async (alias) => {
+		if(!alias){
 			return;//Cancelled
 		}
-		console.log('RUNNING SCRATCH ORG CREATE');
-		createScratchOrgJob(value as string);
-		//Dependency job includes a secondary validate process that afterwards resolves a promise
-		await installDependenciesJob();
-		sourcePushMetadataJob();
-		deployUnpackagableJob();
-		openScratchOrgJob();
-		assignPermsetsJob();
-		importDummyDataJob();
+		vscode.window.showInputBox({
+			title: 'Scratch org duartion',
+			value: "5",
+			validateInput: input => {
+				if(isNaN(parseInt(input))) {
+					//If the input is not a number, show validation error
+					return `Input must be a valid integer`;
+				}
+				else{
+					return null; //Valid
+				}
+			}
+		}).then(async (duration) => {
+			if(!duration){
+				return;//Cancelled
+			}
 
-		EXTENSION_CONTEXT.startJobs();
+			console.log('RUNNING SCRATCH ORG CREATE');
+			createScratchOrgJob(alias as string, duration as string);
+			//Dependency job includes a secondary validate process that afterwards resolves a promise
+			await installDependenciesJob();
+			sourcePushMetadataJob();
+			deployUnpackagableJob();
+			openScratchOrgJob();
+			assignPermsetsJob();
+			importDummyDataJob();
+
+			EXTENSION_CONTEXT.startJobs();
+		});
 	});
 }
 
