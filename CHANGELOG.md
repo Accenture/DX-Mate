@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ## [2.0.5] - 
 ## Added
 - Added support for scratch duration as input on scratch org creation
+- Added support for dummy data import using SFDMU
 
 ## [2.0.4] - 2023-01-31
 ### Fixed

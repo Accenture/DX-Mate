@@ -8,7 +8,7 @@ DX-Mate is an extension that provides a set of UI actions to improve SFDX develo
 
 Key features includes:
 - Fetch scratch org from a pool
-- Import dummy data to your scratch org
+- Import dummy data to your scratch org using either sfdx data:tree:import or SFDMU
 - Export data from a .soql file
 - Create new scratch org
 - Assign default permission sets
@@ -49,6 +49,7 @@ This extension contributes the following settings:
 * `dependency.keys`: Installation keys for all known dependencies only available in user settings
 * `dummy.user.location`: Set the workspace relative directory for dummy users to create in scratch orgs
 * `dummy.data.location`: Set the workspace relative directory for the dummy data
+* `dummy.data.sfdmu`: Enable dummy data import using sfdmu plugin
 * `unpackagable.location`: Set the workspace relative directory for unpackagable metadata
 * `scratch.default.permissionsets`: Set the list of default permission sets to be assigned for the workspace
 * `multi.scratch.default.permissionsets`: Set the list of default permission sets per package directory for the workspace
