@@ -139,7 +139,7 @@ async function setupScratchOrg() {
 			deployUnpackagableJob();
 			openScratchOrgJob();
 			assignPermsetsJob();
-			importDummyDataJob();
+			importDummyDataJob(alias);
 
 			EXTENSION_CONTEXT.startJobs();
 		});
