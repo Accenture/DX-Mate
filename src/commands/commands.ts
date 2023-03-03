@@ -7,8 +7,8 @@ export function createProject() {
 }
 
 //Creates a new scratch org based on name input. Default duration is set to 5 days
-export function createScratchOrg(scratchName: string, durationDays: ) {
-	createScratchOrgJob(scratchName).startJobs();
+export function createScratchOrg(scratchName: string, durationDays: string) {
+	createScratchOrgJob(scratchName, durationDays).startJobs();
 }
 
 /**
@@ -45,12 +45,12 @@ function handleExistingAliases(scratchName: string, parentJob: Job) {
 	return new Job('Check Scratch Aliases', shellCmd);
 }
 
-export function createScratchOrgJob(scratchName: string) {
+export function createScratchOrgJob(scratchName: string, durationDays: string) {
 	const cmd = 'sfdx force:org:create ' +
 	"-f ./config/project-scratch-def.json " + 
 	"--setalias " + scratchName +
-	" --durationdays 5 " + 
-	"--setdefaultusername";
+	" --durationdays " + durationDays + 
+	" --setdefaultusername";
 
 	let shellJob = new Job('Create New Scratch Org');
 	const onHandlingFinished = () => {
