@@ -160,7 +160,7 @@
 				},
 				"dummy.data.sfdmu": {
 					"type": "boolean",
-					"default": "false",
+					"default": false,
 					"description": "Enables dummy data import using sfdmu. This requires dummy data folder to be on required format for sfdmu csvFile import"
 				},
 				"dummy.users.location": {
