@@ -80,6 +80,7 @@ export async function getScratchFromPool() {
 	getScratchFromPoolJob(tagInput, aliasInput);
 	sourcePushMetadataJob();
 	assignPermsetsJob();
+	importDummyDataJob(aliasInput);
 	EXTENSION_CONTEXT.startJobs();
 
 }
@@ -119,7 +120,7 @@ function isDevHub(orgInfo: string) {
 }
 
 //Calls sfdx command to retrieve default org information
-function getDefaultOrgInfo() {
+export function getDefaultOrgInfo() {
 	let cmd = 'sfdx force:org:display --json';
 	return new Job('Get default org info', new ShellCommand(cmd, true)).startJob(); 
 }
@@ -226,33 +227,53 @@ export function deployUnpackagableJob(): EXTENSION_CONTEXT | Promise<string> {
 }
 
 //Iterates all folder in the dummy data folder to run sfdx import using the plan.json file
-export function importDummyData() { 
-	let jobSubmitted = importDummyDataJob();
+export async function importDummyData(scratchAlias?: string) { 
+	if(scratchAlias === undefined) {
+		//If method is called without alias defined, get the default org alias
+		let orgInfo = await getDefaultOrgInfo();
+		let orgObj = JSON.parse(orgInfo as string);
+		scratchAlias = orgObj?.result?.alias;
+	}
+
+	let jobSubmitted = importDummyDataJob(scratchAlias);
 
 	if(jobSubmitted === true) {
 		EXTENSION_CONTEXT.startJobs();
 	}
 }
 
-export function importDummyDataJob(): boolean {
+export function importDummyDataJob(scratchAlias?: string): boolean {
 	let dummyDataFolder = vscode.workspace.getConfiguration().get('dummy.data.location') as string;
 	const relPath = dummyDataFolder.startsWith('/') ? dummyDataFolder : '/' + dummyDataFolder;
 	let directories = getDirectories(workspacePath as string + relPath);
 
-	if(directories.length > 0) {
-		let shellJob = new Job('Import Dummy Data');
-		directories.forEach((dataDirectory: string) => {
-			let planJsonPath = workspacePath as string + relPath + '/' + dataDirectory + '/plan.json';
-			let cmd = 'sfdx force:data:tree:import --plan ' + planJsonPath;
-			shellJob.addJob(new Job('Import: ' + dataDirectory, new ShellCommand(cmd)));
-		});
+	const sfdmuActive = vscode.workspace.getConfiguration().get('dummy.data.sfdmu') as boolean;
+	if(sfdmuActive === true) {
+		let cmd = `sfdx sfdmu:run --sourceusername csvFile --targetusername ${scratchAlias}`;
+		let shellCommand = new ShellCommand(cmd);
+		shellCommand.setCwd(workspacePath + relPath);
+		let shellJob = new Job('Import Dummy Data', shellCommand);;
 
 		EXTENSION_CONTEXT.addJob(shellJob);
 		return true;
 	}
 	else{
-		return false;
+		if(directories.length > 0) {
+			let shellJob = new Job('Import Dummy Data');
+			directories.forEach((dataDirectory: string) => {
+				let planJsonPath = workspacePath as string + relPath + '/' + dataDirectory + '/plan.json';
+				let cmd = 'sfdx force:data:tree:import --plan ' + planJsonPath;
+				shellJob.addJob(new Job('Import: ' + dataDirectory, new ShellCommand(cmd)));
+			});
+	
+			EXTENSION_CONTEXT.addJob(shellJob);
+			return true;
+		}
+		else{
+			return false;
+		}
 	}
+
 }
 
 //Allows calling sfdx export on the default org to retrieve data on json format
