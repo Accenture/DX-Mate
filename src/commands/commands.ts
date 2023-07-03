@@ -251,7 +251,7 @@ export function importDummyDataJob(scratchAlias?: string): boolean {
 		let cmd = `sfdx sfdmu:run --sourceusername csvFile --targetusername ${scratchAlias}`;
 		let shellCommand = new ShellCommand(cmd);
 		shellCommand.setCwd(workspacePath + relPath);
-		let shellJob = new Job('Import Dummy Data', shellCommand);;
+		let shellJob = new Job('Import Dummy Data', shellCommand);
 		
 		EXTENSION_CONTEXT.addJob(shellJob);
 		return true;
@@ -326,6 +326,21 @@ export async function sfdxExportData() {
 			});
 		});
 	}
+}
+
+export async function sfdmuExport(target: vscode.Uri) {
+	//If method is called without alias defined, get the default org alias
+	let orgInfo = await getDefaultOrgInfo();
+	let orgObj = JSON.parse(orgInfo as string);
+	let scratchAlias = orgObj?.result?.alias;
+
+	let cmd = `sfdx sfdmu:run --targetusername csvFile --sourceusername ${scratchAlias}`;
+	let shellCommand = new ShellCommand(cmd);
+	shellCommand.setCwd(target.fsPath);
+	let shellJob = new Job('Export Dummy Data', shellCommand);
+
+	EXTENSION_CONTEXT.addJob(shellJob);
+	EXTENSION_CONTEXT.startJobs();
 }
 
 function getSoqlQuickPicks(soqlFiles: any[]): vscode.QuickPickItem[] {
