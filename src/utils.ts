@@ -53,7 +53,7 @@ export class ShellCommand{
                 if(!this.retryEnabled) { return reject('Error'); }
                 vscode.window.showErrorMessage(
                     'An error occurred. See DX-Mate output for info',
-                    ...['Retry', 'Cancel']
+                    ...['Retry', 'Skip', 'Cancel']
                 )
                 .then(value => {
                     if(value === 'Retry') {
@@ -65,7 +65,7 @@ export class ShellCommand{
                         });
                     }
                     else{
-                        return reject('Error');
+                        return reject(value);
                     }
                 });
             };
