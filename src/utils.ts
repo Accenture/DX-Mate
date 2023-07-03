@@ -174,7 +174,7 @@ export async function checkPoolingEnabled() {
         return; //Error getting default devhub
     }
 
-    const shellJob = new Job('Checking Devhub pooling status', new ShellCommand(`sfdx force:package:installed:list -u ${devHub} --json`, true).disableRetry());
+    const shellJob = new Job('Checking Devhub pooling status', new ShellCommand(`sf package installed list -o ${devHub} --json`, true).disableRetry());
     EXTENSION_CONTEXT.addJob(shellJob);
     shellJob.startJob()?.then(jsonList => {
         if(jsonList) {
@@ -200,7 +200,7 @@ export async function checkPoolingEnabled() {
 
 export function getDefaultDevhub(): Promise<string> {
     return new Promise<string>((resolve, reject) => {
-        execShell('sfdx config:get defaultdevhubusername --json', true).shellPromise?.then(config =>{
+        execShell('sf config get target-dev-hub --json', true).shellPromise?.then(config =>{
             console.log(config);
             if(!config) { reject('Error'); }
             resolve(JSON.parse(config)?.result[0]?.value);
