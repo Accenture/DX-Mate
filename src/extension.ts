@@ -1,7 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import {openScratchOrg, sourcePushMetadata, importDummyData, generateLoginLink, sourcePullMetadata, createProject, assignDefaultPermsets, createScratchOrgJob, sourcePushMetadataJob, deployUnpackagableJob, openScratchOrgJob, importDummyDataJob, assignPermsetsJob, sfdxExportData, getScratchFromPool} from './commands/commands';
+import {openScratchOrg, sourcePushMetadata, importDummyData, generateLoginLink, sourcePullMetadata, createProject, assignDefaultPermsets, createScratchOrgJob, sourcePushMetadataJob, deployUnpackagableJob, openScratchOrgJob, importDummyDataJob, assignPermsetsJob, sfdxExportData, getScratchFromPool, sfdmuExport} from './commands/commands';
 import { EXTENSION_CONTEXT } from './models';
 import {inputUpdateDependencyKey, addDependency} from './commands/dependencyCommands';
 import { installDependencies, installDependenciesJob } from './commands/packageCommands';
@@ -103,6 +103,10 @@ function registerOrgCommands(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(vscode.commands.registerCommand('dxmate.generateFieldMarkdown', (target: vscode.Uri) => {
 		generateFieldMarkdown(target);
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('dxmate.generateFieldMarkdown', (target: vscode.Uri) => {
+		sfdmuExport(target);
 	}));
 }
 
