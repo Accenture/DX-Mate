@@ -136,7 +136,6 @@ export function openScratchOrgJob() {
 	return EXTENSION_CONTEXT.addJob(shellJob);
 }
 
-
 //push metadata from scratch org
 export function sourcePushMetadata() {
 	sourcePushMetadataJob().startJobs();
@@ -336,7 +335,7 @@ export async function sfdmuExport(target: vscode.Uri) {
 
 	let cmd = `sfdx sfdmu:run --targetusername csvFile --sourceusername ${scratchAlias}`;
 	let shellCommand = new ShellCommand(cmd);
-	shellCommand.setCwd(target.fsPath);
+	shellCommand.setCwd( target.fsPath.replace('export.json', ''));
 	let shellJob = new Job('Export Dummy Data', shellCommand);
 
 	EXTENSION_CONTEXT.addJob(shellJob);
