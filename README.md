@@ -45,7 +45,7 @@ sfdx plugins:install sfpowerkit
 Scratch org pooling is supported using DX-Mate and adheres to functionality from the [DX@Scale](https://docs.dxatscale.io/) framework. To activates these function your DebHub needs to have the unlocked package installed as described [here](https://docs.dxatscale.io/implementing-your-ci-cd/getting-started/getting-started-1#e-install-sfpowerscripts-scratch-org-pooling-unlocked-package-in-devhub). Also, run following commands to install dx@scale utilities and the sfdmu plugin:
 
 ```bash
-npm i -g @dxatscale/sfpowerscripts 
+npm i -g @dxatscale/sfpowerscripts  #include --force to overwrite existing plugin
 sfdx plugins:install sfdmu  
 ```
 
