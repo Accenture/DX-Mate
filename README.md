@@ -70,7 +70,9 @@ The settings can be located in the VS code ui by pressing <kbd>cmd</kbd> + <kbd>
 
 ## Dummy data
 
-To enable automatic import of dummy data after scratch org creation/fetch from org pool update the dummy data location setting and select whether dummy data is on the required [sfdmu format](https://help.sfdmu.com/get-started). For SFDMU import a single ``export.json``file is required in the dummy data directory, along with x-amount of .csv files generated using the sfdmu export command.
+To enable automatic import of dummy data after scratch org creation/fetch from org pool update the dummy data location setting and select whether dummy data is on the required [sfdmu format](https://help.sfdmu.com/get-started). For SFDMU import a single ``export.json`` file is required in the dummy data directory, along with x-amount of .csv files generated using the sfdmu export command.
+
+![SFDMU export](src/graphics/sfdmu_export.gif)
 
 ## Known Issues
 
