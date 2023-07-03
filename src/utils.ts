@@ -104,7 +104,6 @@ export class ShellCommand{
 }
 
 export function refreshRunningTasks() {
-    console.log('REFRESHING RUNNING TASKS');
     EXTENSION_CONTEXT.refreshRunningTasks();
 }
 /**
@@ -181,7 +180,6 @@ export async function checkPoolingEnabled() {
             const packageList = JSON.parse(jsonList);
             for (let index = 0; index < packageList.result.length; index++) {
                 const installedPckg = packageList.result[index];
-                console.log(installedPckg);
                 if(installedPckg.SubscriberPackageName === 'sfpower-scratchorg-pool') {
                     console.info('Pooling activated');
                     vscode.commands.executeCommand("setContext", "poolingActivated", true);

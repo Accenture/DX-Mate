@@ -23,7 +23,6 @@ function rowifyField(field: string) {
     const xmlRegex = /<(\w*)>(.*)<\/\w*>/g;
     const matches = field.matchAll(xmlRegex);
     for (const match of matches) {
-        console.log(match);
         if(match[1] === 'fullName' && !apiName) {
             apiName = match[2];
             continue;

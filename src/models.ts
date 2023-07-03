@@ -85,7 +85,13 @@ export class Job extends vscode.TreeItem{
                 this.jobCompleted();
             })
             .catch(err => {
-                console.log('JOB FAILED');
+                console.log(err);
+                if(err === 'Cancel') {
+                    console.log('JOBS CANCELLED');
+                    return new Promise<string>((resolve, reject) => {
+                        reject('Cancel');
+                    });
+                }
                 this.jobFailed();
             })
             .finally(() => {
