@@ -100,7 +100,7 @@ export async function generateLoginLink() {
 		dxmateOutput.appendLine('No link generation allowed for DevHub');
 		return;
 	}
-	let cmd = 'sfdx force:org:open -r --json';
+	let cmd = 'sf org open -r --json';
 	const promiseHandler = (cmdResult: string) => {
 		let parsedResult = JSON.parse(cmdResult as string);
 		dxmateOutput.appendLine('WARNING! This link generates a direct opening to the default org\n\n LINK: ' + parsedResult.result.url );
@@ -121,7 +121,7 @@ function isDevHub(orgInfo: string) {
 
 //Calls sfdx command to retrieve default org information
 export function getDefaultOrgInfo() {
-	let cmd = 'sfdx force:org:display --json';
+	let cmd = 'sf org display --json';
 	return new Job('Get default org info', new ShellCommand(cmd, true)).startJob(); 
 }
 
@@ -131,7 +131,7 @@ export function openScratchOrg() {
 }
 
 export function openScratchOrgJob() {
-	let cmd = 'sfdx force:org:open';
+	let cmd = 'sf org open';
 	let shellJob = new Job('Open Scratch Org', new ShellCommand(cmd));
 	return EXTENSION_CONTEXT.addJob(shellJob);
 }
@@ -143,7 +143,7 @@ export function sourcePushMetadata() {
 }
 
 export function sourcePushMetadataJob() {
-	let cmd = 'sfdx force:source:push';
+	let cmd = 'sf project deploy start';
 	let shellJob = new Job('Push Metadata', new ShellCommand(cmd));
 	return EXTENSION_CONTEXT.addJob(shellJob);
 }
@@ -154,7 +154,7 @@ export function sourcePullMetadata() {
 }
 
 export function sourcePullMetadataJob() {
-	let cmd = 'sfdx force:source:pull';
+	let cmd = 'sf project retrieve start';
 	let shellJob = new Job('Pull Metadata', new ShellCommand(cmd));
 	return EXTENSION_CONTEXT.addJob(shellJob);
 }
@@ -178,7 +178,7 @@ export function assignPermsetsJob(): boolean {
 	if(permsets && permsets.length > 0) {
 		let shellJob = new Job('Assign Default Permission Sets');
 		permsets.forEach(permset => {
-			let cmd = 'sfdx force:user:permset:assign -n ' + permset;
+			let cmd = 'sf org assign permset -n ' + permset;
 			shellJob.addJob(new Job('Assign: ' + permset, new ShellCommand(cmd)));
 		});
 		EXTENSION_CONTEXT.addJob(shellJob);
@@ -221,7 +221,7 @@ export function deployUnpackagableJob(): EXTENSION_CONTEXT | Promise<string> {
 		});
 	}
 
-	let cmd = 'sfdx force:source:deploy -p ' + workspacePath as string + relPath;
+	let cmd = 'sfdx project deploy start -d ' + workspacePath as string + relPath;
 	let shellJob = new Job('Deploy Unpackagable Metadata', new ShellCommand(cmd));
 	return EXTENSION_CONTEXT.addJob(shellJob);
 }
@@ -262,7 +262,7 @@ export function importDummyDataJob(scratchAlias?: string): boolean {
 			let shellJob = new Job('Import Dummy Data');
 			directories.forEach((dataDirectory: string) => {
 				let planJsonPath = workspacePath as string + relPath + '/' + dataDirectory + '/plan.json';
-				let cmd = 'sfdx force:data:tree:import --plan ' + planJsonPath;
+				let cmd = 'sf data import tree --plan ' + planJsonPath;
 				shellJob.addJob(new Job('Import: ' + dataDirectory, new ShellCommand(cmd)));
 			});
 	
@@ -315,7 +315,7 @@ export async function sfdxExportData() {
 			vscode.window.showOpenDialog(options).then(fileUri => {
 				if (fileUri && fileUri[0]) {
 					outputDir = fileUri[0].fsPath;
-					let cmd = 'sfdx force:data:tree:export --json --outputdir ' + outputDir + ` --query \"${inputQuery}\"`;
+					let cmd = 'sf data export tree --json --output-dir ' + outputDir + ` --query \"${inputQuery}\"`;
 					const shellJob = new Job('Export data', new ShellCommand(cmd));
 					EXTENSION_CONTEXT.addJob(shellJob);
 					EXTENSION_CONTEXT.startJobs();
