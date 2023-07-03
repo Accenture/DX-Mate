@@ -16,7 +16,7 @@ export function createScratchOrg(scratchName: string, durationDays: string) {
  * @param alias 
  */
 function deleteScratchOrgJob(alias: string) {
-	const cmd = `sfdx force:org:delete -u ${alias} -p`;
+	const cmd = `sf force org delete -u ${alias} -p`;
 	return new Job('Delete Matching Alias', new ShellCommand(cmd, true));
 }
 
@@ -27,7 +27,7 @@ function deleteScratchOrgJob(alias: string) {
  * @returns 
  */
 function handleExistingAliases(scratchName: string, parentJob: Job) {
-	const cmd = 'sfdx force:org:list --json';
+	const cmd = 'sf org:list --json';
 	let shellCmd = new ShellCommand(cmd, true);
 	const promiseHandler = (cmdResult: string) => {
 		const parsedResult = JSON.parse(cmdResult);
@@ -46,7 +46,7 @@ function handleExistingAliases(scratchName: string, parentJob: Job) {
 }
 
 export function createScratchOrgJob(scratchName: string, durationDays: string) {
-	const cmd = 'sfdx force:org:create ' +
+	const cmd = 'sf force org create ' +
 	"-f ./config/project-scratch-def.json " + 
 	"--setalias " + scratchName +
 	" --durationdays " + durationDays + 
@@ -86,7 +86,7 @@ export async function getScratchFromPool() {
 }
 
 function getScratchFromPoolJob(tag: string, alias: string) {
-	const cmd = `sfdx sfpowerscripts:pool:fetch --tag ${tag} -a ${alias} -d`;
+	const cmd = `sfp pool:fetch --tag ${tag} -a ${alias} -d`;
 	const shellJob = new Job('Get Scratch From Pool', new ShellCommand(cmd));
 	EXTENSION_CONTEXT.addJob(shellJob);
 }
