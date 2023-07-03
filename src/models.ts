@@ -66,11 +66,13 @@ export class Job extends vscode.TreeItem{
                 }
                 catch(exception) {
                     console.error('DXMATE:JobException: ' + JSON.stringify(exception, null, 2));
-                    this.jobFailed();
-                    this.cancel();
-                    return new Promise<string>((resolve, reject) => {
-                        reject('Subjob rejected');
-                    });
+                    if(exception === 'Cancel') {
+                        this.jobFailed();
+                        this.cancel();
+                        return new Promise<string>((resolve, reject) => {
+                            reject('Subjob rejected');
+                        });
+                    }
                 }
             }
             this.jobCompleted();
