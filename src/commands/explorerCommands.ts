@@ -24,15 +24,15 @@ function rowifyField(field: string) {
     const matches = field.matchAll(xmlRegex);
     for (const match of matches) {
         console.log(match);
-        if(match[1] === 'fullName') {
+        if(match[1] === 'fullName' && !apiName) {
             apiName = match[2];
             continue;
         }
-        else if(match[1] === 'type') {
+        else if(match[1] === 'type' && !type) {
             type = match[2];
             continue;
         }
-        else if(match[1] === 'description') {
+        else if(match[1] === 'description' && !description) {
             description = match[2];
             continue;
         }
