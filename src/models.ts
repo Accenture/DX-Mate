@@ -215,8 +215,10 @@ export abstract class EXTENSION_CONTEXT {
                     await job.startJob();
                 }
                 catch(exception) {
-                    //If a job in the process chain rejects, we move to the next
-                    //TODO: Possibly implement functionality to skip an ongoing action?
+                    //If a job in the process chain rejects, we move to the next, unless cancel is sent
+                    if(exception === 'Cancel') {
+                        this.cancelJobs();
+                    }
                 }
             }
         }
