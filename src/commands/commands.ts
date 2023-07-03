@@ -329,6 +329,8 @@ export async function sfdxExportData() {
 
 export async function sfdmuExport(target: vscode.Uri) {
 	//If method is called without alias defined, get the default org alias
+	dxmateOutput.appendLine('Initializing export');
+	dxmateOutput.show();
 	let orgInfo = await getDefaultOrgInfo();
 	let orgObj = JSON.parse(orgInfo as string);
 	let scratchAlias = orgObj?.result?.alias;
