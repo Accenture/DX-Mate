@@ -54,7 +54,7 @@ export function activateDummyUserCommands() {
  * @param generatepassword 
  */
 function createUserJob(userFile: string, username: string, generatepassword: boolean) {
-    let cmd = `sfdx force:user:create -f ${userFile} username=${username} email=${username} generatepassword=${generatepassword}`;
+    let cmd = `sf org create user -f ${userFile} username=${username} email=${username} generatepassword=${generatepassword}`;
     let shellJob = new Job('Create dummy user', new ShellCommand(cmd));
     EXTENSION_CONTEXT.addJob(shellJob);
 }
