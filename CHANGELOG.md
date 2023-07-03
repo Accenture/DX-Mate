@@ -4,7 +4,7 @@ All notable changes to the "dxmate" extension will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
-## [2.0.6] - 
+## [2.0.6] - 2023-07-03
 
 ### Changed
 - Converted to SF commands
