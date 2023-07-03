@@ -66,7 +66,7 @@ This extension contributes the following settings:
 
 The settings can be located in the VS code ui by pressing <kbd>cmd</kbd> + <kbd>,</kbd> on mac or <kbd>Ctrl</kbd> + <kbd>,</kbd> on windows. Select workspace as the setting scope and findt DX-mate below extensions.
 
-![Extension Screenshot](src/graphics/extension_settings.png)
+![Extension Settings](src/graphics/extension_settings.png)
 
 ## Dummy data
 
