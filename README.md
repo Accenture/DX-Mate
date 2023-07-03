@@ -28,15 +28,19 @@ In addition the create scratch org command automatically chains the following ac
 ## Requirements
 
 1. [Salesforce CLI](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_install_cli.htm)
+```bash
+npm install sfdx-cli --global #Needed for backwards compatability
+npm install @salesforce/cli --global
+```
 
 2. sfpowerkit plugin
 ```bash
 sfdx plugins:install sfpowerkit
 ```
 
-Scratch org pooling is supported using DX-Mate and adheres to functionality from the [DX@Scale](https://docs.dxatscale.io/) framework. To activates these function your DebHub needs to have the unlocked package installed as described [here](https://docs.dxatscale.io/challenges/challenges/scratch-org-pooling). Also, two additional cli plugins must be installed:
+Scratch org pooling is supported using DX-Mate and adheres to functionality from the [DX@Scale](https://docs.dxatscale.io/) framework. To activates these function your DebHub needs to have the unlocked package installed as described [here](https://docs.dxatscale.io/challenges/challenges/scratch-org-pooling). Also, run following commands to install dx@scale utilities and the sfdmu plugin:
 ```bash
-sfdx plugins:install @dxatscale/sfpowerscripts 
+npm i -g @dxatscale/sfpowerscripts 
 ````
 ```bash
 sfdx plugins:install sfdmu  
