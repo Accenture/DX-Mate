@@ -105,7 +105,7 @@ function registerOrgCommands(context: vscode.ExtensionContext) {
 		generateFieldMarkdown(target);
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('dxmate.generateFieldMarkdown', (target: vscode.Uri) => {
+	context.subscriptions.push(vscode.commands.registerCommand('dxmate.sfdmuExport', (target: vscode.Uri) => {
 		sfdmuExport(target);
 	}));
 }
