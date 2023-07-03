@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { DependencyKey, EXTENSION_CONTEXT, PackageDirectory, Dependency } from "../models";
 import { createFile, dxmateOutput, getFile, workspacePath } from "../utils";
-import { getPackageDirectory, getPackageDirectories, getPackageDirectoryInput } from "../workspace";
+import { getPackageDirectories, getPackageDirectoryInput } from "../workspace";
 
 function addDependencyGetPackageKeyInput() {
     return vscode.window.showInputBox({
