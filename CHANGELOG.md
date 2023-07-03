@@ -4,7 +4,12 @@ All notable changes to the "dxmate" extension will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
-## [2.0.5] - 
+## [2.0.6] - 
+## Added
+- Added support for scratch duration as input on scratch org creation
+- Added support for dummy data import using SFDMU
+
+## [2.0.5] - 2023-03-03
 ## Added
 - Added support for scratch duration as input on scratch org creation
 - Added support for dummy data import using SFDMU
