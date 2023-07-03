@@ -11,7 +11,7 @@
 	},
 	"dependencies": {
 		"sfdx-cli": "7.171.0",
-		"salesforce-cli": "1.12.0",
+		"salesforce-cli": "1.84.9",
 		"sfpowerkit": "4.2.13",
 		"sfpowerscripts": "22.5.5"
 	},
@@ -55,6 +55,10 @@
 			{
 				"command": "dxmate.generateFieldMarkdown",
 				"title": "DX Mate: Generate field table"
+			},
+			{
+				"command": "dxmate.sfdmuExport",
+				"title": "DX Mate: SFDMU export to default org"
 			}
 		],
 		"viewsContainers": {
@@ -148,6 +152,10 @@
 				{
 					"command": "dxmate.generateFieldMarkdown",
 					"when": "explorerResourceIsFolder == true && resourceFilename == 'fields'"
+				},
+				{
+					"command": "dxmate.sfdmuExport",
+					"when": "resourceFilename == 'export.json'"
 				}
 			]
 		},
