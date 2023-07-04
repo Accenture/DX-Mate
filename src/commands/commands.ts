@@ -220,7 +220,7 @@ export function deployUnpackagableJob(): EXTENSION_CONTEXT | Promise<string> {
 		});
 	}
 
-	let cmd = 'sfdx project deploy start -d ' + workspacePath as string + relPath;
+	let cmd = 'sf project deploy start -d ' + workspacePath as string + relPath;
 	let shellJob = new Job('Deploy Unpackagable Metadata', new ShellCommand(cmd));
 	return EXTENSION_CONTEXT.addJob(shellJob);
 }
