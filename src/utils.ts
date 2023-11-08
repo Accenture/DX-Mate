@@ -53,12 +53,22 @@ export class ShellCommand{
     
             const handleRetry = () => {
                 if(!this.retryEnabled) { return reject('Error'); }
+                let messageOptions = this.retryLabel ? [this.retryLabel, 'Retry', 'Skip', 'Cancel'] :['Retry', 'Skip', 'Cancel'];
                 vscode.window.showErrorMessage(
                     'An error occurred. See DX-Mate output for info',
-                    ...['Retry', 'Skip', 'Cancel']
+                    ...messageOptions
                 )
                 .then(value => {
                     if(value === 'Retry') {
+                        this.runCommand().shellPromise
+                        ?.then(() => {
+                            resolve('Retry success');
+                        }).catch( err => {
+                            reject('Retry error');
+                        });
+                    }
+                    else if(value === this.retryLabel) {
+                        this.command = this.retryCommand as string;
                         this.runCommand().shellPromise
                         ?.then(() => {
                             resolve('Retry success');

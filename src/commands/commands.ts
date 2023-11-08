@@ -145,7 +145,7 @@ export function sourcePushMetadataJob() {
 	let cmd = 'sf project deploy start';
 	let shellCmd = new ShellCommand(cmd);
 	shellCmd.retryLabel = 'Retry and ignore conflicts';
-	shellCmd.retryCommand += ' --ignore-conflicts';
+	shellCmd.retryCommand = cmd + ' --ignore-conflicts';
 	let shellJob = new Job('Push Metadata', shellCmd);
 	return EXTENSION_CONTEXT.addJob(shellJob);
 }
@@ -159,7 +159,7 @@ export function sourcePullMetadataJob() {
 	let cmd = 'sf project retrieve start';
 	let shellCmd = new ShellCommand(cmd);
 	shellCmd.retryLabel = 'Retry and ignore conflicts';
-	shellCmd.retryCommand += ' --ignore-conflicts';
+	shellCmd.retryCommand = cmd + ' --ignore-conflicts';
 	let shellJob = new Job('Pull Metadata', shellCmd);
 	return EXTENSION_CONTEXT.addJob(shellJob);
 }
