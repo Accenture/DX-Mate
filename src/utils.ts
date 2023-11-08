@@ -12,6 +12,8 @@ export class ShellCommand{
     cwd?: string = workspacePath;
     suppressOutput: boolean = false;
     retryEnabled: boolean = true;
+    retryLabel?: string;
+    retryCommand?: string;
 
     constructor(command: string, suppressOutput?: boolean) {
         this.command = command;

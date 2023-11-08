@@ -143,7 +143,10 @@ export function sourcePushMetadata() {
 
 export function sourcePushMetadataJob() {
 	let cmd = 'sf project deploy start';
-	let shellJob = new Job('Push Metadata', new ShellCommand(cmd));
+	let shellCmd = new ShellCommand(cmd);
+	shellCmd.retryLabel = 'Retry and ignore conflicts';
+	shellCmd.retryCommand += ' --ignore-conflicts';
+	let shellJob = new Job('Push Metadata', shellCmd);
 	return EXTENSION_CONTEXT.addJob(shellJob);
 }
 
@@ -154,7 +157,10 @@ export function sourcePullMetadata() {
 
 export function sourcePullMetadataJob() {
 	let cmd = 'sf project retrieve start';
-	let shellJob = new Job('Pull Metadata', new ShellCommand(cmd));
+	let shellCmd = new ShellCommand(cmd);
+	shellCmd.retryLabel = 'Retry and ignore conflicts';
+	shellCmd.retryCommand += ' --ignore-conflicts';
+	let shellJob = new Job('Pull Metadata', shellCmd);
 	return EXTENSION_CONTEXT.addJob(shellJob);
 }
 
