@@ -338,7 +338,28 @@ export async function sfdmuExport(target: vscode.Uri) {
 	let cmd = `sfdx sfdmu:run --targetusername csvFile --sourceusername ${scratchAlias}`;
 	let shellCommand = new ShellCommand(cmd);
 	shellCommand.setCwd( target.fsPath.replace('export.json', ''));
-	let shellJob = new Job('Export Dummy Data', shellCommand);
+	let shellJob = new Job('Export dummy data to CSV', shellCommand);
+
+	EXTENSION_CONTEXT.addJob(shellJob);
+	EXTENSION_CONTEXT.startJobs();
+}
+
+/**
+ * Initiates import of dummy data using sfdmu with the default org as target
+ * @param target: vscode.Uri to the export.json file defining the import SOQL
+ */
+export async function sfdmuImport(target: vscode.Uri) {
+	//If method is called without alias defined, get the default org alias
+	dxmateOutput.appendLine('Initializing export');
+	dxmateOutput.show();
+	let orgInfo = await getDefaultOrgInfo();
+	let orgObj = JSON.parse(orgInfo as string);
+	let scratchAlias = orgObj?.result?.alias;
+
+	let cmd = `sfdx sfdmu:run --sourceusername csvFile --targetusername ${scratchAlias}`;
+	let shellCommand = new ShellCommand(cmd);
+	shellCommand.setCwd( target.fsPath.replace('export.json', ''));
+	let shellJob = new Job('Import dummy data to default org', shellCommand);
 
 	EXTENSION_CONTEXT.addJob(shellJob);
 	EXTENSION_CONTEXT.startJobs();
