@@ -58,7 +58,7 @@
 			},
 			{
 				"command": "dxmate.sfdmuExport",
-				"title": "DX Mate: SFDMU export to default org"
+				"title": "DX Mate: SFDMU export from default org"
 			}
 		],
 		"viewsContainers": {
