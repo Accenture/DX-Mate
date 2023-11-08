@@ -4,6 +4,11 @@ All notable changes to the "dxmate" extension will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [2.0.7] - 2023-11-08
+## Added
+- Added support for retry with ignore conflicts for push and pull commands
+- Added support for sfdmu import to default org from explorer
+
 ## [2.0.6] - 2023-07-03
 
 ### Changed
