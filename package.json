@@ -59,6 +59,10 @@
 			{
 				"command": "dxmate.sfdmuExport",
 				"title": "DX Mate: SFDMU export from default org"
+			},
+			{
+				"command": "dxmate.sfdmuImport",
+				"title": "DX Mate: SFDMU import to default org"
 			}
 		],
 		"viewsContainers": {
@@ -155,6 +159,10 @@
 				},
 				{
 					"command": "dxmate.sfdmuExport",
+					"when": "resourceFilename == 'export.json'"
+				},
+				{
+					"command": "dxmate.sfdmuImport",
 					"when": "resourceFilename == 'export.json'"
 				}
 			]
