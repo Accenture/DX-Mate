@@ -77,7 +77,7 @@ export async function getScratchFromPool() {
     });
 	if(!aliasInput) { return; }
 
-	getScratchFromPoolJob(tagInput, aliasInput);
+	await getScratchFromPoolJob(tagInput, aliasInput);
 	sourcePushMetadataJob();
 	assignPermsetsJob();
 	importDummyDataJob(aliasInput);
@@ -85,8 +85,39 @@ export async function getScratchFromPool() {
 
 }
 
-function getScratchFromPoolJob(tag: string, alias: string) {
-	const cmd = `sfp pool:fetch --tag ${tag} -a ${alias} -d`;
+async function getScratchFromPoolJob(tag: string, alias: string) {
+	let devhub = await vscode.window.withProgress({
+		location: vscode.ProgressLocation.Notification,
+		cancellable: false,
+		title: 'Getting DevHub Info'
+	}, async (progress) => {
+		
+		return await getDefaultDevhubAlias();
+	});
+
+	let devhubObj = JSON.parse(devhub as string);
+	let devHubAlias = '';
+	if(devhubObj?.result && devhubObj.result.length >  1) {
+		let options: vscode.QuickPickItem[] = [];
+		devhubObj.result.forEach((devhub: any) => {
+			options.push({label: devhub.value});
+		});
+		await vscode.window.showQuickPick(options, {
+			title: 'Select DevHub',
+			canPickMany: false
+		}).then(selectedHub => {
+			if(!selectedHub) {
+				//Cancelled
+				return;
+			}
+			devHubAlias = selectedHub.label;
+		});
+	}
+	else{
+		devHubAlias = devhubObj.result[0].value;
+	}
+
+	const cmd = `sfp pool:fetch --tag ${tag} -a ${alias} -v ${devHubAlias} -d`;
 	const shellJob = new Job('Get Scratch From Pool', new ShellCommand(cmd));
 	EXTENSION_CONTEXT.addJob(shellJob);
 }
@@ -123,6 +154,15 @@ function isDevHub(orgInfo: string) {
 export function getDefaultOrgInfo() {
 	let cmd = 'sf org display --json';
 	return new Job('Get default org info', new ShellCommand(cmd, true)).startJob(); 
+}
+
+export function getDefaultDevhubAlias() {
+	return getDefaultDevhubAliasJob().startJob(); 
+}
+
+function getDefaultDevhubAliasJob() {
+	let cmd = 'sf config get target-dev-hub --json';
+	return new Job('Get default DevHub', new ShellCommand(cmd, true));
 }
 
 //Opens the default scratch org
@@ -361,7 +401,6 @@ export async function sfdmuImport(target: vscode.Uri) {
 	let orgInfo = await getDefaultOrgInfo();
 	let orgObj = JSON.parse(orgInfo as string);
 	let scratchAlias = orgObj?.result?.alias;
-
 	let cmd = `sfdx sfdmu:run --sourceusername csvFile --targetusername ${scratchAlias}`;
 	let shellCommand = new ShellCommand(cmd);
 	shellCommand.setCwd( target.fsPath.replace('export.json', ''));
