@@ -4,6 +4,10 @@ All notable changes to the "dxmate" extension will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [2.0.8] - 2023-12-14
+## Changed
+- Added support for -v tag on scratch org pool fetch
+
 ## [2.0.7] - 2023-11-08
 ## Added
 - Added support for retry with ignore conflicts for push and pull commands
