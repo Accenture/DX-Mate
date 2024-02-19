@@ -46,11 +46,11 @@ function handleExistingAliases(scratchName: string, parentJob: Job) {
 }
 
 export function createScratchOrgJob(scratchName: string, durationDays: string) {
-	const cmd = 'sf force org create ' +
+	const cmd = 'sf org create scratch ' +
 	"-f ./config/project-scratch-def.json " + 
-	"--setalias " + scratchName +
-	" --durationdays " + durationDays + 
-	" --setdefaultusername";
+	"--alias " + scratchName +
+	" --duration-days " + durationDays + 
+	" --set-default";
 
 	let shellJob = new Job('Create New Scratch Org');
 	const onHandlingFinished = () => {
