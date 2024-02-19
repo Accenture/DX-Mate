@@ -4,9 +4,10 @@ All notable changes to the "dxmate" extension will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
-## [2.0.0] - TBD
+## [2.0.9] - TBD
 ## Changed
 - Converted package dependency install to use sf powerscripts instead of deprecated sfpowerkit
+- Updated scratch create to new sf org create scratch syntax
 
 ## [2.0.8] - 2023-12-14
 ## Changed
