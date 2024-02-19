@@ -1,6 +1,8 @@
 import { getDependencyKeys, updateDependencyKey, getProjectDependencies } from './dependencyCommands';
 import { DependencyKey, EXTENSION_CONTEXT, Job } from '../models';
 import {dxmateOutput, ShellCommand } from '../utils';
+import { getDefaultDevhubAlias, getDefaultOrgInfo } from './commands';
+import * as vscode from 'vscode';
 
 /**
  * Gets the keys for the packages that the project depends on if defined in config file
@@ -25,10 +27,11 @@ function getPackageKeys() {
                 }
             }
         });
+
     }
     dxmateOutput.show();
 
-    return keyParams;
+    return keyParams.trim();
 }
 
 async function validateDependencies() {
@@ -38,7 +41,7 @@ async function validateDependencies() {
         let dependencyKeys = getDependencyKeys() as DependencyKey[];
         const startInstall = () => {
             resolve('START INSTALL');
-        }
+        };
 
         dxmateOutput.appendLine('FOUND DEPENDENCIES: ' + JSON.stringify(packageDependencies));
         let mappedPackages = new Set();
@@ -66,7 +69,12 @@ async function validateDependencies() {
 
 //TODO: INCLUDE EXTRA CHECK IF THE PROCESS TRIES TO INSTALL DEPENDENCIES IN A SANDBOX/FIND A WAY TO --updateOnly
 export function installDependencies() {
-    installDependenciesJob().then( jobsReady => {
+    vscode.window.withProgress({
+        location: vscode.ProgressLocation.Notification,
+        cancellable: false,
+        title: "Validating dependencies"
+    }, async () => {
+        let jobsReady = await installDependenciesJob() as Boolean;
         //If the resolved value is true we start the jobs
         if(jobsReady === true) {
             EXTENSION_CONTEXT.startJobs();
@@ -95,8 +103,15 @@ export async function installDependenciesJob() {
         let keyParams = getPackageKeys(); //Get package.json, and find dependencies. keysParam must be a list 
     
         //Verify sfpowerkit is installed, or else run the installation
-        let cmd = 'sfdx sfpowerkit:package:dependencies:install -r -a -w 10';
-        cmd += keyParams.length > 0 ? ' --installationkeys \"' + keyParams + '\"' : '';
+        let orgInfo = await getDefaultOrgInfo();
+        let orgObj = JSON.parse(orgInfo as string);
+	    let targetOrg = orgObj?.result?.alias;
+
+        let devhub = await getDefaultDevhubAlias();
+        let devhubObj = JSON.parse(devhub as string);
+	    let devHubAlias = devhubObj?.result[0]?.value;
+        let cmd = `sfp dependency:install -v ${devHubAlias} -u ${targetOrg}`;
+        cmd += keyParams.length > 0 ? ' -k \"' + keyParams + '\"' : '';
     
         let shellJob = new Job('Install Dependencies', new ShellCommand(cmd));
         EXTENSION_CONTEXT.addJob(shellJob);
