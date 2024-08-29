@@ -4,6 +4,14 @@ All notable changes to the "dxmate" extension will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+
+## [2.0.10] - 2024-08-29
+## Fixed
+- Fixed dependency validation for projects with no dependencies
+
+## Changed
+- Added longer wait for scratch creation process to better support creation from snapshots and source orgs
+
 ## [2.0.9] - 2024-02-19
 ## Changed
 - Converted package dependency install to use sf powerscripts instead of deprecated sfpowerkit

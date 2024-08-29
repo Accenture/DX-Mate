@@ -84,13 +84,13 @@ export function installDependencies() {
 
 /**
  * Submits the install dependencies job after validation. Returns a boolean promise that resolves to true if the job was added
- * @param packageName 
+ * @param alias - Conditional alias defined if submitting job in a new scratch creation process
  * @returns 
  */
-export async function installDependenciesJob() {
+export async function installDependenciesJob(alias?: string) {
     let dependencies = getProjectDependencies();
 
-	if(!dependencies) {
+	if(!dependencies || dependencies.size === 0) {
 		//No dependencies
 		dxmateOutput.appendLine('No Dependencies to install');
 		dxmateOutput.show();
@@ -103,9 +103,12 @@ export async function installDependenciesJob() {
         let keyParams = getPackageKeys(); //Get package.json, and find dependencies. keysParam must be a list 
     
         //Verify sfpowerkit is installed, or else run the installation
-        let orgInfo = await getDefaultOrgInfo();
-        let orgObj = JSON.parse(orgInfo as string);
-	    let targetOrg = orgObj?.result?.alias;
+        let targetOrg = alias;
+        if(!targetOrg) {
+            let orgInfo = await getDefaultOrgInfo();
+            let orgObj = JSON.parse(orgInfo as string);
+            targetOrg = orgObj?.result?.alias;
+        }
 
         let devhub = await getDefaultDevhubAlias();
         let devhubObj = JSON.parse(devhub as string);

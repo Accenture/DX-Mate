@@ -50,7 +50,8 @@ export function createScratchOrgJob(scratchName: string, durationDays: string) {
 	"-f ./config/project-scratch-def.json " + 
 	"--alias " + scratchName +
 	" --duration-days " + durationDays + 
-	" --set-default";
+	" --set-default" +
+	" --wait 10";
 
 	let shellJob = new Job('Create New Scratch Org');
 	const onHandlingFinished = () => {

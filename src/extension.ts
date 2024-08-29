@@ -142,7 +142,7 @@ async function setupScratchOrg() {
 			console.log('RUNNING SCRATCH ORG CREATE');
 			createScratchOrgJob(alias as string, duration as string);
 			//Dependency job includes a secondary validate process that afterwards resolves a promise
-			await installDependenciesJob();
+			await installDependenciesJob(alias); //Submitting job before scratch is created
 			sourcePushMetadataJob();
 			deployUnpackagableJob();
 			openScratchOrgJob();
