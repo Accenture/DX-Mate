@@ -90,7 +90,7 @@ export function installDependencies() {
 export async function installDependenciesJob() {
     let dependencies = getProjectDependencies();
 
-	if(!dependencies) {
+	if(!dependencies || dependencies.size === 0) {
 		//No dependencies
 		dxmateOutput.appendLine('No Dependencies to install');
 		dxmateOutput.show();
