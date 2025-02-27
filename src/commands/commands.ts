@@ -16,7 +16,7 @@ export function createScratchOrg(scratchName: string, durationDays: string) {
  * @param alias 
  */
 function deleteScratchOrgJob(alias: string) {
-	const cmd = `sf force org delete -u ${alias} -p`;
+	const cmd = `sf org delete scratch --target-org ${alias} -p`;
 	return new Job('Delete Matching Alias', new ShellCommand(cmd, true));
 }
 
