@@ -102,7 +102,7 @@ export class ShellCommand{
     
             
             this.shellProcess.stdout?.on('data', (data: string) => {
-                output += data;
+                output = data;
                 //Adding stream to the output console for the process
                 //Possibly give ability to see what subprocess is ongoing
                 if(this.suppressOutput === false) {
