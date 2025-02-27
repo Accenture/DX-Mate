@@ -106,7 +106,7 @@ export class ShellCommand{
                 //Adding stream to the output console for the process
                 //Possibly give ability to see what subprocess is ongoing
                 if(this.suppressOutput === false) {
-                    dxmateOutput.appendLine(data);
+                    dxmateOutput.replace(data);
                 }
             });
         });
