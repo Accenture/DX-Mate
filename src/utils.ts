@@ -34,7 +34,7 @@ export class ShellCommand{
     }
 
     public runCommand() {
-        this.shellProcess = cp.exec(this.command, {cwd: this.cwd}, (err, out) => {
+        this.shellProcess = cp.exec(this.command, {cwd: this.cwd, maxBuffer: 2048*2048}, (err, out) => {
             if(err && err.signal !== 'SIGINT') {
                 console.error('DXMATE:CommandError: ' + err);
                 dxmateOutput.appendLine("An error occurred: \n " + err);
@@ -99,14 +99,13 @@ export class ShellCommand{
                     handleRetry();
                 }
             });
-    
             
             this.shellProcess.stdout?.on('data', (data: string) => {
                 output += data;
                 //Adding stream to the output console for the process
                 //Possibly give ability to see what subprocess is ongoing
                 if(this.suppressOutput === false) {
-                    dxmateOutput.replace(data);
+                    dxmateOutput.appendLine(data);
                 }
             });
         });

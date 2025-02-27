@@ -183,7 +183,7 @@ export function sourcePushMetadata() {
 }
 
 export function sourcePushMetadataJob() {
-	let cmd = 'sf project deploy start';
+	let cmd = 'sf project deploy start --json';
 	let shellCmd = new ShellCommand(cmd);
 	shellCmd.retryLabel = 'Retry and ignore conflicts';
 	shellCmd.retryCommand = cmd + ' --ignore-conflicts';
