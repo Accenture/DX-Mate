@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [2.0.12] - 2025-02-27
 ## Fixed
-- Increased buffer and changed deploy command to --json to reduce stdout buffer consumption
+- Increased buffer and changed deploy command to --json to reduce stdout buffer consumption. 
 
 ## [2.0.11] - 2025-02-27
 ## Fixed
