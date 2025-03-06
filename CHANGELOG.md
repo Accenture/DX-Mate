@@ -4,6 +4,11 @@ All notable changes to the "dxmate" extension will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## [2.0.13] - 2025-03-06
+## Fixed
+- Updated SF org delete command
+- Updated source pull command with --json flag to minimize stream buffering
+
 ## [2.0.12] - 2025-02-27
 ## Fixed
 - Increased buffer and changed deploy command to --json to reduce stdout buffer consumption. 

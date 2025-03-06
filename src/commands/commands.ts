@@ -197,7 +197,7 @@ export function sourcePullMetadata() {
 }
 
 export function sourcePullMetadataJob() {
-	let cmd = 'sf project retrieve start';
+	let cmd = 'sf project retrieve start --json';
 	let shellCmd = new ShellCommand(cmd);
 	shellCmd.retryLabel = 'Retry and ignore conflicts';
 	shellCmd.retryCommand = cmd + ' --ignore-conflicts';
