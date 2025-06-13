@@ -65,6 +65,36 @@ export function createScratchOrgJob(scratchName: string, durationDays: string) {
 	return EXTENSION_CONTEXT.addJob(shellJob);
 }
 
+export async function runLocalDev() {
+	let cmd = 'sf lightning dev app';
+	let options = [{label: 'desktop'}, {label: 'ios'}, {label: 'android'}];
+	await vscode.window.showQuickPick(options, {
+			title: 'Device Type',
+			canPickMany: false
+		}).then(devType => {
+			if(!devType) {
+				return;
+			}
+			cmd += ` --device-type ${devType.label}` ;
+	});
+
+	let appName = await vscode.window.showInputBox({
+        title: 'App Name',
+        placeHolder: "App name (optional)",
+    });
+	if(appName && appName !== '') { cmd += ` --name ${appName}`; }
+
+	let cmdJob = new ShellCommand(cmd);
+	vscode.window.withProgress({
+		location: vscode.ProgressLocation.Notification,
+		cancellable: false,
+		title: 'Starting local dev'
+	}, async (progress) => {	
+		await cmdJob.runCommand().shellPromise;
+	});
+	
+}
+
 export async function getScratchFromPool() {
 	let tagInput = await vscode.window.showInputBox({
         title: 'Pool tag',
