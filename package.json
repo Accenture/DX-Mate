@@ -4,7 +4,7 @@
 	"description": "Support tools for SFDX development",
 	"publisher": "Accenture",
 	"icon": "lightning.png",
-	"version": "2.0.14",
+	"version": "2.0.15",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/Accenture/DX-Mate.git"
@@ -67,6 +67,10 @@
 			{
 				"command": "dxmate.runLocalDev",
 				"title": "DX Mate: Run local dev"
+			},
+			{
+				"command": "dxmate.openFlow",
+				"title": "DX Mate: Open flow in default org"
 			}
 		],
 		"viewsContainers": {
@@ -156,6 +160,12 @@
 					"group": "navigation"
 				}
 			],
+			"commandPalette": [
+				{
+					"command": "dxmate.openFlow",
+					"when": "false"
+				}
+			],
 			"explorer/context": [
 				{
 					"command": "dxmate.generateFieldMarkdown",
@@ -168,6 +178,10 @@
 				{
 					"command": "dxmate.sfdmuImport",
 					"when": "resourceFilename == 'export.json'"
+				},
+				{
+					"command": "dxmate.openFlow",
+					"when": "resourceFilename =~ /flow-meta.xml/"
 				}
 			]
 		},

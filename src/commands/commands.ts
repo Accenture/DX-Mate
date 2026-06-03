@@ -441,6 +441,25 @@ export async function sfdmuImport(target: vscode.Uri) {
 	EXTENSION_CONTEXT.startJobs();
 }
 
+/**
+ * Initiates import of dummy data using sfdmu with the default org as target
+ * @param target: vscode.Uri to the export.json file defining the import SOQL
+ */
+export async function openFlow(target: vscode.Uri) {
+	//If method is called without alias defined, get the default org alias
+	dxmateOutput.appendLine('Opening flow in flow builder..');
+	dxmateOutput.show();
+	let orgInfo = await getDefaultOrgInfo();
+	let orgObj = JSON.parse(orgInfo as string);
+	let scratchAlias = orgObj?.result?.alias;
+	let cmd = `sf org open --source-file ${target.fsPath}`;
+	let shellCommand = new ShellCommand(cmd);
+	let shellJob = new Job('Open flow in flow builder', shellCommand);
+
+	EXTENSION_CONTEXT.addJob(shellJob);
+	EXTENSION_CONTEXT.startJobs();
+}
+
 function getSoqlQuickPicks(soqlFiles: any[]): vscode.QuickPickItem[] {
 	let options: vscode.QuickPickItem[] = [];
 	soqlFiles.forEach((file): any => {
